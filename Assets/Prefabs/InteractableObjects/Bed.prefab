@@ -1,0 +1,163 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &2709377606747569000
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.71586
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 4.0990496
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -12.245579
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -487417789786016363, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -487417789786016363, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_Name
+      value: Bed
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 7799659646988898428, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7799659646988898428, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_TagString
+      value: Interactable
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182994745558294914, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8182994745558294914, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7799659646988898428, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8676531941264278593}
+    - targetCorrespondingSourceObject: {fileID: 7799659646988898428, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8174450117471671443}
+    - targetCorrespondingSourceObject: {fileID: 7799659646988898428, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5178627290153480251}
+  m_SourcePrefab: {fileID: 100100000, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+--- !u!1 &5306455922538638100 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7799659646988898428, guid: 763da1f2a0374a64087cc431219b95ce, type: 3}
+  m_PrefabInstance: {fileID: 2709377606747569000}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &8676531941264278593
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5306455922538638100}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.8, y: 0.85238814, z: 2.06132}
+  m_Center: {x: 0.00000032782555, y: 0.42619407, z: -0.00000023841858}
+--- !u!114 &8174450117471671443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5306455922538638100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf491154f087f9546a0b385dccab9853, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  promptMessage: 
+  miniGameScript: {fileID: 0}
+  targetImage: {fileID: 0}
+  targetText: {fileID: 0}
+  fadeInDuration: 1
+  fadeOutDuration: 2
+  waitDuration: 3
+  isLightsOff: 0
+  lightMessageText: {fileID: 0}
+  lightOnMessage: I need the turn off the light
+  messageDisplayTime: 3
+--- !u!114 &5178627290153480251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5306455922538638100}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc22a1ad9ad4da547a790ffdc681e332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredMission: {fileID: 11400000, guid: a5f7a5edd3b929447beafbd1c0a27e13, type: 2}
+  destroyAfterInteract: 0
