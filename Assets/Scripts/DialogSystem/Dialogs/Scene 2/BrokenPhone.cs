@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using TreeEditor;
 
 public class BrokenPhone : Interactable
 {
@@ -79,6 +80,7 @@ public class BrokenPhone : Interactable
             Vector3 targetPositionWithOffset = lookAtTarget.position + (Vector3.up * lookOffset);
             playerCamera.DOLookAt(targetPositionWithOffset, rotationDuration);
         }
+        
     }
 
     private System.Collections.IEnumerator CheckDialogEnd()

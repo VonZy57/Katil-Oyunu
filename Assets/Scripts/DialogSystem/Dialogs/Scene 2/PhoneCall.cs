@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -10,6 +11,10 @@ public class PhoneCall : Interactable
     public Transform phoneLookAtTarget; //Telefona bakış hedefi // Sonrasında hedef anneye geçecek ve anneye dönecek
     public Transform playerBody;      // Karakterin ana gövdesi (Sağa/Sola dönüş için)
     public Transform playerCamera;    // Karakterin kamerası (Yukarı/Aşağı bakış için)
+    public GameObject phoneHandSet; // Telefonun ahizesi
+    public Transform playerHandSetRef; // Ahizenin gideceği referans
+    [SerializeField] private Vector3 initialHandSetPos; // Telefon kapanınca ahizenin geri döneceği yer
+    [SerializeField] private Quaternion initialHandSetRot;
 
     [Header("Jumpscare & Wake Up References")]
     public GameObject girlObj_to_beMother; // Küçük kız GameObject'i (başlangıçta deaktif)
@@ -50,14 +55,18 @@ public class PhoneCall : Interactable
         // DialogSystem'i otomatik bul
         dialogSystem = FindFirstObjectByType<DialogSystem>();
 
-        // Prompt message'ı ayarla
         promptMessage = "E - Answer Call";
+        
+        clockText.text = "";
 
         // 2. Başlangıç Ayarları
         if (girlObj_to_beMother != null) girlObj_to_beMother.SetActive(false); // Kızı kaldır
         if (blackScreen != null) blackScreen.gameObject.SetActive(false); // Siyah ekranı kaldır
         if (littleGirlToTalk != null) littleGirlToTalk.SetActive(false); // Konuşulacak kız kapalı
-        clockText.text = "";
+
+        // Ahizenin başlangıç position ve rotation verisini kaydet
+        initialHandSetPos = phoneHandSet.transform.position;
+        initialHandSetRot = phoneHandSet.transform.rotation;
 
         // AudioSource ekle
         audioSource = gameObject.AddComponent<AudioSource>();
@@ -106,9 +115,16 @@ public class PhoneCall : Interactable
             Vector3 targetPositionWithOffset = phoneLookAtTarget.position + (Vector3.up * lookOffset);
             playerCamera.DOLookAt(targetPositionWithOffset, rotateDuration);
         }
+
+        // C. Telefon ahizesini hedefe ilerlet.
+        if (phoneHandSet != null)
+        {
+            phoneHandSet.transform.DOMove(playerHandSetRef.transform.position, 1f);
+            phoneHandSet.transform.DORotateQuaternion(playerHandSetRef.transform.rotation, 1f);
+        }
     }
 
-    private System.Collections.IEnumerator CheckDialogEnd()
+    private IEnumerator CheckDialogEnd()
     {
         // Dialog paneli kapanana kadar bekle
         while (dialogSystem != null && dialogSystem.dialogPanel.activeSelf)
@@ -119,7 +135,7 @@ public class PhoneCall : Interactable
         isDialogActive = false;
     }
 
-    private System.Collections.IEnumerator AutoCloseDialog()
+    private IEnumerator AutoCloseDialog()
     {
         // Belirtilen süre kadar bekle
         yield return new WaitForSeconds(autoCloseDelay);
@@ -366,6 +382,8 @@ public class PhoneCall : Interactable
 
     IEnumerator blackScreenAfterJumpscare()
     {
+        phoneHandSet.transform.DOMove(initialHandSetPos, 0.5f);
+        phoneHandSet.transform.DORotateQuaternion(initialHandSetRot, 0.5f);
         // Jumpscare anı (1 sn bekle)
         yield return new WaitForSeconds(1f);
         // Siyah ekranı aç
