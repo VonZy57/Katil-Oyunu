@@ -24,7 +24,7 @@ public class PhoneCall : Interactable
 
     [Header("UI References")]
     public GameObject playerObjectToTeleport; // Işınlanma için
-    public Image blackScreen;
+    public Image clockImage;
     public TextMeshProUGUI clockText;
     public GameObject girlObject;
     
@@ -61,7 +61,7 @@ public class PhoneCall : Interactable
 
         // 2. Başlangıç Ayarları
         if (girlObj_to_beMother != null) girlObj_to_beMother.SetActive(false); // Kızı kaldır
-        if (blackScreen != null) blackScreen.gameObject.SetActive(false); // Siyah ekranı kaldır
+        if (clockImage != null) clockImage.gameObject.SetActive(false); // Siyah ekranı kaldır
         if (littleGirlToTalk != null) littleGirlToTalk.SetActive(false); // Konuşulacak kız kapalı
 
         // Ahizenin başlangıç position ve rotation verisini kaydet
@@ -79,8 +79,9 @@ public class PhoneCall : Interactable
 
     protected override void Interact()
     {
+
         //Button Smash gamei bitir
-        buttonSmashGame.EndGame();
+        buttonSmashGame.EndGame(); // Telefon açma sesi bu metodun içinde
 
         // E tuşuna basıldığında çağrılır (PlayerInteraction raycast ile kontrol eder)
         if (dialogSystem != null && !isDialogActive && !hasInteracted)
@@ -90,6 +91,13 @@ public class PhoneCall : Interactable
 
             // Kamerayı telefona döndür
             RotateCameraToTarget(rotationDuration);
+
+            // Telefon ahizesini kulağa götür.
+            if (phoneHandSet != null)
+            {
+                phoneHandSet.transform.DOMove(playerHandSetRef.transform.position, 1f);
+                phoneHandSet.transform.DORotateQuaternion(playerHandSetRef.transform.rotation, 1f);
+            }
 
             dialogSystem.StartDialog(phoneCallNode);
             isDialogActive = true;
@@ -116,12 +124,6 @@ public class PhoneCall : Interactable
             playerCamera.DOLookAt(targetPositionWithOffset, rotateDuration);
         }
 
-        // C. Telefon ahizesini hedefe ilerlet.
-        if (phoneHandSet != null)
-        {
-            phoneHandSet.transform.DOMove(playerHandSetRef.transform.position, 1f);
-            phoneHandSet.transform.DORotateQuaternion(playerHandSetRef.transform.rotation, 1f);
-        }
     }
 
     private IEnumerator CheckDialogEnd()
@@ -345,6 +347,8 @@ public class PhoneCall : Interactable
                 // Telefon kapatma sesi çal
                 if (audioSource != null && phoneHangupSound != null)
                 {
+                    phoneHandSet.transform.DOMove(initialHandSetPos, 0.2f);
+                    phoneHandSet.transform.DORotateQuaternion(initialHandSetRot, 0.2f);
                     audioSource.PlayOneShot(phoneHangupSound);
                 }
 
@@ -382,15 +386,14 @@ public class PhoneCall : Interactable
 
     IEnumerator blackScreenAfterJumpscare()
     {
-        phoneHandSet.transform.DOMove(initialHandSetPos, 0.5f);
-        phoneHandSet.transform.DORotateQuaternion(initialHandSetRot, 0.5f);
         // Jumpscare anı (1 sn bekle)
         yield return new WaitForSeconds(1f);
         // Siyah ekranı aç
-        blackScreen.gameObject.SetActive(true);
+        clockImage.gameObject.SetActive(true);
+        clockText.gameObject.SetActive(false);
         if (girlObject != null) girlObject.SetActive(false); // Girl object'i kaldır
         // 5 saniye karanlıkta bekle
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
 
         // Oyuncuyu yatağa/uyanma noktasına ışınla
         if (playerObjectToTeleport != null && wakePosition != null)
@@ -418,16 +421,16 @@ public class PhoneCall : Interactable
         }
 
         clockText.text = "9:40 AM";
-        yield return new WaitForSeconds(2);
-        blackScreen.gameObject.SetActive(false);
+        clockText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(4f);
+
         //Buraya nefes nefese kalma sesleri eklenebilir veya kendi kendine rüyaymış gibi bir konuşma olabilir.
         //Yada bu kısım siyah ekranda uykudan uyanmadan enginin kendi kendine söylediği bir konuşma olabilir.
 
         // Siyah ekranı kapat
-        if (blackScreen != null)
+        if (clockImage != null)
         {
-            blackScreen.gameObject.SetActive(false);
-            // Destroy(blackScreen); // UI'ı yok etmek yerine kapatmak daha sağlıklıdır.
+            clockImage.gameObject.SetActive(false);
         }
     }
 }

@@ -8,8 +8,8 @@ public class BedInteraction : Interactable
 {
     public ButtonSmashGame miniGameScript;
 
-    public Image targetImage;
-    public TextMeshProUGUI targetText;
+    public Image clockImage;
+    public TextMeshProUGUI clockTextMeshPro;
 
     public float fadeInDuration = 1.0f;
     public float fadeOutDuration = 2.0f;
@@ -61,7 +61,9 @@ public class BedInteraction : Interactable
 
     IEnumerator PlayClockFade()
     {
-        targetImage.gameObject.SetActive(true);
+        clockImage.gameObject.SetActive(true);
+        if (clockTextMeshPro != null) clockTextMeshPro.gameObject.SetActive(false);
+
         promptMessage = null;
 
         // --- FADE IN (G�r�n�r Olma) ---
@@ -74,6 +76,10 @@ public class BedInteraction : Interactable
             yield return null; // Bir sonraki kareye bekle
         }
 
+        // Saat yazısını ekranda göster
+        if (clockTextMeshPro != null)
+            clockTextMeshPro.gameObject.SetActive(true);
+
         // --- BEKLEME (3 Saniye) ---
         yield return new WaitForSeconds(waitDuration/2);
 
@@ -83,7 +89,10 @@ public class BedInteraction : Interactable
             miniGameScript.StartMiniGame();
         }
 
-        yield return new WaitForSeconds(waitDuration / 2);
+        yield return new WaitForSeconds(waitDuration);
+
+        if (clockTextMeshPro != null)
+            clockTextMeshPro.gameObject.SetActive(false);
 
         // --- FADE OUT (Kaybolma) ---
         timer = 0f;
@@ -97,24 +106,25 @@ public class BedInteraction : Interactable
 
         SetAlpha(0); // Kesinlikle tam g�r�nmez oldu�undan emin ol
 
-        Destroy(targetImage);
+        clockImage.gameObject.SetActive(false); // Imageı kapat
+        SetAlpha(1); //Tekrar siyah hale getir.
     }
 
     // Hem Image hem Text'in �effafl���n� ayn� anda de�i�tiren yard�mc� fonksiyon
     void SetAlpha(float alpha)
     {
-        if (targetImage != null)
+        if (clockImage != null)
         {
-            Color imgColor = targetImage.color;
+            Color imgColor = clockImage.color;
             imgColor.a = alpha;
-            targetImage.color = imgColor;
+            clockImage.color = imgColor;
         }
 
-        if (targetText != null)
+        if (clockTextMeshPro != null)
         {
-            Color txtColor = targetText.color;
+            Color txtColor = clockTextMeshPro.color;
             txtColor.a = alpha;
-            targetText.color = txtColor;
+            clockTextMeshPro.color = txtColor;
         }
     }
 
