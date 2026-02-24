@@ -16,7 +16,6 @@ public class KuruGreeting : Interactable
     private DialogSystem dialogSystem;
     private MissionObjective missionObj;
 
-    private bool hasTriggered = false;
     private bool dialogCompleted = false; // Dialog tamamlandı mı?
     private bool isDialogActive = false; // Dialog şu anda aktif mi?
 
@@ -39,20 +38,8 @@ public class KuruGreeting : Interactable
     }
 
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            // Sadece ilk kez trigger'a girildiğinde intro dialog başlat
-            if (!hasTriggered)
-            {
-                hasTriggered = true;
-                StartIntroDialog();
-            }
-        }
-    }
 
-    void StartIntroDialog()
+    public void StartIntroDialog()
     {
         if (dialogSystem != null)
         {
