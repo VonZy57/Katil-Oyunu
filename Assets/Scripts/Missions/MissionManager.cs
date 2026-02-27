@@ -22,6 +22,7 @@ public class MissionManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            transform.SetParent(null);
             DontDestroyOnLoad(gameObject); // Sahne deðiþse de yok olmasýn
         }
         else
