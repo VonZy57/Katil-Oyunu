@@ -136,7 +136,7 @@ public class FirstPersonController : MonoBehaviour
             speed = isRunning ? runSpeed : walkSpeed;
         }
 
-        controller.Move(move * speed * Time.deltaTime);
+        controller.Move(speed * Time.deltaTime * move);
 
         // Yerçekimi
         velocity.y += gravity * Time.deltaTime;

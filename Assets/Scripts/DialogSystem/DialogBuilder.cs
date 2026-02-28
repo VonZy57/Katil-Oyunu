@@ -7,15 +7,17 @@ public class DialogBuilder               // 💬 DialogNode ve DialogOption nesn
     // 🔗 DialogNode, bir konuşma satırını temsil eder.
     public static DialogNode CreateNode(string englishText, string turkishText, string speakerName = "")
     {
-        DialogNode node = new DialogNode();     // 💬 Yeni bir diyalog düğümü oluşturuluyor.
-        node.speakerName = speakerName;         // 💬 Konuşan karakterin ismi atanıyor.
-        node.dialogText = new LocalizedText     // 💬 Diyalog metni iki dilde tutulacak (LocalizedText yapısı kullanılıyor).
+        DialogNode node = new()
         {
-            english = englishText,              // 💬 İngilizce metin atanıyor.
-            turkish = turkishText               // 💬 Türkçe metin atanıyor.
-        };
-        node.optionsList = new List<DialogOption>(); // 💬 Bu node'a ait seçeneklerin listesi başlatılıyor.
-        node.isEndDialog = false;                // 💬 Varsayılan olarak bu node, diyalog sonu değil.
+            speakerName = speakerName,         // 💬 Konuşan karakterin ismi atanıyor.
+            dialogText = new LocalizedText     // 💬 Diyalog metni iki dilde tutulacak (LocalizedText yapısı kullanılıyor).
+            {
+                english = englishText,              // 💬 İngilizce metin atanıyor.
+                turkish = turkishText               // 💬 Türkçe metin atanıyor.
+            },
+            optionsList = new List<DialogOption>(), // 💬 Bu node'a ait seçeneklerin listesi başlatılıyor.
+            isEndDialog = false                // 💬 Varsayılan olarak bu node, diyalog sonu değil.
+        };     // 💬 Yeni bir diyalog düğümü oluşturuluyor.
         return node;                             // 💬 Oluşturulan node geri döndürülüyor.
     }
 
@@ -32,14 +34,16 @@ public class DialogBuilder               // 💬 DialogNode ve DialogOption nesn
     // 🔗 DialogOption, bir cevabı ve devam eden node'u temsil eder.
     public static DialogOption CreateOption(string englishText, string turkishText, DialogNode response = null, bool isSilent = false)
     {
-        DialogOption option = new DialogOption();      // 💬 Yeni seçenek nesnesi oluşturuluyor.
-        option.optionText = new LocalizedText          // 💬 Seçeneğin iki dildeki metni atanıyor.
+        DialogOption option = new()
         {
-            english = englishText,
-            turkish = turkishText
-        };
-        option.responseNode = response;                // 💬 Bu seçeneğe tıklandığında gidilecek node atanıyor (null olabilir).
-        option.isSilentOption = isSilent;              // 💬 "..." gibi sessiz cevap mı?
+            optionText = new LocalizedText          // 💬 Seçeneğin iki dildeki metni atanıyor.
+            {
+                english = englishText,
+                turkish = turkishText
+            },
+            responseNode = response,                // 💬 Bu seçeneğe tıklandığında gidilecek node atanıyor (null olabilir).
+            isSilentOption = isSilent              // 💬 "..." gibi sessiz cevap mı?
+        };      // 💬 Yeni seçenek nesnesi oluşturuluyor.
         return option;
     }
 

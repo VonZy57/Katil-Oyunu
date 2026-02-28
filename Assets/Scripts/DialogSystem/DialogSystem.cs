@@ -204,6 +204,8 @@ public class DialogSystem : MonoBehaviour
                 {
                     parentContainer = optionsContainer;
                 }
+
+                //parentContainer = optionsContainer; //Doğrudan LayoutGroup'a gönder
             }
 
             GameObject optionButton = Instantiate(optionButtonPrefab, parentContainer);

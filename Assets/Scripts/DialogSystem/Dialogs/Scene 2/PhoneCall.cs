@@ -377,14 +377,14 @@ public class PhoneCall : Interactable
 
                 // Otomatik kapanma başlat
                 StartCoroutine(AutoCloseDialog());
-                StartCoroutine(blackScreenAfterJumpscare());
+                StartCoroutine(BlackScreenAfterJumpscare());
             },
             true
         );
         DialogBuilder.AddOption(girlArrives, girlToMother);
     }
 
-    IEnumerator blackScreenAfterJumpscare()
+    IEnumerator BlackScreenAfterJumpscare()
     {
         // Jumpscare anı (1 sn bekle)
         yield return new WaitForSeconds(1f);
