@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections;
 
 public class EndlessRunner : MonoBehaviour
 {
@@ -16,19 +17,17 @@ public class EndlessRunner : MonoBehaviour
     [Header("Dönüş Ayarları")]
     public float rotationDuration = 1.5f;
 
-    [Header("Head Bob Ayarları (1. ve 2. Trigger Arası)")]
+    [Header("Head Bob Ayarları")]
     public float headBobFrequencyBetween = 4f;
     public float headBobAmplitudeBetween = 0.05f;
     public float headBobHorizontalAmpBetween = 0.05f;
 
-    [Header("Head Bob Ayarları (2. Trigger Sonrası)")]
-    public float headBobFrequencyAfter = 1.5f;
-    public float headBobAmplitudeAfter = 0.05f;
-    public float headBobHorizontalAmpAfter = 0.05f;
-
     [Header("Trigger Referansları")]
     public Collider firstTriggerZone;
     public Collider secondTriggerZone;
+
+    [Header("Kararma Efekti")]
+    public GameObject blackScreenObject;
 
     // Durum takibi
     private bool isControllingPlayer = false;
@@ -53,6 +52,13 @@ public class EndlessRunner : MonoBehaviour
     // 2. trigger pozisyonu (respawn için)
     private Vector3 secondTriggerPosition;
     private Quaternion secondTriggerRotation;
+
+    // Obstacle cache
+    private GameObject[] cachedObstacles;
+    private JumpableObstacle[] cachedJumpableObstacles;
+
+    // Baz hız (2. trigger sonrası 1.5x için)
+    private float baseWalkSpeed;
 
     void Awake()
     {
@@ -87,6 +93,13 @@ public class EndlessRunner : MonoBehaviour
         // Player'a obstacle collision helper ekle
         if (playerBody != null)
             SetupObstacleDetection();
+
+        baseWalkSpeed = walkSpeed;
+
+        // Obstacle'ları cache'e al ve gizle
+        cachedObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
+        cachedJumpableObstacles = FindObjectsByType<JumpableObstacle>(FindObjectsSortMode.None);
+        SetObstaclesActive(false);
     }
 
     void SetupTriggerZone(Collider triggerCollider, bool isFirstTrigger)
@@ -131,7 +144,14 @@ public class EndlessRunner : MonoBehaviour
     public void OnFirstTriggerEnter()
     {
         if (isControllingPlayer) return;
-        TakeControlOfPlayer();
+        TakeControlOfPlayer(IsLookingAtInteractable());
+    }
+
+    bool IsLookingAtInteractable()
+    {
+        if (playerCamera == null) return false;
+        Ray ray = new Ray(playerCamera.position, playerCamera.forward);
+        return Physics.Raycast(ray, out RaycastHit hit, 10f) && hit.collider.CompareTag("Interactable");
     }
 
     public void OnSecondTriggerEnter()
@@ -148,10 +168,27 @@ public class EndlessRunner : MonoBehaviour
 
     public void OnObstacleHit()
     {
-        if (!canUseInputAndHeadBob) return; // Sadece 2. trigger'dan sonra aktif
+        if (!canUseInputAndHeadBob) return;
+        StartCoroutine(ObstacleHitSequence());
+    }
 
-        // Oyuncuyu 2. trigger pozisyonuna geri götür
+    private IEnumerator ObstacleHitSequence()
+    {
+        canUseInputAndHeadBob = false;
+
+        blackScreenObject?.SetActive(true);
+
         TeleportToSecondTrigger();
+
+        if (cachedJumpableObstacles != null)
+            foreach (var jo in cachedJumpableObstacles)
+                jo?.ResetObstacle();
+
+        yield return new WaitForSeconds(0.5f);
+
+        blackScreenObject?.SetActive(false);
+
+        canUseInputAndHeadBob = true;
     }
 
     void TeleportToSecondTrigger()
@@ -176,7 +213,7 @@ public class EndlessRunner : MonoBehaviour
         characterController.enabled = true;
     }
 
-    void TakeControlOfPlayer()
+    void TakeControlOfPlayer(bool rotate180 = false)
     {
         isControllingPlayer = true;
         canUseInputAndHeadBob = false;
@@ -184,15 +221,16 @@ public class EndlessRunner : MonoBehaviour
         if (firstPersonController != null)
             firstPersonController.enabled = false;
 
-        if (playerBody != null)
-        {
-            Vector3 targetRotation = new Vector3(0f, -90f, 0f);
-            playerBody.DORotate(targetRotation, rotationDuration).SetEase(Ease.OutQuad);
-        }
-
         if (playerCamera != null)
-        {
             playerCamera.DOLocalRotate(Vector3.zero, rotationDuration).SetEase(Ease.OutQuad);
+
+        if (rotate180 && playerBody != null)
+        {
+            isRotating = true;
+            Vector3 targetRotation = playerBody.eulerAngles + new Vector3(0f, 180f, 0f);
+            playerBody.DORotate(targetRotation, rotationDuration)
+                .SetEase(Ease.OutQuad)
+                .OnComplete(() => isRotating = false);
         }
     }
 
@@ -228,9 +266,9 @@ public class EndlessRunner : MonoBehaviour
     {
         if (playerCamera == null) return;
 
-        float frequency = canUseInputAndHeadBob ? headBobFrequencyAfter : headBobFrequencyBetween;
-        float amplitude = canUseInputAndHeadBob ? headBobAmplitudeAfter : headBobAmplitudeBetween;
-        float horizontalAmp = canUseInputAndHeadBob ? headBobHorizontalAmpAfter : headBobHorizontalAmpBetween;
+        float frequency = headBobFrequencyBetween;
+        float amplitude = headBobAmplitudeBetween;
+        float horizontalAmp = headBobHorizontalAmpBetween;
 
         if (characterController.isGrounded)
         {
@@ -255,6 +293,8 @@ public class EndlessRunner : MonoBehaviour
         RotateBackwards();
         yield return new WaitForSeconds(rotationDuration);
 
+        SetObstaclesActive(true);
+
         yield return new WaitForSeconds(0.5f);
 
         ReturnToOriginal();
@@ -262,6 +302,14 @@ public class EndlessRunner : MonoBehaviour
 
         isRotating = false;
         canUseInputAndHeadBob = true;
+        walkSpeed = baseWalkSpeed * 1.5f;
+    }
+
+    void SetObstaclesActive(bool active)
+    {
+        if (cachedObstacles == null) return;
+        foreach (var obj in cachedObstacles)
+            obj?.SetActive(active);
     }
 
     void RotateBackwards()
@@ -286,6 +334,7 @@ public class EndlessRunner : MonoBehaviour
         ReleaseControlOfPlayer();
         hasReachedSecondTrigger = false;
         isRotating = false;
+        walkSpeed = baseWalkSpeed;
     }
 }
 
