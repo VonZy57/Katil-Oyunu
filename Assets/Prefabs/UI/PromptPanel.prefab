@@ -68,7 +68,7 @@ MonoBehaviour:
   m_text: prompt message
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ea6491341b7f71f48a89b1cc344dbede, type: 2}
-  m_sharedMaterial: {fileID: -4754038719648292871, guid: ea6491341b7f71f48a89b1cc344dbede, type: 2}
+  m_sharedMaterial: {fileID: -2829128673955305038, guid: ea6491341b7f71f48a89b1cc344dbede, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -119,7 +119,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void ShowPrompt(string message)
+    public void ShowPrompt(string message)
     {
         if (promptPanel != null && promptText != null && promptCanvasGroup != null)
         {
@@ -130,7 +130,7 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void HidePrompt()
+    public void HidePrompt()
     {
         if (promptPanel != null && promptCanvasGroup != null)
         {

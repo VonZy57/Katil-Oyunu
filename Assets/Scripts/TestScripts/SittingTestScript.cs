@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class Sitting : Interactable
+public class SittingTestScript : Interactable
 {
     [Header("Oturma Ayarlarý")]
     public Transform sitReference;
