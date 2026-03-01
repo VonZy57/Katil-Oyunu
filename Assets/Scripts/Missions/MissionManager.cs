@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using System.Collections; // Coroutine kütüphanesi
 using System; // Action eventleri için gerekli
 
 public class MissionManager : MonoBehaviour
@@ -22,8 +24,6 @@ public class MissionManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            transform.SetParent(null);
-            DontDestroyOnLoad(gameObject); // Sahne deðiþse de yok olmasýn
         }
         else
         {
@@ -58,7 +58,17 @@ public class MissionManager : MonoBehaviour
         Debug.Log($"Görev Tamamlandý: {CurrentMission.description}");
         OnMissionComplete?.Invoke(CurrentMission);
 
-        // Eðer bir sonraki görev varsa ona geç, yoksa oyunu bitir
+
+        // Eðer görev sonunda sahne deðiþecekse (sahne ismi boþ deðilse), yeni sahneyi yükle
+        if (!string.IsNullOrEmpty(CurrentMission.loadSceneName))
+        {
+            Debug.Log($"Yeni Sahne Yükleniyor: {CurrentMission.loadSceneName}");
+            SceneManager.LoadScene(CurrentMission.loadSceneName);
+            return; // Sahne yüklenecekse geri kalan kodu okuma
+        }
+
+
+        // Eðer bir sonraki görev varsa ve sahne deðiþmeyecekse sonraki göreve geç, yoksa oyunu bitir
         if (CurrentMission.nextMission != null && !CurrentMission.isFinalMission)
         {
             StartMission(CurrentMission.nextMission);
@@ -67,6 +77,24 @@ public class MissionManager : MonoBehaviour
         {
             FinishGame();
         }
+    }
+
+    private IEnumerator HandleSceneTransition(string sceneName)
+    {
+        // 1. AÞAMA: Sahne yüklenmeden önce yapýlacaklar bu kýsma yazýlacak
+        // Örneðin; müzik baþlatma, ekran kararma animasyonlarý...
+        // ...deðiþken deðiþtirme, kayýt alma, oyuncu hareket kýsýtlamalarý gibi iþlemler burada yapýlabilir
+        Debug.Log("Sahne geçiþi öncesi iþlemler tamamlandý, sahne yükleniyor...");
+
+
+        // 2. AÞAMA: Sahneyi yükleme
+        SceneManager.LoadScene(sceneName);
+
+        // Bu aþamadana sonra yeni sahne yüklenirken yapýlacak iþlemleri...
+        // ...bu script yeni sahnede yok olup sýfýrdan baþlayacaðýndan dolayý...
+        // ...yeni sahnede yer alacak baþka bir script ile kontrol etmek gerekiyor.
+
+        yield return null;
     }
 
     // Belirli bir görevi direkt atamak için (Örn: Save dosyasýndan yüklerken)
