@@ -29,6 +29,17 @@ public class EndlessRunner : MonoBehaviour
     [Header("Kararma Efekti")]
     public GameObject blackScreenObject;
 
+    [Header("Kapı Dönüş Sistemi")]
+    public float doorPromptTimeout = 2f;
+    public float doorSlowSpeed = 1f;
+    public GameObject promptLeft;   // "Sola Dön" UI
+    public GameObject promptRight;  // "Sağa Dön" UI
+
+    [Header("FOV Ayarları")]
+    public float normalFOV = 60f;
+    public float runFOV = 75f;
+    public float fovChangeSpeed = 5f;
+
     // Durum takibi
     private bool isControllingPlayer = false;
     private bool hasReachedSecondTrigger = false;
@@ -52,6 +63,16 @@ public class EndlessRunner : MonoBehaviour
     // 2. trigger pozisyonu (respawn için)
     private Vector3 secondTriggerPosition;
     private Quaternion secondTriggerRotation;
+
+    // FOV
+    private Camera playerCam;
+
+    // Kapı dönüş durumu
+    private bool isWaitingForDoorInput = false;
+    private bool requireLeft;
+    private Coroutine doorTimeoutCoroutine;
+    private DoorCheckpointTrigger currentDoorCheckpoint;
+    private DoorCheckpointTrigger[] cachedDoorCheckpoints;
 
     // Obstacle cache
     private GameObject[] cachedObstacles;
@@ -85,7 +106,10 @@ public class EndlessRunner : MonoBehaviour
             playerCamera = firstPersonController.cameraTransform;
 
         if (playerCamera != null)
+        {
             initialCameraPosition = playerCamera.localPosition;
+            playerCam = playerCamera.GetComponent<Camera>();
+        }
 
         SetupTriggerZone(firstTriggerZone, true);
         SetupTriggerZone(secondTriggerZone, false);
@@ -100,6 +124,8 @@ public class EndlessRunner : MonoBehaviour
         cachedObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
         cachedJumpableObstacles = FindObjectsByType<JumpableObstacle>(FindObjectsSortMode.None);
         SetObstaclesActive(false);
+
+        cachedDoorCheckpoints = FindObjectsByType<DoorCheckpointTrigger>(FindObjectsSortMode.None);
     }
 
     void SetupTriggerZone(Collider triggerCollider, bool isFirstTrigger)
@@ -138,6 +164,20 @@ public class EndlessRunner : MonoBehaviour
         {
             MovePlayerForward();
             HandleHeadBob();
+        }
+
+        if (playerCam != null)
+        {
+            float targetFOV = (canUseInputAndHeadBob && !isWaitingForDoorInput) ? runFOV : normalFOV;
+            playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, targetFOV, Time.deltaTime * fovChangeSpeed);
+        }
+
+        if (isWaitingForDoorInput)
+        {
+            if (moveInput.x < -0.5f)
+                OnDoorInput(true);   // A - sol
+            else if (moveInput.x > 0.5f)
+                OnDoorInput(false);  // D - sağ
         }
     }
 
@@ -246,10 +286,11 @@ public class EndlessRunner : MonoBehaviour
     {
         if (characterController == null || !characterController.enabled) return;
 
-        Vector3 forward = playerBody.forward * walkSpeed;
+        float speed = isWaitingForDoorInput ? doorSlowSpeed : walkSpeed;
+        Vector3 forward = playerBody.forward * speed;
 
         Vector3 strafe = Vector3.zero;
-        if (canUseInputAndHeadBob)
+        if (canUseInputAndHeadBob && !isWaitingForDoorInput)
             strafe = playerBody.right * moveInput.x * walkSpeed;
 
         Vector3 move = (forward + strafe) * Time.deltaTime;
@@ -335,7 +376,111 @@ public class EndlessRunner : MonoBehaviour
         hasReachedSecondTrigger = false;
         isRotating = false;
         walkSpeed = baseWalkSpeed;
+
+        if (playerCam != null)
+            playerCam.fieldOfView = normalFOV;
+
+        // Kapı girdisini temizle
+        isWaitingForDoorInput = false;
+        if (doorTimeoutCoroutine != null)
+        {
+            StopCoroutine(doorTimeoutCoroutine);
+            doorTimeoutCoroutine = null;
+        }
+        HideDoorPrompts();
+        currentDoorCheckpoint?.TurnOffLights();
+        currentDoorCheckpoint = null;
+        ResetAllDoorCheckpoints();
     }
+
+    // Kapı checkpoint trigger'ından çağrılır
+    public void OnDoorCheckpointReached(DoorCheckpointTrigger checkpoint, bool leftRequired)
+    {
+        if (!isControllingPlayer || isWaitingForDoorInput) return;
+
+        currentDoorCheckpoint = checkpoint;
+        requireLeft = leftRequired;
+        isWaitingForDoorInput = true;
+
+        if (promptLeft) promptLeft.SetActive(true);
+        if (promptRight) promptRight.SetActive(true);
+
+        doorTimeoutCoroutine = StartCoroutine(DoorPromptTimeout());
+    }
+
+    void HideDoorPrompts()
+    {
+        if (promptLeft) promptLeft.SetActive(false);
+        if (promptRight) promptRight.SetActive(false);
+    }
+
+    void OnDoorInput(bool pressedLeft)
+    {
+        if (!isWaitingForDoorInput) return;
+
+        isWaitingForDoorInput = false;
+        HideDoorPrompts();
+
+        // Her iki durumda da oyuncu döner
+        float angle = pressedLeft ? -90f : 90f;
+        isRotating = true;
+        Vector3 target = playerBody.eulerAngles + new Vector3(0f, angle, 0f);
+        playerBody.DORotate(target, 0.35f)
+            .SetEase(Ease.OutQuad)
+            .OnComplete(() => isRotating = false);
+
+        if (pressedLeft == requireLeft)
+        {
+            // Doğru yön → ışıkları kapat, timeout iptal
+            currentDoorCheckpoint?.TurnOffLights();
+            currentDoorCheckpoint = null;
+
+            if (doorTimeoutCoroutine != null)
+            {
+                StopCoroutine(doorTimeoutCoroutine);
+                doorTimeoutCoroutine = null;
+            }
+        }
+        // Yanlış yön → timeout çalışmaya devam eder, kapıya çarpar → fail
+    }
+
+    private IEnumerator DoorPromptTimeout()
+    {
+        yield return new WaitForSeconds(doorPromptTimeout);
+        if (isWaitingForDoorInput)
+        {
+            isWaitingForDoorInput = false;
+            StartCoroutine(DoorFailSequence());
+        }
+    }
+
+    private IEnumerator DoorFailSequence()
+    {
+        canUseInputAndHeadBob = false;
+        HideDoorPrompts();
+        currentDoorCheckpoint?.TurnOffLights();
+        currentDoorCheckpoint = null;
+
+        blackScreenObject?.SetActive(true);
+        ResetAllDoorCheckpoints();
+        TeleportToSecondTrigger();
+
+        yield return new WaitForSeconds(0.5f);
+
+        blackScreenObject?.SetActive(false);
+        canUseInputAndHeadBob = true;
+    }
+
+    void ResetAllDoorCheckpoints()
+    {
+        if (cachedDoorCheckpoints == null) return;
+        foreach (var dc in cachedDoorCheckpoints)
+        {
+            if (dc != null)
+                dc.ResetCheckpoint();
+        }
+    }
+
 }
 
 public class EndlessRunnerTriggerHelper : MonoBehaviour
@@ -368,3 +513,4 @@ public class EndlessRunnerObstacleHelper : MonoBehaviour
         }
     }
 }
+

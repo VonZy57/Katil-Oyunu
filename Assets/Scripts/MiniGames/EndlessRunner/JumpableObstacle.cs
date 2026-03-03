@@ -13,6 +13,7 @@ public class JumpableObstacle : MonoBehaviour
 
     [Header("Jump Ayarları")]
     public float jumpForce = 8f;
+    public float jumpForwardForce = 4f; // İleri momentum
     public float timeToReact = 1.5f; // Kaç saniye içinde basmalı
 
     [Header("Trigger Ayarları")]
@@ -108,7 +109,8 @@ public class JumpableObstacle : MonoBehaviour
         if (characterController == null) return;
 
         isJumping = true;
-        jumpVelocity = new Vector3(0f, jumpForce, 0f);
+        Vector3 forward = endlessRunner != null ? endlessRunner.playerBody.forward : Vector3.forward;
+        jumpVelocity = forward * jumpForwardForce + Vector3.up * jumpForce;
     }
 
     public void OnPromptTriggerEnter()
