@@ -36,10 +36,21 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Head Bob Ayarlarý")]
     public float headBobFrequency = 1.5f;
-    public float headBobAmplitude = 0.05f;
+    public float headBobVerticalAmp = 0.05f;
     public float headBobHorizontalAmp = 0.05f;
     private float headBobTimer = 0f;
     private Vector3 initialCameraPosition;
+
+    [Header("Head Tilt Ayarlarý")]
+    public float tiltAngle = 1f;
+    public float tiltSpeed = 5f;
+    private float currentTilt = 0f;
+
+    [Header("Breathing Ayarlarý")]
+    public float breathFrequency = 1.0f;
+    public float breathAmpX = 0.01f;
+    public float breathAmpY = 0.01f;
+    private float breathTimer = 0f;
 
     private void Awake()
     {
@@ -75,7 +86,7 @@ public class FirstPersonController : MonoBehaviour
         if (!IsSitting)
         {
             HandleMovement();
-            HandleHeadBob();
+            HandleCameraMotions();
         }
     }
 
@@ -83,6 +94,10 @@ public class FirstPersonController : MonoBehaviour
     {
         float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
         float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
+
+        //Kamera tilt için - a ve d tuþlarýna basýldýðýnda hareket kamera belli belirsiz saða ve sola eðilecek.
+        float targetTilt = IsSitting ? 0f : -moveInput.x * tiltAngle; 
+        currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * tiltSpeed);
 
         if (IsSitting)
         {
@@ -106,7 +121,7 @@ public class FirstPersonController : MonoBehaviour
             // Yukarý Aþaðý (Pitch) - 90 Derece Limit
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
-            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
 
             // Saða Sola (Yaw) - Gövdeyi döndür
             transform.Rotate(Vector3.up * mouseX);
@@ -136,34 +151,57 @@ public class FirstPersonController : MonoBehaviour
             speed = isRunning ? runSpeed : walkSpeed;
         }
 
-        controller.Move(speed * Time.deltaTime * move);
-
-        // Yerçekimi
-        velocity.y += gravity * Time.deltaTime;
-        if (controller.enabled)
-            controller.Move(velocity * Time.deltaTime);
-        else
-            return; // Controller kapalýysa hareket etmeye çalýþma
-
+        // 1. Yerçekimi Hesaplamasý (Henüz hareket ettirme)
         if (controller.isGrounded && velocity.y < 0)
+        {
             velocity.y = -2f;
+        }
+        velocity.y += gravity * Time.deltaTime;
+
+        // 2. Ýki hareketi birleþtir (Yatay hýz + Dikey yerçekimi)
+        // move vektöründe Y her zaman 0'dýr, velocity vektöründe ise X ve Z 0'dýr.
+        Vector3 finalMovement = (move * speed) + velocity;
+
+        // 3. Tek seferde hareket ettir
+        if (controller.enabled)
+        {
+            controller.Move(finalMovement * Time.deltaTime);
+        }
     }
 
-    private void HandleHeadBob()
+
+    private void HandleCameraMotions() //BREATHING VE HEADBOB HAREKETLERÝ
     {
-        if (controller.isGrounded && moveInput.magnitude > 0)
+        Vector3 targetOffset = Vector3.zero;
+        float currentRealSpeed = new Vector3(controller.velocity.x, 0f, controller.velocity.z).magnitude;
+
+        if (controller.isGrounded)
         {
-            headBobTimer += Time.deltaTime * (isRunning ? runSpeed : walkSpeed) * headBobFrequency;
-            float bobOffsetY = Mathf.Sin(headBobTimer) * headBobAmplitude;
-            float bobOffsetX = Mathf.Cos(headBobTimer / 2) * headBobHorizontalAmp;
-            cameraTransform.localPosition = initialCameraPosition + new Vector3(bobOffsetX, bobOffsetY, 0);
+            if (currentRealSpeed > 0.1f)
+            {
+                headBobTimer += Time.deltaTime * currentRealSpeed * headBobFrequency;
+
+                float bobOffsetY = Mathf.Sin(headBobTimer) * headBobVerticalAmp;
+                float bobOffsetX = Mathf.Cos(headBobTimer / 2f) * headBobHorizontalAmp;
+
+                targetOffset = new Vector3(bobOffsetX, bobOffsetY, 0f);
+            }
+            else
+            {
+                breathTimer += Time.deltaTime * breathFrequency;
+
+                float breathOffsetY = Mathf.Sin(breathTimer) * breathAmpY;
+                float breathOffsetX = Mathf.Cos(breathTimer / 2f) * breathAmpX;
+
+                targetOffset = new Vector3(breathOffsetX, breathOffsetY, 0f);
+
+                headBobTimer = 0f;
+            }
         }
-        else
-        {
-            headBobTimer = 0f;
-            cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, initialCameraPosition, Time.deltaTime * 5f);
-        }
+        Vector3 targetPosition = initialCameraPosition + targetOffset;
+        cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, targetPosition, Time.deltaTime * 10f);
     }
+
 
     // Dýþarýdan (Sitting scriptinden) çaðrýlacak fonksiyon
     public void SetSittingState(bool state)
@@ -184,4 +222,6 @@ public class FirstPersonController : MonoBehaviour
             cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         }
     }
+
+    
 }
