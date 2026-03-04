@@ -16,6 +16,7 @@ public class EndlessRunner : MonoBehaviour
 
     [Header("Dönüş Ayarları")]
     public float rotationDuration = 1.5f;
+    public float returnRotationDuration = 0.5f;
 
     [Header("Head Bob Ayarları")]
     public float headBobFrequencyBetween = 4f;
@@ -168,7 +169,7 @@ public class EndlessRunner : MonoBehaviour
 
         if (playerCam != null)
         {
-            float targetFOV = (canUseInputAndHeadBob && !isWaitingForDoorInput) ? runFOV : normalFOV;
+            float targetFOV = canUseInputAndHeadBob ? runFOV : normalFOV;
             playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, targetFOV, Time.deltaTime * fovChangeSpeed);
         }
 
@@ -339,7 +340,7 @@ public class EndlessRunner : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         ReturnToOriginal();
-        yield return new WaitForSeconds(rotationDuration);
+        yield return new WaitForSeconds(returnRotationDuration);
 
         isRotating = false;
         canUseInputAndHeadBob = true;
@@ -357,8 +358,8 @@ public class EndlessRunner : MonoBehaviour
     {
         if (playerBody != null)
         {
-            Vector3 targetRotation = playerBody.eulerAngles + new Vector3(0f, 180f, 0f);
-            playerBody.DORotate(targetRotation, rotationDuration).SetEase(Ease.OutQuad);
+            Quaternion target = startBodyRotation * Quaternion.Euler(0f, 180f, 0f);
+            playerBody.DORotateQuaternion(target, rotationDuration).SetEase(Ease.OutQuad);
         }
     }
 
@@ -366,7 +367,7 @@ public class EndlessRunner : MonoBehaviour
     {
         if (playerBody != null)
         {
-            playerBody.DORotateQuaternion(startBodyRotation, rotationDuration).SetEase(Ease.OutQuad);
+            playerBody.DORotateQuaternion(startBodyRotation, returnRotationDuration).SetEase(Ease.OutQuad);
         }
     }
 
@@ -431,7 +432,8 @@ public class EndlessRunner : MonoBehaviour
 
         if (pressedLeft == requireLeft)
         {
-            // Doğru yön → ışıkları kapat, timeout iptal
+            // Doğru yön → kapıyı aç, ışıkları kapat, timeout iptal
+            currentDoorCheckpoint?.OpenCorrectDoor();
             currentDoorCheckpoint?.TurnOffLights();
             currentDoorCheckpoint = null;
 
