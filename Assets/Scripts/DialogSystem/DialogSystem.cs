@@ -98,11 +98,23 @@ public class DialogSystem : MonoBehaviour
             }
         }
 
+        //// 2. YAZIYI HIZLICA GEÇME KONTROLÜ (Input System: Confirm - Space)
+        //if (isTyping && controls.Player.SpaceButton.triggered)
+        //{
+        //    StopAllCoroutines();
+        //    dialogText.text = currentNode.dialogText.GetText(isTurkish);
+        //    isTyping = false;
+        //    ShowOptions();
+        //}
+
         // 2. YAZIYI HIZLICA GEÇME KONTROLÜ (Input System: Confirm - Space)
         if (isTyping && controls.Player.SpaceButton.triggered)
         {
             StopAllCoroutines();
-            dialogText.text = currentNode.dialogText.GetText(isTurkish);
+
+            // Metni anında tamamen görünür yap
+            dialogText.maxVisibleCharacters = dialogText.text.Length;
+
             isTyping = false;
             ShowOptions();
         }
@@ -133,6 +145,43 @@ public class DialogSystem : MonoBehaviour
         ShowDialog();
     }
 
+    //private void ShowDialog()
+    //{
+    //    // Konuşan karakterin ismini göster
+    //    if (speakerNameText != null && !string.IsNullOrEmpty(currentNode.speakerName))
+    //    {
+    //        speakerNameText.text = currentNode.speakerName;
+    //    }
+
+    //    string textToShow = currentNode.dialogText.GetText(isTurkish);
+
+    //    if (useTypewriterEffect)
+    //    {
+    //        StartCoroutine(TypewriterEffect(textToShow));
+    //    }
+    //    else
+    //    {
+    //        dialogText.text = textToShow;
+    //        ShowOptions();
+    //    }
+
+    //}
+
+    //private System.Collections.IEnumerator TypewriterEffect(string text)
+    //{
+    //    isTyping = true;
+    //    dialogText.text = "";
+
+    //    for (int i = 0; i <= text.Length; i++)
+    //    {
+    //        dialogText.text = text.Substring(0, i);
+    //        yield return new UnityEngine.WaitForSeconds(typewriterSpeed);
+    //    }
+
+    //    isTyping = false;
+    //    ShowOptions();
+    //}
+
     private void ShowDialog()
     {
         // Konuşan karakterin ismini göster
@@ -150,6 +199,7 @@ public class DialogSystem : MonoBehaviour
         else
         {
             dialogText.text = textToShow;
+            dialogText.maxVisibleCharacters = textToShow.Length; // Hepsini görünür yap
             ShowOptions();
         }
     }
@@ -157,17 +207,29 @@ public class DialogSystem : MonoBehaviour
     private System.Collections.IEnumerator TypewriterEffect(string text)
     {
         isTyping = true;
-        dialogText.text = "";
 
-        for (int i = 0; i <= text.Length; i++)
+        // 1. Önce tam metni yazdırıyoruz ki UI Layout (Arka plan) ne kadar 
+        // yukarı doğru büyümesi gerektiğini hesaplayıp final boyutunu alsın.
+        dialogText.text = text;
+
+        // 2. Ancak karakterleri anında gizliyoruz (Kutu tam boyutunda kalır ama içi boş görünür)
+        dialogText.maxVisibleCharacters = 0;
+
+        // UI sisteminin arka plan boyutunu güncellemesi için 1 frame bekliyoruz
+        yield return null;
+
+        // 3. Gerçek daktilo efekti: Karakterleri tek tek görünür hale getiriyoruz
+        int totalCharacters = text.Length;
+        for (int i = 0; i <= totalCharacters; i++)
         {
-            dialogText.text = text.Substring(0, i);
+            dialogText.maxVisibleCharacters = i;
             yield return new UnityEngine.WaitForSeconds(typewriterSpeed);
         }
 
         isTyping = false;
         ShowOptions();
     }
+
 
     private void ShowOptions()
     {
