@@ -175,24 +175,17 @@ public class EndlessRunner : MonoBehaviour
 
         if (isWaitingForDoorInput)
         {
-            if (moveInput.x < -0.5f)
-                OnDoorInput(true);   // A - sol
-            else if (moveInput.x > 0.5f)
-                OnDoorInput(false);  // D - sağ
+            if (Input.GetKeyDown(KeyCode.Q))
+                OnDoorInput(true);   // Q - sol
+            else if (Input.GetKeyDown(KeyCode.E))
+                OnDoorInput(false);  // E - sağ
         }
     }
 
     public void OnFirstTriggerEnter()
     {
         if (isControllingPlayer) return;
-        TakeControlOfPlayer(IsLookingAtInteractable());
-    }
-
-    bool IsLookingAtInteractable()
-    {
-        if (playerCamera == null) return false;
-        Ray ray = new Ray(playerCamera.position, playerCamera.forward);
-        return Physics.Raycast(ray, out RaycastHit hit, 10f) && hit.collider.CompareTag("Interactable");
+        TakeControlOfPlayer();
     }
 
     public void OnSecondTriggerEnter()
@@ -254,10 +247,11 @@ public class EndlessRunner : MonoBehaviour
         characterController.enabled = true;
     }
 
-    void TakeControlOfPlayer(bool rotate180 = false)
+    void TakeControlOfPlayer()
     {
         isControllingPlayer = true;
         canUseInputAndHeadBob = false;
+        isRotating = true;
 
         if (firstPersonController != null)
             firstPersonController.enabled = false;
@@ -265,11 +259,9 @@ public class EndlessRunner : MonoBehaviour
         if (playerCamera != null)
             playerCamera.DOLocalRotate(Vector3.zero, rotationDuration).SetEase(Ease.OutQuad);
 
-        if (rotate180 && playerBody != null)
+        if (playerBody != null)
         {
-            isRotating = true;
-            Vector3 targetRotation = playerBody.eulerAngles + new Vector3(0f, 180f, 0f);
-            playerBody.DORotate(targetRotation, rotationDuration)
+            playerBody.DORotateQuaternion(Quaternion.Euler(0f, 90f, 0f), rotationDuration)
                 .SetEase(Ease.OutQuad)
                 .OnComplete(() => isRotating = false);
         }
