@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 230d0263e33294c478455fe3f34928b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  promptMessage: E - Turn off the lights
+  promptMessage: 
   switchButton: {fileID: 2655962376116292981}
   bedInteraction: {fileID: 0}
   lightSwitchSound: {fileID: 8300000, guid: 6de48cccc341c8c4a8b2e32fe9ebd8d5, type: 3}
