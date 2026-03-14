@@ -1,22 +1,22 @@
-using UnityEngine;
+    using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections; // Coroutine kütüphanesi
-using System; // Action eventleri için gerekli
+using System.Collections; // Coroutine kï¿½tï¿½phanesi
+using System; // Action eventleri iï¿½in gerekli
 
 public class MissionManager : MonoBehaviour
 {
     public static MissionManager Instance { get; private set; }
 
-    [Header("Baþlangýç Ayarý")]
-    [SerializeField] private MissionSO firstMission; // Oyun açýlýnca baþlayacak ilk görev
+    [Header("Baï¿½langï¿½ï¿½ Ayarï¿½")]
+    [SerializeField] private MissionSO firstMission; // Oyun aï¿½ï¿½lï¿½nca baï¿½layacak ilk gï¿½rev
 
-    // Þu anki aktif görevi tutar
+    // ï¿½u anki aktif gï¿½revi tutar
     public MissionSO CurrentMission { get; private set; }
 
-    // UI veya ses sistemlerinin dinlemesi için Eventler
-    public event Action<MissionSO> OnMissionStart; // Görev baþladýðýnda tetiklenir
-    public event Action<MissionSO> OnMissionComplete; // Görev bittiðinde tetiklenir
-    public event Action OnAllMissionsComplete; // Tüm oyun bittiðinde
+    // UI veya ses sistemlerinin dinlemesi iï¿½in Eventler
+    public event Action<MissionSO> OnMissionStart; // Gï¿½rev baï¿½ladï¿½ï¿½ï¿½nda tetiklenir
+    public event Action<MissionSO> OnMissionComplete; // Gï¿½rev bittiï¿½inde tetiklenir
+    public event Action OnAllMissionsComplete; // Tï¿½m oyun bittiï¿½inde
 
     private void Awake()
     {
@@ -33,42 +33,42 @@ public class MissionManager : MonoBehaviour
 
     private void Start()
     {
-        // Oyun baþladýðýnda ilk görevi yükle
+        // Oyun baï¿½ladï¿½ï¿½ï¿½nda ilk gï¿½revi yï¿½kle
         if (firstMission != null)
         {
             StartMission(firstMission);
         }
     }
 
-    // Yeni bir görevi baþlatýr
+    // Yeni bir gï¿½revi baï¿½latï¿½r
     public void StartMission(MissionSO mission)
     {
         CurrentMission = mission;
-        Debug.Log($"Görev Baþladý: {mission.description}");
+        Debug.Log($"Gï¿½rev Baï¿½ladï¿½: {mission.description}");
 
-        // Event'i tetikle (UI bunu duyup güncelleyecek)
+        // Event'i tetikle (UI bunu duyup gï¿½ncelleyecek)
         OnMissionStart?.Invoke(mission);
     }
 
-    // Mevcut görevi tamamlar ve sýradakine geçer
+    // Mevcut gï¿½revi tamamlar ve sï¿½radakine geï¿½er
     public void CompleteCurrentMission()
     {
         if (CurrentMission == null) return;
 
-        Debug.Log($"Görev Tamamlandý: {CurrentMission.description}");
+        Debug.Log($"Gï¿½rev Tamamlandï¿½: {CurrentMission.description}");
         OnMissionComplete?.Invoke(CurrentMission);
 
 
-        // Eðer görev sonunda sahne deðiþecekse (sahne ismi boþ deðilse), yeni sahneyi yükle
+        // Eï¿½er gï¿½rev sonunda sahne deï¿½iï¿½ecekse (sahne ismi boï¿½ deï¿½ilse), yeni sahneyi yï¿½kle
         if (!string.IsNullOrEmpty(CurrentMission.loadSceneName))
         {
-            Debug.Log($"Yeni Sahne Yükleniyor: {CurrentMission.loadSceneName}");
+            Debug.Log($"Yeni Sahne Yï¿½kleniyor: {CurrentMission.loadSceneName}");
             SceneManager.LoadScene(CurrentMission.loadSceneName);
-            return; // Sahne yüklenecekse geri kalan kodu okuma
+            return; // Sahne yï¿½klenecekse geri kalan kodu okuma
         }
 
 
-        // Eðer bir sonraki görev varsa ve sahne deðiþmeyecekse sonraki göreve geç, yoksa oyunu bitir
+        // Eï¿½er bir sonraki gï¿½rev varsa ve sahne deï¿½iï¿½meyecekse sonraki gï¿½reve geï¿½, yoksa oyunu bitir
         if (CurrentMission.nextMission != null && !CurrentMission.isFinalMission)
         {
             StartMission(CurrentMission.nextMission);
@@ -81,23 +81,23 @@ public class MissionManager : MonoBehaviour
 
     private IEnumerator HandleSceneTransition(string sceneName)
     {
-        // 1. AÞAMA: Sahne yüklenmeden önce yapýlacaklar bu kýsma yazýlacak
-        // Örneðin; müzik baþlatma, ekran kararma animasyonlarý...
-        // ...deðiþken deðiþtirme, kayýt alma, oyuncu hareket kýsýtlamalarý gibi iþlemler burada yapýlabilir
-        Debug.Log("Sahne geçiþi öncesi iþlemler tamamlandý, sahne yükleniyor...");
+        // 1. Aï¿½AMA: Sahne yï¿½klenmeden ï¿½nce yapï¿½lacaklar bu kï¿½sma yazï¿½lacak
+        // ï¿½rneï¿½in; mï¿½zik baï¿½latma, ekran kararma animasyonlarï¿½...
+        // ...deï¿½iï¿½ken deï¿½iï¿½tirme, kayï¿½t alma, oyuncu hareket kï¿½sï¿½tlamalarï¿½ gibi iï¿½lemler burada yapï¿½labilir
+        Debug.Log("Sahne geï¿½iï¿½i ï¿½ncesi iï¿½lemler tamamlandï¿½, sahne yï¿½kleniyor...");
 
 
-        // 2. AÞAMA: Sahneyi yükleme
+        // 2. Aï¿½AMA: Sahneyi yï¿½kleme
         SceneManager.LoadScene(sceneName);
 
-        // Bu aþamadana sonra yeni sahne yüklenirken yapýlacak iþlemleri...
-        // ...bu script yeni sahnede yok olup sýfýrdan baþlayacaðýndan dolayý...
-        // ...yeni sahnede yer alacak baþka bir script ile kontrol etmek gerekiyor.
+        // Bu aï¿½amadana sonra yeni sahne yï¿½klenirken yapï¿½lacak iï¿½lemleri...
+        // ...bu script yeni sahnede yok olup sï¿½fï¿½rdan baï¿½layacaï¿½ï¿½ndan dolayï¿½...
+        // ...yeni sahnede yer alacak baï¿½ka bir script ile kontrol etmek gerekiyor.
 
         yield return null;
     }
 
-    // Belirli bir görevi direkt atamak için (Örn: Save dosyasýndan yüklerken)
+    // Belirli bir gï¿½revi direkt atamak iï¿½in (ï¿½rn: Save dosyasï¿½ndan yï¿½klerken)
     public void ForceSetMission(MissionSO mission)
     {
         StartMission(mission);
@@ -105,7 +105,7 @@ public class MissionManager : MonoBehaviour
 
     private void FinishGame()
     {
-        Debug.Log("Tüm görevler bitti! Hikaye sonu.");
+        Debug.Log("Tï¿½m gï¿½revler bitti! Hikaye sonu.");
         CurrentMission = null;
         OnAllMissionsComplete?.Invoke();
     }

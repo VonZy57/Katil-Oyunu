@@ -1,24 +1,24 @@
 using UnityEngine;
-using TMPro; // TextMeshPro kullanýmý için
+using TMPro; // TextMeshPro kullanï¿½mï¿½ iï¿½in
 using System.Collections;
 
 public class MissionUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI missionText;
-    [SerializeField] private CanvasGroup canvasGroup; // Opaklýk kontrolü için (Fade in/out)
+    [SerializeField] private CanvasGroup canvasGroup; // Opaklï¿½k kontrolï¿½ iï¿½in (Fade in/out)
 
     private void Start()
     {
-        // Manager'ýn eventlerine abone ol
+        // Manager'ï¿½n eventlerine abone ol
         MissionManager.Instance.OnMissionStart += UpdateMissionText;
 
-        // Baþlangýçta görünmez yap
+        // Baï¿½langï¿½ï¿½ta gï¿½rï¿½nmez yap
         canvasGroup.alpha = 0;
     }
 
     private void OnDestroy()
     {
-        // Sahne deðiþirse aboneliði iptal et (Hata almamak için)
+        // Sahne deï¿½iï¿½irse aboneliï¿½i iptal et (Hata almamak iï¿½in)
         if (MissionManager.Instance != null)
         {
             MissionManager.Instance.OnMissionStart -= UpdateMissionText;
@@ -30,13 +30,13 @@ public class MissionUI : MonoBehaviour
         StartCoroutine(ShowNewObjective(mission.description));
     }
 
-    // Yazýyý animasyonlu gösterme (Fade In -> Bekle -> Fade Out)
+    // Yazï¿½yï¿½ animasyonlu gï¿½sterme (Fade In -> Bekle -> Fade Out)
     private IEnumerator ShowNewObjective(string text)
     {
-        // Önce yazýyý deðiþtir
+        // ï¿½nce yazï¿½yï¿½ deï¿½iï¿½tir
         missionText.text = text;
 
-        // Fade In (Görünür ol)
+        // Fade In (Gï¿½rï¿½nï¿½r ol)
         float duration = 1f;
         float time = 0;
 
@@ -48,8 +48,8 @@ public class MissionUI : MonoBehaviour
         }
         canvasGroup.alpha = 1;
 
-        // Fears to Fathom tarzýnda görev yazýsý ekranda kalýr,
-        // görevi tamamlayýnca veya yenisi gelince efekt verilebilir.
-        // Þimdilik sürekli görünür býrakýyoruz.
+        // Fears to Fathom tarzï¿½nda gï¿½rev yazï¿½sï¿½ ekranda kalï¿½r,
+        // gï¿½revi tamamlayï¿½nca veya yenisi gelince efekt verilebilir.
+        // ï¿½imdilik sï¿½rekli gï¿½rï¿½nï¿½r bï¿½rakï¿½yoruz.
     }
 }
