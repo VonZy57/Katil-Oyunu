@@ -131,7 +131,7 @@ public class KeyDialog : MonoBehaviour
         introNode = DialogBuilder.CreateNode(
             "(Shouts from inside) GIVE ZEKİ'S ROOM. I HAD THE DOOR FIXED YESTERDAY. HE WON'T BE COMING TO THE ROOM ANYWAY.",
             "(İçerden bağırır) ZEKİ'NİN ODASINI VER. KAPISINI DÜN YAPTIRDIM. ODA YAKINDA GELMEZ ZATEN.",
-            "Kuru'nun Eşi"
+            "Kuru's Wife"
         );
 
         // === KURU'NUN CEVABI ===
@@ -145,7 +145,7 @@ public class KeyDialog : MonoBehaviour
         DialogNode wifeEnd = DialogBuilder.CreateEndNode(
             "Where do we keep the keys? It's hanging behind you. Idiot.",
             "Biz anahtarları nereye koyuyoruz. Arkanda asılı duruyor. Salak.",
-            "Kuru'nun Eşi"
+            "Kuru's Wife"
         );
 
         // === AFTER DIALOG NODE (Dialog tamamlandıktan sonra) ===
