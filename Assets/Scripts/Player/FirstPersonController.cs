@@ -6,47 +6,47 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class FirstPersonController : MonoBehaviour
 {
-    [Header("Hareket Ayarlarý")]
+    [Header("Hareket Ayarlarï¿½")]
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
     public float starisSpeed = 1.5f;
     public float gravity = -9.81f;
 
-    [Header("Kamera Ayarlarý")]
+    [Header("Kamera Ayarlarï¿½")]
     public float mouseSensitivity = 100f;
     public Transform cameraTransform;
 
-    [Header("Oturma Kýsýtlamalarý")]
-    public float sittingLookLimit = 45f; // Saða sola yukarý aþaðý limit
+    [Header("Oturma Kï¿½sï¿½tlamalarï¿½")]
+    public float sittingLookLimit = 45f; // SaÄŸa sola yukarÄ± aÅŸaÄŸÄ± limit
 
     private PlayerControls controls;
     private CharacterController controller;
     private Vector2 moveInput;
     private Vector2 lookInput;
 
-    // Bakýþ açýlarý
-    private float xRotation = 0f; // Yukarý/Aþaðý (Pitch)
-    private float yRotation = 0f; // Saða/Sola (Yaw) - Sadece otururken kullanýlýr
+    // Bakï¿½ï¿½ aï¿½ï¿½larï¿½
+    private float xRotation = 0f; // YukarÄ±/AÅŸaÄŸÄ± (Pitch)
+    private float yRotation = 0f; // SaÄŸa/Sola (Yaw) - Sadece otururken kullanÄ±lÄ±r
 
     private Vector3 velocity;
     private bool isRunning;
 
-    // Oturma durumu kontrolü
+    // Oturma durumu kontrol
     public bool IsSitting { get; private set; } = false;
 
-    [Header("Head Bob Ayarlarý")]
+    [Header("Head Bob Ayarlarï¿½")]
     public float headBobFrequency = 1.5f;
     public float headBobVerticalAmp = 0.05f;
     public float headBobHorizontalAmp = 0.05f;
     private float headBobTimer = 0f;
     private Vector3 initialCameraPosition;
 
-    [Header("Head Tilt Ayarlarý")]
+    [Header("Head Tilt Ayarlarï¿½")]
     public float tiltAngle = 1f;
     public float tiltSpeed = 5f;
     private float currentTilt = 0f;
 
-    [Header("Breathing Ayarlarý")]
+    [Header("Breathing Ayarlarï¿½")]
     public float breathFrequency = 1.0f;
     public float breathAmpX = 0.01f;
     public float breathAmpY = 0.01f;
@@ -82,7 +82,7 @@ public class FirstPersonController : MonoBehaviour
     {
         HandleRotation();
 
-        // Eðer oturmuyorsak hareket et ve yerçekimi uygula
+        // EÄŸer oturmuyorsak hareket et ve yerÃ§ekimi uygula
         if (!IsSitting)
         {
             HandleMovement();
@@ -95,7 +95,7 @@ public class FirstPersonController : MonoBehaviour
         float mouseX = lookInput.x * mouseSensitivity * Time.deltaTime;
         float mouseY = lookInput.y * mouseSensitivity * Time.deltaTime;
 
-        //Kamera tilt için - a ve d tuþlarýna basýldýðýnda hareket kamera belli belirsiz saða ve sola eðilecek.
+        //Kamera tilt iÃ§in - a ve d tuÅŸlarÄ±na basÄ±ldÄ±ÄŸÄ±nda hareket kamera belli belirsiz saÄŸa ve sola eÄŸilecek.
         float targetTilt = IsSitting ? 0f : -moveInput.x * tiltAngle; 
         currentTilt = Mathf.Lerp(currentTilt, targetTilt, Time.deltaTime * tiltSpeed);
 
@@ -103,27 +103,27 @@ public class FirstPersonController : MonoBehaviour
         {
             // --- OTURMA MODU ROTASYONU ---
 
-            // Yukarý Aþaðý (Pitch) - Limitli
+            // YukarÄ± AÅŸaÄŸÄ± (Pitch) - Limitli
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -sittingLookLimit, sittingLookLimit);
 
-            // Saða Sola (Yaw) - Limitli (Normalde gövde dönerdi, þimdi sadece kafa)
+            // SaÄŸa Sola (Yaw) - Limitli (Normalde gÃ¶vde dÃ¶nerdi, ÅŸimdi sadece kafa)
             yRotation += mouseX;
             yRotation = Mathf.Clamp(yRotation, -sittingLookLimit, sittingLookLimit);
 
-            // Hem X hem Y rotasyonunu kameraya uygula (Gövde sabit kalýr)
+            // Hem X hem Y rotasyonunu kameraya uygula (GÃ¶vde sabit kalÄ±r)
             cameraTransform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
         }
         else
         {
             // --- NORMAL MOD ROTASYONU ---
 
-            // Yukarý Aþaðý (Pitch) - 90 Derece Limit
+            // YukarÄ± AÅŸaÄŸÄ± (Pitch) - 90 Derece Limit
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
             cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
 
-            // Saða Sola (Yaw) - Gövdeyi döndür
+            // SaÄŸa Sola (Yaw) - GÃ¶vdeyi dÃ¶ndÃ¼r
             transform.Rotate(Vector3.up * mouseX);
         }
     }
@@ -151,15 +151,15 @@ public class FirstPersonController : MonoBehaviour
             speed = isRunning ? runSpeed : walkSpeed;
         }
 
-        // 1. Yerçekimi Hesaplamasý (Henüz hareket ettirme)
+        // 1. YerÃ§ekimi HesaplamasÄ± (HenÃ¼z hareket ettirme)
         if (controller.isGrounded && velocity.y < 0)
         {
             velocity.y = -2f;
         }
         velocity.y += gravity * Time.deltaTime;
 
-        // 2. Ýki hareketi birleþtir (Yatay hýz + Dikey yerçekimi)
-        // move vektöründe Y her zaman 0'dýr, velocity vektöründe ise X ve Z 0'dýr.
+        // 2. Ä°ki hareketi birleÅŸtir (Yatay hÄ±z + Dikey yerÃ§ekimi)
+        // move vektÃ¶rÃ¼nde Y her zaman 0'dÄ±r, velocity vektÃ¶rÃ¼nde ise X ve Z 0'dÄ±r.
         Vector3 finalMovement = (move * speed) + velocity;
 
         // 3. Tek seferde hareket ettir
@@ -170,7 +170,7 @@ public class FirstPersonController : MonoBehaviour
     }
 
 
-    private void HandleCameraMotions() //BREATHING VE HEADBOB HAREKETLERÝ
+    private void HandleCameraMotions() //BREATHING VE HEADBOB HAREKETLERÄ°
     {
         Vector3 targetOffset = Vector3.zero;
         float currentRealSpeed = new Vector3(controller.velocity.x, 0f, controller.velocity.z).magnitude;
@@ -203,21 +203,21 @@ public class FirstPersonController : MonoBehaviour
     }
 
 
-    // Dýþarýdan (Sitting scriptinden) çaðrýlacak fonksiyon
+    // Dï¿½ï¿½arï¿½dan (Sitting scriptinden) ï¿½aï¿½rï¿½lacak fonksiyon
     public void SetSittingState(bool state)
     {
         IsSitting = state;
 
         if (state)
         {
-            // Oturmaya baþladýðýmýzda kafa rotasyonlarýný sýfýrla (öne bak)
+            // Oturmaya baï¿½ladï¿½ï¿½ï¿½mï¿½zda kafa rotasyonlarï¿½nï¿½ sï¿½fï¿½rla (ï¿½ne bak)
             xRotation = 0f;
             yRotation = 0f;
-            velocity = Vector3.zero; // Kaymayý engelle
+            velocity = Vector3.zero; // Kaymayï¿½ engelle
         }
         else
         {
-            // Kalktýðýmýzda kamera açýsýný tekrar düzelt
+            // Kalktï¿½ï¿½ï¿½mï¿½zda kamera aï¿½ï¿½sï¿½nï¿½ tekrar dï¿½zelt
             yRotation = 0f;
             cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         }

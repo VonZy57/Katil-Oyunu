@@ -1,7 +1,7 @@
-    using UnityEngine;
+using System; // Action eventleri için gerekli
+using System.Collections; // Coroutine kütüphanesi
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections; // Coroutine k�t�phanesi
-using System; // Action eventleri i�in gerekli
 
 public class MissionManager : MonoBehaviour
 {

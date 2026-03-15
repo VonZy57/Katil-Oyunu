@@ -1,6 +1,5 @@
-using UnityEngine;
 using DG.Tweening;
-using Unity.VisualScripting;
+using UnityEngine;
 
 public class SittingInteraction : Interactable
 {

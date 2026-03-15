@@ -343,7 +343,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.8
+  m_Height: 1.7
   m_Radius: 0.35
   m_SlopeLimit: 45
   m_StepOffset: 0.3
@@ -370,7 +370,7 @@ MonoBehaviour:
   cameraTransform: {fileID: 9169657910967153612}
   sittingLookLimit: 45
   headBobFrequency: 1.5
-  headBobAmplitude: 0.05
+  headBobVerticalAmp: 0.05
   headBobHorizontalAmp: 0.07
   tiltAngle: 0.5
   tiltSpeed: 5

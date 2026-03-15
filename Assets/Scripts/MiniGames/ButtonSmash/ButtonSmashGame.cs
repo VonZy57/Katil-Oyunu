@@ -1,10 +1,10 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem; // Yeni Input System kütüphanesi
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
-using TMPro;
-using System.Collections;
-using UnityEngine.InputSystem; // Yeni Input System kütüphanesi
 
 public class ButtonSmashGame : MonoBehaviour
 {

@@ -1,5 +1,5 @@
-﻿using UnityEngine;                        // 🔗 Unity'nin temel sınıflarını (MonoBehaviour, GameObject vb.) kullanmak için gerekli.
-using System.Collections.Generic;         // 🔗 List<T> gibi koleksiyon sınıflarını kullanmak için.
+﻿using System.Collections.Generic;         // 🔗 List<T> gibi koleksiyon sınıflarını kullanmak için.
+using UnityEngine;                        // 🔗 Unity'nin temel sınıflarını (MonoBehaviour, GameObject vb.) kullanmak için gerekli.
 
 public class DialogBuilder               // 💬 DialogNode ve DialogOption nesnelerini kolay oluşturmak için kullanılan yardımcı sınıf (factory).
 {

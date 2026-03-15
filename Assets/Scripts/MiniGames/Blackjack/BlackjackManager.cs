@@ -1,25 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class BlackjackManager : MonoBehaviour
 {
-    [Header("Görev Ayarlarý")]
-    public MissionSO storyMission; // Bu görev aktifse hileli mod açýlýr
+    [Header("GÃ¶rev AyarlarÄ±")]
+    public MissionSO storyMission; // Bu gÃ¶rev aktifse hileli mod aÃ§Ä±lÄ±r
 
-    [Header("Görsel Ayarlar")]
+    [Header("GÃ¶rsel Ayarlar")]
     public List<Sprite> allCardSprites;
     public Sprite cardBackSprite;
     public GameObject cardPrefab;
-    public float cardMoveSpeed = 1500f; // Kartýn uçuþ hýzý
+    public float cardMoveSpeed = 1500f; // KartÄ±n uÃ§uÅŸ hÄ±zÄ±
 
     [Header("Deste Pozisyonu")]
-    public Transform deckSpawnPoint; // Sahnedeki DeckReference objesi (Boþ GameObject)
-    private List<GameObject> visualDeckStack = new List<GameObject>(); // Masadaki görsel deste objeleri
+    public Transform deckSpawnPoint; // Sahnedeki DeckReference objesi (Boï¿½ GameObject)
+    private List<GameObject> visualDeckStack = new List<GameObject>(); // Masadaki gÃ¶rsel deste objeleri
 
-    [Header("UI Referanslarý")]
+    [Header("UI ReferanslarÄ±")]
     public Transform dealerCardArea;
     public Transform playerCardArea;
     public TextMeshProUGUI playerScoreText;
@@ -34,17 +34,17 @@ public class BlackjackManager : MonoBehaviour
 
     private BlackjackTableInteractable currentTable;
 
-    // Oyun Mantýðý
+    // Oyun Mantï¿½ï¿½ï¿½
     private List<Card> deck = new List<Card>();
     private List<Card> playerHand = new List<Card>();
     private List<Card> dealerHand = new List<Card>();
 
-    // Krupiyerin kapalý kartý (Animasyon sonrasý referans tutmak için)
+    // Krupiyerin kapalÄ± kartÄ± (Animasyon sonrasÄ± referans tutmak iÃ§in)
     private Card dealerHiddenCardData;
     private GameObject dealerHiddenCardObj;
     private bool isDealerCardHidden = false;
 
-    // Animasyon kilidi (Kart uçarken butonlara basýlmasýn)
+    // Animasyon kilidi (Kart uÃ§arken butonlara basÄ±lmasÄ±n)
     private bool isDealingAnimationPlaying = false;
 
     void Start()
@@ -65,7 +65,7 @@ public class BlackjackManager : MonoBehaviour
         CreateDeck();
         ShuffleDeck();
 
-        // Görsel desteyi oluþtur (Masadaki yýðýn)
+        // Gï¿½rsel desteyi oluï¿½tur (Masadaki yï¿½ï¿½ï¿½n)
         GenerateVisualDeck();
 
         StartRound();
@@ -73,13 +73,13 @@ public class BlackjackManager : MonoBehaviour
 
     void StartRound()
     {
-        // Deste azaldýysa yenile
+        // Deste azaldï¿½ysa yenile
         if (deck.Count < 10)
         {
             CreateDeck();
             ShuffleDeck();
-            GenerateVisualDeck(); // Görsel yýðýný da tazele
-            resultText.text = "Deste Karýþtýrýldý!";
+            GenerateVisualDeck(); // Gï¿½rsel yï¿½ï¿½ï¿½nï¿½ da tazele
+            resultText.text = "Deste Karï¿½ï¿½tï¿½rï¿½ldï¿½!";
         }
         else
         {
@@ -99,10 +99,10 @@ public class BlackjackManager : MonoBehaviour
         StartCoroutine(DealInitialCardsRoutine());
     }
 
-    // --- GÖRSEL DESTE OLUÞTURMA ---
+    // --- GÃ–RSEL DESTE OLUÅžTURMA ---
     void GenerateVisualDeck()
     {
-        // Önce eskileri temizle
+        // Ã–nce eskileri temizle
         foreach (GameObject obj in visualDeckStack) Destroy(obj);
         visualDeckStack.Clear();
 
@@ -111,78 +111,78 @@ public class BlackjackManager : MonoBehaviour
         for (int i = 0; i < visualCount; i++)
         {
             GameObject cardObj = Instantiate(cardPrefab, deckSpawnPoint);
-            // LayoutGroup tarafýndan yönetilmesin, serbest dursun
+            // LayoutGroup tarafÄ±ndan yÃ¶netilmesin, serbest dursun
             Destroy(cardObj.GetComponent<LayoutElement>());
 
-            cardObj.transform.localPosition = new Vector3(0, i * 2f, 0); // Hafif üst üste bindir
+            cardObj.transform.localPosition = new Vector3(0, i * 2f, 0); // Hafif Ã¼st Ã¼ste bindir
             cardObj.GetComponent<Image>().sprite = cardBackSprite;
 
-            // Deste referansýnýn içinde dursun
+            // Deste referansÄ±nÄ±n iÃ§inde dursun
             cardObj.transform.SetParent(deckSpawnPoint, false);
 
             visualDeckStack.Add(cardObj);
         }
     }
 
-    // --- KART DAÐITMA ANÝMASYONU ---
+    // --- KART DAï¿½ITMA ANï¿½MASYONU ---
     IEnumerator DealCardAnimated(List<Card> hand, Transform targetArea, bool faceDown)
     {
         if (deck.Count == 0) yield break;
 
         isDealingAnimationPlaying = true; // Kilit vur
 
-        // 1. Veriyi çek
+        // 1. Veriyi ï¿½ek
         Card cardToDeal = deck[0];
         deck.RemoveAt(0);
         hand.Add(cardToDeal);
 
-        // 2. Görsel desteden bir kart eksilt
+        // 2. Gï¿½rsel desteden bir kart eksilt
         GameObject flyingCard = null;
         if (visualDeckStack.Count > 0)
         {
-            // En üstteki kartý al
+            // En ï¿½stteki kartï¿½ al
             int lastIndex = visualDeckStack.Count - 1;
             flyingCard = visualDeckStack[lastIndex];
             visualDeckStack.RemoveAt(lastIndex);
         }
         else
         {
-            // Eðer görsel deste bittiyse (ama oyun devam ediyorsa) yeni bir tane oluþtur
+            // Eï¿½er gï¿½rsel deste bittiyse (ama oyun devam ediyorsa) yeni bir tane oluï¿½tur
             flyingCard = Instantiate(cardPrefab, deckSpawnPoint);
             flyingCard.GetComponent<Image>().sprite = cardBackSprite;
         }
 
-        // 3. Kartý GamePanel'in çocuðu yap (böylece el alanýndan baðýmsýz uçar)
+        // 3. Kartï¿½ GamePanel'in ï¿½ocuï¿½u yap (bï¿½ylece el alanï¿½ndan baï¿½ï¿½msï¿½z uï¿½ar)
         flyingCard.transform.SetParent(gamePanel.transform);
-        flyingCard.transform.position = deckSpawnPoint.position; // Baþlangýç noktasý
+        flyingCard.transform.position = deckSpawnPoint.position; // Baï¿½langï¿½ï¿½ noktasï¿½
 
-        // 4. Hedefe uçur (Lerp)
-        Vector3 targetPos = targetArea.position; // Elin olduðu yere uçacak
-        float flightTime = 0.4f; // Saniye cinsinden uçuþ süresi
+        // 4. Hedefe uï¿½ur (Lerp)
+        Vector3 targetPos = targetArea.position; // Elin olduï¿½u yere uï¿½acak
+        float flightTime = 0.4f; // Saniye cinsinden uï¿½uï¿½ sï¿½resi
         float elapsedTime = 0f;
         Vector3 startPos = flyingCard.transform.position;
 
         while (elapsedTime < flightTime)
         {
-            // Hedefe doðru git
+            // Hedefe doï¿½ru git
             flyingCard.transform.position = Vector3.Lerp(startPos, targetPos, elapsedTime / flightTime);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        // 5. Hedefe vardý, artýk Layout Grubuna (Elin içine) girsin
+        // 5. Hedefe vardï¿½, artï¿½k Layout Grubuna (Elin iï¿½ine) girsin
         flyingCard.transform.SetParent(targetArea, false);
 
-        // Uçuþ sýrasýnda scale bozulabilir, düzeltelim
+        // Uï¿½uï¿½ sï¿½rasï¿½nda scale bozulabilir, dï¿½zeltelim
         flyingCard.transform.localScale = Vector3.one;
 
-        // Layout grubunun onu sýraya dizmesini beklemeden görseli ayarla
+        // Layout grubunun onu sï¿½raya dizmesini beklemeden gï¿½rseli ayarla
         Image cardImg = flyingCard.GetComponent<Image>();
 
         if (faceDown)
         {
             cardImg.sprite = cardBackSprite;
-            // Eðer bu krupiyerin kapalý kartýysa referansýný sakla
+            // Eï¿½er bu krupiyerin kapalï¿½ kartï¿½ysa referansï¿½nï¿½ sakla
             if (hand == dealerHand)
             {
                 dealerHiddenCardObj = flyingCard;
@@ -191,14 +191,14 @@ public class BlackjackManager : MonoBehaviour
         }
         else
         {
-            // Kartý aç (Flip efekti eklenebilir ama þimdilik direkt deðiþelim)
+            // Kartï¿½ aï¿½ (Flip efekti eklenebilir ama ï¿½imdilik direkt deï¿½iï¿½elim)
             cardImg.sprite = cardToDeal.cardSprite;
         }
 
-        isDealingAnimationPlaying = false; // Kilidi aç
+        isDealingAnimationPlaying = false; // Kilidi aï¿½
     }
 
-    // --- OYUN AKIÞI ---
+    // --- OYUN AKIï¿½I ---
 
     IEnumerator DealInitialCardsRoutine()
     {
@@ -212,11 +212,11 @@ public class BlackjackManager : MonoBehaviour
         yield return StartCoroutine(DealCardAnimated(playerHand, playerCardArea, false));
         UpdateScores();
 
-        // Dealer'ýn kapalý kartý
+        // Dealer'Ä±n kapalÄ± kartÄ±
         yield return StartCoroutine(DealCardAnimated(dealerHand, dealerCardArea, true));
         UpdateScores();
 
-        // Blackjack Kontrolü
+        // Blackjack KontrolÃ¼
         if (CalculateHandValue(playerHand) == 21)
         {
             StartCoroutine(RevealHiddenCardAndFinish());
@@ -227,10 +227,10 @@ public class BlackjackManager : MonoBehaviour
         }
     }
 
-    // Player Hit artýk Coroutine olmalý çünkü animasyonu bekleyeceðiz
+    // Player Hit artÄ±k Coroutine olmalÄ± Ã§Ã¼nkÃ¼ animasyonu bekleyeceÄŸiz
     IEnumerator PlayerHitRoutine()
     {
-        // Butonlarý kapat (spam yapýlmasýn)
+        // ButonlarÄ± kapat (spam yapÄ±lmasÄ±n)
         SetGameButtonsActive(false);
 
         yield return StartCoroutine(DealCardAnimated(playerHand, playerCardArea, false));
@@ -238,7 +238,7 @@ public class BlackjackManager : MonoBehaviour
 
         if (CalculateHandValue(playerHand) > 21)
         {
-            EndGame("Busted! (Battýn)");
+            EndGame("Busted! (BattÄ±n)");
         }
         else if (CalculateHandValue(playerHand) == 21)
         {
@@ -246,7 +246,7 @@ public class BlackjackManager : MonoBehaviour
         }
         else
         {
-            // Eðer batmadýysa butonlarý tekrar aç
+            // EÄŸer batmadÄ±ysa butonlarÄ± tekrar aÃ§
             SetGameButtonsActive(true);
         }
     }
@@ -259,7 +259,7 @@ public class BlackjackManager : MonoBehaviour
 
     IEnumerator DealerTurnRoutine()
     {
-        // Önce kapalý kartý aç
+        // Ã–nce kapalÄ± kartÄ± aÃ§
         if (isDealerCardHidden)
         {
             RevealHiddenCard();
@@ -286,7 +286,7 @@ public class BlackjackManager : MonoBehaviour
         UpdateScores();
     }
 
-    // Özel durum: Blackjack olunca veya oyun bitince kart açýp bitirme
+    // Ã–zel durum: Blackjack olunca veya oyun bitince kart aÃ§Ä±p bitirme
     IEnumerator RevealHiddenCardAndFinish()
     {
         yield return new WaitForSeconds(0.5f);
@@ -300,8 +300,8 @@ public class BlackjackManager : MonoBehaviour
         int dealerVal = CalculateHandValue(dealerHand);
 
         if (playerVal > 21) EndGame("Kaybettin.");
-        else if (dealerVal > 21) EndGame("Kasa Battý! Kazandýn!");
-        else if (playerVal > dealerVal) EndGame("Kazandýn!");
+        else if (dealerVal > 21) EndGame("Kasa BattÄ±! KazandÄ±n!");
+        else if (playerVal > dealerVal) EndGame("KazandÄ±n!");
         else if (playerVal < dealerVal) EndGame("Kaybettin.");
         else EndGame("Berabere.");
     }
@@ -390,14 +390,14 @@ public class BlackjackManager : MonoBehaviour
 
     void SetGameButtonsActive(bool isActive)
     {
-        // Animasyon oynuyorsa butonlarý zorla kapalý tut
+        // Animasyon oynuyorsa butonlarÄ± zorla kapalÄ± tut
         if (isDealingAnimationPlaying) isActive = false;
 
         hitButton.interactable = isActive;
         standButton.interactable = isActive;
 
-        // Buton objelerini kapatmak yerine interactable kapatmak daha þýk durur
-        // Ama görünürlük kapatmak istersen gameObject.SetActive kullanabilirsin
+        // Buton objelerini kapatmak yerine interactable kapatmak daha ÅŸÄ±k durur
+        // Ama gÃ¶rÃ¼nÃ¼rlÃ¼k kapatmak istersen gameObject.SetActive kullanabilirsin
         hitButton.gameObject.SetActive(isActive);
         standButton.gameObject.SetActive(isActive);
     }

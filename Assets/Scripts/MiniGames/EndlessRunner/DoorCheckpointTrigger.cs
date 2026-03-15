@@ -1,5 +1,5 @@
-using UnityEngine;
 using DG.Tweening;
+using UnityEngine;
 
 // Kapıya dönüş noktası — trigger box'a ekle
 public class DoorCheckpointTrigger : MonoBehaviour

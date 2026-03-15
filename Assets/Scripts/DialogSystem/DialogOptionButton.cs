@@ -1,6 +1,6 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using TMPro;
 
 public class DialogOptionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {

@@ -1,6 +1,6 @@
+using System; // Action kullanabilmek için ekledik
 using UnityEngine;
 using UnityEngine.UI;
-using System; // Action kullanabilmek için ekledik
 
 public class SkillCheckSystem : MonoBehaviour
 {

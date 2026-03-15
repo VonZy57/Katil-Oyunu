@@ -1,6 +1,6 @@
-using UnityEngine;
-using TMPro; // TextMeshPro kullan�m� i�in
 using System.Collections;
+using TMPro; // TextMeshPro kullan�m� i�in
+using UnityEngine;
 
 public class MissionUI : MonoBehaviour
 {

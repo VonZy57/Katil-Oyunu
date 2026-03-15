@@ -1,6 +1,6 @@
-using UnityEngine;
-using TMPro;
 using DG.Tweening;
+using TMPro;
+using UnityEngine;
 
 public class SlidableObstacle : MonoBehaviour
 {

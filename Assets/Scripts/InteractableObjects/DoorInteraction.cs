@@ -1,5 +1,5 @@
-using UnityEngine;
 using DG.Tweening; // DOTween kütüphanesini dahil ettik
+using UnityEngine;
 
 public class DoorInteraction : Interactable
 {

@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
 using TMPro;
-using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class LocalizedText

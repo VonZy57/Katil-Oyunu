@@ -1,6 +1,6 @@
-using UnityEngine;
-using DG.Tweening;
 using System.Collections;
+using DG.Tweening;
+using UnityEngine;
 
 public class EndlessRunner : MonoBehaviour
 {
