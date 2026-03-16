@@ -79,6 +79,7 @@ public class EndlessRunner : MonoBehaviour
     private GameObject[] cachedObstacles;
     private JumpableObstacle[] cachedJumpableObstacles;
     private SlidableObstacle[] cachedSlidableObstacles;
+    private FallingObject[] cachedFallingObjects;
 
     // Baz hız (2. trigger sonrası 1.5x için)
     private float baseWalkSpeed;
@@ -126,6 +127,7 @@ public class EndlessRunner : MonoBehaviour
         cachedObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
         cachedJumpableObstacles = FindObjectsByType<JumpableObstacle>(FindObjectsSortMode.None);
         cachedSlidableObstacles = FindObjectsByType<SlidableObstacle>(FindObjectsSortMode.None);
+        cachedFallingObjects = FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
         SetObstaclesActive(false);
 
         cachedDoorCheckpoints = FindObjectsByType<DoorCheckpointTrigger>(FindObjectsSortMode.None);
@@ -234,6 +236,10 @@ public class EndlessRunner : MonoBehaviour
         if (cachedSlidableObstacles != null)
             foreach (var so in cachedSlidableObstacles)
                 so?.ResetObstacle();
+
+        if (cachedFallingObjects != null)
+            foreach (var fo in cachedFallingObjects)
+                fo?.ResetRotation();
 
         ResetAllDoorCheckpoints();
 
