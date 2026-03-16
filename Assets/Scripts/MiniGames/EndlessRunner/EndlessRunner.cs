@@ -212,6 +212,17 @@ public class EndlessRunner : MonoBehaviour
     {
         canUseInputAndHeadBob = false;
 
+        // Kapı bekleme durumunu temizle
+        isWaitingForDoorInput = false;
+        if (doorTimeoutCoroutine != null)
+        {
+            StopCoroutine(doorTimeoutCoroutine);
+            doorTimeoutCoroutine = null;
+        }
+        HideDoorPrompts();
+        currentDoorCheckpoint?.TurnOffLights();
+        currentDoorCheckpoint = null;
+
         blackScreenObject?.SetActive(true);
 
         TeleportToSecondTrigger();
@@ -223,6 +234,8 @@ public class EndlessRunner : MonoBehaviour
         if (cachedSlidableObstacles != null)
             foreach (var so in cachedSlidableObstacles)
                 so?.ResetObstacle();
+
+        ResetAllDoorCheckpoints();
 
         yield return new WaitForSeconds(0.5f);
 
