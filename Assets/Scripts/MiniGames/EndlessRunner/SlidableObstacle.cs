@@ -30,6 +30,18 @@ public class SlidableObstacle : MonoBehaviour
     private float originalCCHeight;
     private Vector3 originalCCCenter;
 
+    // Input
+    private PlayerControls controls;
+
+    void Awake()
+    {
+        controls = new PlayerControls();
+        controls.Player.Crouch.performed += ctx => OnSlidePressed();
+    }
+
+    void OnEnable() => controls?.Player.Enable();
+    void OnDisable() => controls?.Player.Disable();
+
     void Start()
     {
         if (endlessRunner == null)
@@ -63,18 +75,18 @@ public class SlidableObstacle : MonoBehaviour
     {
         if (isInPromptZone && !hasSlid)
         {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                hasSlid = true;
-                HidePrompt();
-                PerformSlide();
-                return;
-            }
-
             promptTimer += Time.deltaTime;
             if (promptTimer >= timeToReact)
                 OnFail();
         }
+    }
+
+    void OnSlidePressed()
+    {
+        if (!isInPromptZone || hasSlid) return;
+        hasSlid = true;
+        HidePrompt();
+        PerformSlide();
     }
 
     void PerformSlide()
@@ -146,7 +158,7 @@ public class SlidableObstacle : MonoBehaviour
     void ShowPrompt()
     {
         if (promptUI != null) promptUI.SetActive(true);
-        if (promptText != null) promptText.text = "Press S to Slide";
+        if (promptText != null) promptText.text = "Press Ctrl to Slide";
     }
 
     void HidePrompt()

@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "Katil Oyunu.slnx",
+    "dotnet.defaultSolution": "Katil-Oyunu.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }

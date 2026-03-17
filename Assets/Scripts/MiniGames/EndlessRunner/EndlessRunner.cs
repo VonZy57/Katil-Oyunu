@@ -33,8 +33,11 @@ public class EndlessRunner : MonoBehaviour
     [Header("Kapı Dönüş Sistemi")]
     public float doorPromptTimeout = 2f;
     public float doorSlowSpeed = 1f;
+    [Tooltip("Trigger'a girince kaç saniye yavaşlar")]
+    public float doorSlowDuration = 0.8f;
     public GameObject promptLeft;   // "Sola Dön" UI
     public GameObject promptRight;  // "Sağa Dön" UI
+    public GameObject promptOpenDoor; // "Kapıyı Aç" UI
 
     [Header("FOV Ayarları")]
     public float normalFOV = 60f;
@@ -70,6 +73,8 @@ public class EndlessRunner : MonoBehaviour
 
     // Kapı dönüş durumu
     private bool isWaitingForDoorInput = false;
+    private bool isWaitingForDoorOpen = false;
+    private bool isDoorSlowed = false;
     private bool requireLeft;
     private Coroutine doorTimeoutCoroutine;
     private DoorCheckpointTrigger currentDoorCheckpoint;
@@ -184,6 +189,9 @@ public class EndlessRunner : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.E))
                 OnDoorInput(false);  // E - sağ
         }
+
+        if (isWaitingForDoorOpen && Input.GetKeyDown(KeyCode.E))
+            OnDoorOpenPressed();
     }
 
     public void OnFirstTriggerEnter()
@@ -216,12 +224,15 @@ public class EndlessRunner : MonoBehaviour
 
         // Kapı bekleme durumunu temizle
         isWaitingForDoorInput = false;
+        isWaitingForDoorOpen = false;
+        isDoorSlowed = false;
         if (doorTimeoutCoroutine != null)
         {
             StopCoroutine(doorTimeoutCoroutine);
             doorTimeoutCoroutine = null;
         }
         HideDoorPrompts();
+        if (promptOpenDoor) promptOpenDoor.SetActive(false);
         currentDoorCheckpoint?.TurnOffLights();
         currentDoorCheckpoint = null;
 
@@ -304,11 +315,12 @@ public class EndlessRunner : MonoBehaviour
     {
         if (characterController == null || !characterController.enabled) return;
 
-        float speed = isWaitingForDoorInput ? doorSlowSpeed : walkSpeed;
+        bool doorSlow = isDoorSlowed || isWaitingForDoorInput || isWaitingForDoorOpen;
+        float speed = doorSlow ? doorSlowSpeed : walkSpeed;
         Vector3 forward = playerBody.forward * speed;
 
         Vector3 strafe = Vector3.zero;
-        if (canUseInputAndHeadBob && !isWaitingForDoorInput)
+        if (canUseInputAndHeadBob && !doorSlow)
             strafe = playerBody.right * moveInput.x * walkSpeed;
 
         Vector3 move = (forward + strafe) * Time.deltaTime;
@@ -400,12 +412,15 @@ public class EndlessRunner : MonoBehaviour
 
         // Kapı girdisini temizle
         isWaitingForDoorInput = false;
+        isWaitingForDoorOpen = false;
+        isDoorSlowed = false;
         if (doorTimeoutCoroutine != null)
         {
             StopCoroutine(doorTimeoutCoroutine);
             doorTimeoutCoroutine = null;
         }
         HideDoorPrompts();
+        if (promptOpenDoor) promptOpenDoor.SetActive(false);
         currentDoorCheckpoint?.TurnOffLights();
         currentDoorCheckpoint = null;
         ResetAllDoorCheckpoints();
@@ -419,11 +434,19 @@ public class EndlessRunner : MonoBehaviour
         currentDoorCheckpoint = checkpoint;
         requireLeft = leftRequired;
         isWaitingForDoorInput = true;
+        isDoorSlowed = true;
 
         if (promptLeft) promptLeft.SetActive(true);
         if (promptRight) promptRight.SetActive(true);
 
         doorTimeoutCoroutine = StartCoroutine(DoorPromptTimeout());
+        StartCoroutine(DoorSlowTimeout());
+    }
+
+    private IEnumerator DoorSlowTimeout()
+    {
+        yield return new WaitForSeconds(doorSlowDuration);
+        isDoorSlowed = false;
     }
 
     void HideDoorPrompts()
@@ -449,11 +472,7 @@ public class EndlessRunner : MonoBehaviour
 
         if (pressedLeft == requireLeft)
         {
-            // Doğru yön → kapıyı aç, ışıkları kapat, timeout iptal
-            currentDoorCheckpoint?.OpenCorrectDoor();
-            currentDoorCheckpoint?.TurnOffLights();
-            currentDoorCheckpoint = null;
-
+            // Doğru yön → timeout iptal, kapı open trigger'ını bekle
             if (doorTimeoutCoroutine != null)
             {
                 StopCoroutine(doorTimeoutCoroutine);
@@ -461,6 +480,29 @@ public class EndlessRunner : MonoBehaviour
             }
         }
         // Yanlış yön → timeout çalışmaya devam eder, kapıya çarpar → fail
+    }
+
+    public void OnDoorOpenZoneEntered(bool isLeftDoor)
+    {
+        if (currentDoorCheckpoint == null || isWaitingForDoorOpen) return;
+        if (isLeftDoor != requireLeft) return;  // Yanlış kapının trigger'ı, yok say
+
+        isWaitingForDoorOpen = true;
+        isDoorSlowed = true;
+        if (promptOpenDoor) promptOpenDoor.SetActive(true);
+    }
+
+    void OnDoorOpenPressed()
+    {
+        if (!isWaitingForDoorOpen) return;
+
+        isWaitingForDoorOpen = false;
+        isDoorSlowed = false;
+        if (promptOpenDoor) promptOpenDoor.SetActive(false);
+
+        currentDoorCheckpoint?.OpenCorrectDoor();
+        currentDoorCheckpoint?.TurnOffLights();
+        currentDoorCheckpoint = null;
     }
 
     private IEnumerator DoorPromptTimeout()

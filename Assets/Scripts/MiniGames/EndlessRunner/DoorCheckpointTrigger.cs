@@ -16,6 +16,14 @@ public class DoorCheckpointTrigger : MonoBehaviour
     [Tooltip("true = sol (A tuşu), false = sağ (D tuşu)")]
     public bool requireLeft = true;
     private bool triggered = false;
+    private Vector3 leftDoorInitialRotation;
+    private Vector3 rightDoorInitialRotation;
+
+    void Awake()
+    {
+        if (leftDoor) leftDoorInitialRotation = leftDoor.transform.localEulerAngles;
+        if (rightDoor) rightDoorInitialRotation = rightDoor.transform.localEulerAngles;
+    }
 
     void OnTriggerEnter(Collider other)
     {
@@ -32,8 +40,15 @@ public class DoorCheckpointTrigger : MonoBehaviour
         if (door != null)
         {
             Vector3 target = door.transform.localEulerAngles + new Vector3(0f, doorOpenAngle, 0f);
-            door.transform.DOLocalRotate(target, doorOpenDuration).SetEase(Ease.OutQuad);
+            door.transform.DOLocalRotate(target, doorOpenDuration).SetEase(Ease.OutQuad)
+                .OnComplete(() => SetDoorColliders(door, false));
         }
+    }
+
+    void SetDoorColliders(GameObject door, bool enabled)
+    {
+        foreach (var col in door.GetComponentsInChildren<Collider>())
+            col.enabled = enabled;
     }
 
     public void TurnOffLights()
@@ -46,5 +61,18 @@ public class DoorCheckpointTrigger : MonoBehaviour
     {
         triggered = false;
         TurnOffLights();
+
+        if (leftDoor)
+        {
+            leftDoor.transform.DOKill();
+            leftDoor.transform.localEulerAngles = leftDoorInitialRotation;
+            SetDoorColliders(leftDoor, true);
+        }
+        if (rightDoor)
+        {
+            rightDoor.transform.DOKill();
+            rightDoor.transform.localEulerAngles = rightDoorInitialRotation;
+            SetDoorColliders(rightDoor, true);
+        }
     }
 }
