@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d7f7082a0980e498bd54f334487eb1, type: 3}
-  m_Name: M_07_CheckTheNoise
+  m_Name: M2_01_GettingToMotel
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
-  missionID: CheckTheNoises
-  description: "D\u0131\u015Far\u0131dan gelen g\xFCr\xFClt\xFCy\xFC kontrol et"
-  nextMission: {fileID: 0}
-  isFinalMission: 1
+  missionID: GettingToMotel
+  description: Otele git ve bir oda kirala
+  nextMission: {fileID: 11400000, guid: 4fd02f660e3f8d14f98a7f5b12377151, type: 2}
+  isFinalMission: 0

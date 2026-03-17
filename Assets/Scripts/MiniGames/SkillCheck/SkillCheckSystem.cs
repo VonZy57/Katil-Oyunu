@@ -1,6 +1,7 @@
 using System; // Action kullanabilmek için ekledik
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class SkillCheckSystem : MonoBehaviour
 {
@@ -21,6 +22,25 @@ public class SkillCheckSystem : MonoBehaviour
     // Sonucu BodyDragController'a iletmek için kullanacağımız köprü
     private Action<bool> onCheckComplete;
 
+    private PlayerControls controls;
+
+    private void Awake()
+    {
+        controls = new PlayerControls();
+    }
+
+    private void OnEnable()
+    {
+        controls.Enable();
+        controls.Player.SpaceButton.performed += OnSpacePressed;
+    }
+
+    private void OnDisable()
+    {
+        controls.Disable();
+        controls.Player.SpaceButton.performed -= OnSpacePressed; // Bellek sızıntısını (Memory leak) önle
+    }
+
     void Start()
     {
         skillCheckUI.SetActive(false);
@@ -33,13 +53,18 @@ public class SkillCheckSystem : MonoBehaviour
         currentProgress += (1f / timeToComplete) * Time.deltaTime;
         needleTransform.localRotation = Quaternion.Euler(0, 0, -currentProgress * 360f);
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            CheckResult();
-        }
-        else if (currentProgress > safeZoneEnd + 0.05f)
+        if (currentProgress > safeZoneEnd + 0.05f)
         {
             EndSkillCheck(false); // Süre doldu, kaçırdı
+        }
+    }
+
+    // Yeni Input System ile tuşa basıldığında tetiklenecek fonksiyon
+    private void OnSpacePressed(InputAction.CallbackContext context)
+    {
+        if (isActive)
+        {
+            CheckResult();
         }
     }
 

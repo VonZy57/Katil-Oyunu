@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class BodyDragController : MonoBehaviour
 {
@@ -9,16 +10,33 @@ public class BodyDragController : MonoBehaviour
 
     private bool isDragging = false;
     private bool isInDropZone = false;
+    private Coroutine dragCoroutine;
 
-    void Start()
+    private PlayerControls controls;
+
+    private void Awake()
     {
-        // Başlangıçta T tuşunu bekliyoruz
+        controls = new PlayerControls();
     }
 
-    void Update()
+    private void OnEnable()
     {
-        //BİTİRME KONTROLÜ (DropZone içindeyken kilitliyken E'ye basma)
-        if (isInDropZone && isDragging && Input.GetKeyDown(KeyCode.E))
+        controls.Enable();
+        // DİKKAT: 'E' tuşu için 'Interact' eylemini kullandığını varsaydım.
+        // Input Actions panelinde adı farklıysa burayı düzeltmelisin (örn: controls.Player.EButton)
+        controls.Player.Interact.performed += OnInteractPressed;
+    }
+
+    private void OnDisable()
+    {
+        controls.Disable();
+        controls.Player.Interact.performed -= OnInteractPressed;
+    }
+
+    private void OnInteractPressed(InputAction.CallbackContext context)
+    {
+        // BİTİRME KONTROLÜ (DropZone içindeyken kilitliyken E'ye basma)
+        if (isInDropZone && isDragging)
         {
             DropBodyAndFinish();
         }
@@ -35,7 +53,7 @@ public class BodyDragController : MonoBehaviour
         if (playerMovementScript != null)
             playerMovementScript.enabled = false;
 
-        StartCoroutine(DragRoutine());
+        dragCoroutine = StartCoroutine(DragRoutine());
     }
 
     IEnumerator DragRoutine()
@@ -73,13 +91,17 @@ public class BodyDragController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log("Banyoya girildi! Ceset bırakma alanına gir...");
         // Oyuncu alana girdiğinde
         if (other.CompareTag("DropZone") && isDragging)
         {
             isInDropZone = true;
 
             // 1. Skill check döngüsünü ve UI'ı tamamen durdur
-            StopAllCoroutines();
+            if (dragCoroutine != null)
+            {
+                StopCoroutine(dragCoroutine);
+            }
             skillCheckSystem.ForceStop();
 
             // 2. Oyuncunun hareketini E'ye basana kadar KESİN OLARAK KİLİTLE
