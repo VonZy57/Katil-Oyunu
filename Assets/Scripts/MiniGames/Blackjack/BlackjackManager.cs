@@ -16,7 +16,7 @@ public class BlackjackManager : MonoBehaviour
     public float cardMoveSpeed = 1500f; // Kartın uçuş hızı
 
     [Header("Deste Pozisyonu")]
-    public Transform deckSpawnPoint; // Sahnedeki DeckReference objesi (Bo� GameObject)
+    public Transform deckSpawnPoint; // Sahnedeki DeckReference objesi (Boş GameObject)
     private List<GameObject> visualDeckStack = new List<GameObject>(); // Masadaki görsel deste objeleri
 
     [Header("UI Referansları")]
@@ -65,7 +65,7 @@ public class BlackjackManager : MonoBehaviour
         CreateDeck();
         ShuffleDeck();
 
-        // G�rsel desteyi olu�tur (Masadaki y���n)
+        // Görsel desteyi oluşyur (Masadaki yığın)
         GenerateVisualDeck();
 
         StartRound();
@@ -73,13 +73,13 @@ public class BlackjackManager : MonoBehaviour
 
     void StartRound()
     {
-        // Deste azald�ysa yenile
+        // Deste azaldıysa yenile
         if (deck.Count < 10)
         {
             CreateDeck();
             ShuffleDeck();
-            GenerateVisualDeck(); // G�rsel y���n� da tazele
-            resultText.text = "Deste Kar��t�r�ld�!";
+            GenerateVisualDeck(); // Görsel yığınını da tazele
+            resultText.text = "Deste Karıştırıldı!";
         }
         else
         {
@@ -131,34 +131,34 @@ public class BlackjackManager : MonoBehaviour
 
         isDealingAnimationPlaying = true; // Kilit vur
 
-        // 1. Veriyi �ek
+        // 1. Veriyi çek
         Card cardToDeal = deck[0];
         deck.RemoveAt(0);
         hand.Add(cardToDeal);
 
-        // 2. G�rsel desteden bir kart eksilt
+        // 2. Görsel desteden bir kart eksilt
         GameObject flyingCard = null;
         if (visualDeckStack.Count > 0)
         {
-            // En �stteki kart� al
+            // En üstteki kart� al
             int lastIndex = visualDeckStack.Count - 1;
             flyingCard = visualDeckStack[lastIndex];
             visualDeckStack.RemoveAt(lastIndex);
         }
         else
         {
-            // E�er g�rsel deste bittiyse (ama oyun devam ediyorsa) yeni bir tane olu�tur
+            // Eğer görsel deste bittiyse (ama oyun devam ediyorsa) yeni bir tane oluştur
             flyingCard = Instantiate(cardPrefab, deckSpawnPoint);
             flyingCard.GetComponent<Image>().sprite = cardBackSprite;
         }
 
-        // 3. Kart� GamePanel'in �ocu�u yap (b�ylece el alan�ndan ba��ms�z u�ar)
+        // 3. Kartı GamePanel'in çocuğu yap (böylece el alanından bağımsız hareket eder)
         flyingCard.transform.SetParent(gamePanel.transform);
-        flyingCard.transform.position = deckSpawnPoint.position; // Ba�lang�� noktas�
+        flyingCard.transform.position = deckSpawnPoint.position; // Başlangıç noktas
 
-        // 4. Hedefe u�ur (Lerp)
-        Vector3 targetPos = targetArea.position; // Elin oldu�u yere u�acak
-        float flightTime = 0.4f; // Saniye cinsinden u�u� s�resi
+        // 4. Hedefe uçur (Lerp)
+        Vector3 targetPos = targetArea.position; // Elin olduğu yere uçacak
+        float flightTime = 0.4f; // Saniye cinsinden uçuş süresi
         float elapsedTime = 0f;
         Vector3 startPos = flyingCard.transform.position;
 

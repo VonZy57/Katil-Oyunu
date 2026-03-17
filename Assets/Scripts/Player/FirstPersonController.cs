@@ -6,17 +6,17 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CharacterController))]
 public class FirstPersonController : MonoBehaviour
 {
-    [Header("Hareket Ayarlar�")]
+    [Header("Hareket Ayarları")]
     public float walkSpeed = 3f;
     public float runSpeed = 6f;
     public float starisSpeed = 1.5f;
     public float gravity = -9.81f;
 
-    [Header("Kamera Ayarlar�")]
+    [Header("Kamera Ayarları")]
     public float mouseSensitivity = 100f;
     public Transform cameraTransform;
 
-    [Header("Oturma K�s�tlamalar�")]
+    [Header("Oturma Kısıtlamaları")]
     public float sittingLookLimit = 45f; // Sağa sola yukarı aşağı limit
 
     private PlayerControls controls;
@@ -34,19 +34,19 @@ public class FirstPersonController : MonoBehaviour
     // Oturma durumu kontrol
     public bool IsSitting { get; private set; } = false;
 
-    [Header("Head Bob Ayarlar�")]
+    [Header("Head Bob Ayarları")]
     public float headBobFrequency = 1.5f;
     public float headBobVerticalAmp = 0.05f;
     public float headBobHorizontalAmp = 0.05f;
     private float headBobTimer = 0f;
     private Vector3 initialCameraPosition;
 
-    [Header("Head Tilt Ayarlar�")]
+    [Header("Head Tilt Ayarları")]
     public float tiltAngle = 1f;
     public float tiltSpeed = 5f;
     private float currentTilt = 0f;
 
-    [Header("Breathing Ayarlar�")]
+    [Header("Breathing Ayarları")]
     public float breathFrequency = 1.0f;
     public float breathAmpX = 0.01f;
     public float breathAmpY = 0.01f;
