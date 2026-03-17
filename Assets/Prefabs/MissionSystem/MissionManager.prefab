@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7d8704545a5409419c4643f74c17181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MissionManager
-  firstMission: {fileID: 11400000, guid: d2bf6fcd724cfcf44b3eff6ec4a8635f, type: 2}
+  firstMission: {fileID: 0}
 --- !u!114 &5706522877136435388
 MonoBehaviour:
   m_ObjectHideFlags: 0

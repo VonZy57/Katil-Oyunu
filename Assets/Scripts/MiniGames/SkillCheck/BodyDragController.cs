@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class BodyDragController : MonoBehaviour
 {
@@ -8,39 +7,9 @@ public class BodyDragController : MonoBehaviour
     public SkillCheckSystem skillCheckSystem;
     public MonoBehaviour playerMovementScript;
 
-    private bool isDragging = false;
+    public bool isDragging { get; private set; } = false;
     private bool isInDropZone = false;
     private Coroutine dragCoroutine;
-
-    private PlayerControls controls;
-
-    private void Awake()
-    {
-        controls = new PlayerControls();
-    }
-
-    private void OnEnable()
-    {
-        controls.Enable();
-        // DİKKAT: 'E' tuşu için 'Interact' eylemini kullandığını varsaydım.
-        // Input Actions panelinde adı farklıysa burayı düzeltmelisin (örn: controls.Player.EButton)
-        controls.Player.Interact.performed += OnInteractPressed;
-    }
-
-    private void OnDisable()
-    {
-        controls.Disable();
-        controls.Player.Interact.performed -= OnInteractPressed;
-    }
-
-    private void OnInteractPressed(InputAction.CallbackContext context)
-    {
-        // BİTİRME KONTROLÜ (DropZone içindeyken kilitliyken E'ye basma)
-        if (isInDropZone && isDragging)
-        {
-            DropBodyAndFinish();
-        }
-    }
 
     public void StartDraggingTask()
     {
@@ -104,25 +73,24 @@ public class BodyDragController : MonoBehaviour
             }
             skillCheckSystem.ForceStop();
 
-            // 2. Oyuncunun hareketini E'ye basana kadar KESİN OLARAK KİLİTLE
+            // 2. Oyuncunun küvete yürüyebilmesi için hareket KİLİDİNİ AÇ
             if (playerMovementScript != null)
-                playerMovementScript.enabled = false;
+                playerMovementScript.enabled = true;
 
-            Debug.Log("DropZone'a girildi! Hareket kilitlendi. Cesedi bırakmak için 'E' tuşuna basın.");
+            Debug.Log("DropZone'a girildi! Skill check bitti. Cesedi bırakmak için küvete yürüyüp etkileşime geçin.");
         }
     }
 
-    private void DropBodyAndFinish()
+    public void DropBodyAndFinish()
     {
+        if (!isDragging) return;
+
         isDragging = false;
 
-        // 3. E'ye basıldı, ceset bırakıldı ve hareket KİLİDİ AÇILDI
+        // 3. Küvetle etkileşime girildi, ceset bırakıldı. (Emin olmak için hareket kilidini tekrar açıyoruz)
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
 
-        Debug.Log("Ceset bırakıldı. Hareket kilidi açıldı. Görev Bitti!");
-
-        if (MissionManager.Instance != null)
-            MissionManager.Instance.CompleteCurrentMission();
+        Debug.Log("Ceset küvete bırakıldı. Görev Bitti!");
     }
 }

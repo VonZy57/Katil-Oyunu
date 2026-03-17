@@ -55,20 +55,20 @@ public class MissionManager : MonoBehaviour
     {
         if (CurrentMission == null) return;
 
-        Debug.Log($"G�rev Tamamland�: {CurrentMission.description}");
+        Debug.Log($"Görev Tamamlandı: {CurrentMission.description}");
         OnMissionComplete?.Invoke(CurrentMission);
 
 
         // E�er g�rev sonunda sahne de�i�ecekse (sahne ismi bo� de�ilse), yeni sahneyi y�kle
         if (!string.IsNullOrEmpty(CurrentMission.loadSceneName))
         {
-            Debug.Log($"Yeni Sahne Y�kleniyor: {CurrentMission.loadSceneName}");
+            Debug.Log($"Yeni Sahne Yükleniyor: {CurrentMission.loadSceneName}");
             SceneManager.LoadScene(CurrentMission.loadSceneName);
-            return; // Sahne y�klenecekse geri kalan kodu okuma
+            return; // Sahne yüklenecekse geri kalan kodu okuma
         }
 
 
-        // E�er bir sonraki g�rev varsa ve sahne de�i�meyecekse sonraki g�reve ge�, yoksa oyunu bitir
+        // Eğer bir sonraki görev varsa ve sahne değişmeyecekse sonraki göreve geç, yoksa oyunu bitir
         if (CurrentMission.nextMission != null && !CurrentMission.isFinalMission)
         {
             StartMission(CurrentMission.nextMission);
@@ -81,9 +81,9 @@ public class MissionManager : MonoBehaviour
 
     private IEnumerator HandleSceneTransition(string sceneName)
     {
-        // 1. A�AMA: Sahne y�klenmeden �nce yap�lacaklar bu k�sma yaz�lacak
-        // �rne�in; m�zik ba�latma, ekran kararma animasyonlar�...
-        // ...de�i�ken de�i�tirme, kay�t alma, oyuncu hareket k�s�tlamalar� gibi i�lemler burada yap�labilir
+        // 1. AŞAMA: Sahne y�klenmeden �nce yap�lacaklar bu k�sma yaz�lacak
+        // Örneğin; m�zik ba�latma, ekran kararma animasyonlar�...
+        // ...değişken de�i�tirme, kay�t alma, oyuncu hareket k�s�tlamalar� gibi i�lemler burada yap�labilir
         Debug.Log("Sahne ge�i�i �ncesi i�lemler tamamland�, sahne y�kleniyor...");
 
 

@@ -2,28 +2,27 @@ using UnityEngine;
 
 public class MissionObjective : MonoBehaviour
 {
-    [Header("Bu obje hangi görevdeyken iþe yaramalý?")]
+    [Header("Bu obje hangi gÃ¶revdeyken iÅŸe yaramalï¿½?")]
     [SerializeField] public MissionSO requiredMission;
 
-    [Header("Etkileþimden sonra obje yok olsun mu? (Örn: Anahtar)")]
+    [Header("EtkileÅŸimden sonra obje yok olsun mu? (Ã–rn: Anahtar)")]
     [SerializeField] private bool destroyAfterInteract = false;
 
-    // Senin kendi Interaction Script'in E'ye basýlýnca BU fonksiyonu çaðýracak
+    // Senin kendi Interaction Script'in E'ye basï¿½lï¿½nca BU fonksiyonu ï¿½aï¿½ï¿½racak
     public void OnInteracted()
     {
-        // 1. Güvenlik kontrolü: Manager sahnede var mý?
+        // 1. Gï¿½venlik kontrolï¿½: Manager sahnede var mï¿½?
         if (MissionManager.Instance == null) return;
 
-        // 2. Doðru görevde miyiz?
-        // Oyuncu oyunun baþýnda anahtarý alamasýn diye bu kontrolü yapýyoruz.
+        // 2. Doï¿½ru gï¿½revde miyiz?
         if (MissionManager.Instance.CurrentMission == requiredMission)
         {
-            // Görevi tamamla ve sonrakine geç
+            // Gï¿½revi tamamla ve sonrakine geï¿½
             MissionManager.Instance.CompleteCurrentMission();
 
-            Debug.Log($"{gameObject.name} ile etkileþime girildi, görev ilerledi.");
+            Debug.Log($"{gameObject.name} ile etkileï¿½ime girildi, gï¿½rev ilerledi.");
 
-            // Eðer bu bir toplama göreviyse (anahtar vb.) objeyi sahneden kaldýr
+            // Eï¿½er bu bir toplama gï¿½reviyse (anahtar vb.) objeyi sahneden kaldï¿½r
             if (destroyAfterInteract)
             {
                 gameObject.SetActive(false);
@@ -31,8 +30,8 @@ public class MissionObjective : MonoBehaviour
         }
         else
         {
-            // Opsiyonel: Oyuncuya "Bunu þu an almama gerek yok" gibi bir feedback verebilirsin.
-            Debug.Log("Bu obje þu anki görev için gerekli deðil.");
+            // Opsiyonel: Oyuncuya "Bunu ï¿½u an almama gerek yok" gibi bir feedback verebilirsin.
+            Debug.Log("Bu obje ï¿½u anki gï¿½rev iï¿½in gerekli deï¿½il.");
         }
     }
 }

@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d7f7082a0980e498bd54f334487eb1, type: 3}
   m_Name: M1_00_DragFirstBody
   m_EditorClassIdentifier: 
-  missionID: 
-  description: 
-  nextMission: {fileID: 0}
+  missionID: DragFirstBody
+  description: Carry the male body
+  nextMission: {fileID: 11400000, guid: 5fa24099f4fdc434793935e0db989c63, type: 2}
   loadSceneName: 
   isFinalMission: 0

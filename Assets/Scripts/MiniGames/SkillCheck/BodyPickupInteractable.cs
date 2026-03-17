@@ -5,23 +5,24 @@ public class BodyPickupInteractable : Interactable
     [Header("Oyuncu Bağlantıları")]
     [Tooltip("Oyuncunun üzerindeki BodyDragController scripti buraya atanacak")]
     public BodyDragController dragController;
+    private MissionObjective missionObj;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        promptMessage = "Cesedi Al [F] ";   
+        promptMessage = "E - Cesedi Al";   
+
+        missionObj = GetComponent<MissionObjective>();
     }
 
     protected override void Interact()
     {
-        // Taşımayı başlat
-        if (dragController != null)
-            dragController.StartDraggingTask();
+        if(MissionManager.Instance != null && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
+        {
+            // Taşımayı başlat
+            if (dragController != null)
+                dragController.StartDraggingTask();
 
-        MissionObjective missionObj = GetComponent<MissionObjective>();
-        if (missionObj != null)
-            missionObj.OnInteracted();
-
-        gameObject.SetActive(false);
+            gameObject.SetActive(false);
+        }
     }
 }
