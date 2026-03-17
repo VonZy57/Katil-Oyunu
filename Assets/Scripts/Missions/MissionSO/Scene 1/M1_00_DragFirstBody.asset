@@ -15,5 +15,5 @@ MonoBehaviour:
   missionID: DragFirstBody
   description: Carry the male body
   nextMission: {fileID: 11400000, guid: 5fa24099f4fdc434793935e0db989c63, type: 2}
-  loadSceneName: 
+  loadSceneName: EndlessRunnerTestScene
   isFinalMission: 0

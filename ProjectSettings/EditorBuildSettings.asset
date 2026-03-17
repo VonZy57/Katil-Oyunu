@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Scene 2.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/EndlessRunnerTestScene.unity
+    guid: 81b9082e1a1e9f2498deef16eafc9986
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 1662144b35149cd4bbf9646c47ac8ed5, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
