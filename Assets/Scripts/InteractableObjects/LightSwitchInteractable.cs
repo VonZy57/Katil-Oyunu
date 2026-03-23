@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LightSwitchInteractable : Interactable
 {
     [SerializeField] private Transform switchButton;
     [SerializeField] private BedInteraction bedInteraction;
+    [SerializeField] private List<GameObject> lightsBulps;
 
     [Header("Ses Ayarları")]
     public AudioClip lightSwitchSound; // Işık kapama sesi
@@ -29,11 +31,15 @@ public class LightSwitchInteractable : Interactable
 
         //Yukar� konum
         if (bedInteraction.isLightsOff)
+        {
             switchButton.localRotation = Quaternion.Euler(0f, 90f, 0f);
+            lightsBulps.ForEach(bulb => bulb.SetActive(false)); // Tüm ışıkları kapat
+        }       
         else
-            switchButton.localRotation = Quaternion.Euler(0f, 0f , 0f);
-        
-
+        {
+            switchButton.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            lightsBulps.ForEach(bulb => bulb.SetActive(true)); // Tüm ışıkları aç
+        }
 
         promptMessage = GetPrompt();
 

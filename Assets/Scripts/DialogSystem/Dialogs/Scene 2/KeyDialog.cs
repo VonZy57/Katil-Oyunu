@@ -5,6 +5,7 @@ public class KeyDialog : MonoBehaviour
 {
     [Header("References")]
     public Transform lookAtTarget; // Oyuncunun bakacağı hedef (Kuru karakteri)
+    public Transform kuruLookTarget; // Kuru'nun döneceği/bakacağı hedef (Örn: Eşinin olduğu yer veya anahtar)
     public GameObject objectToActivate; // Dialog sonunda aktif edilecek obje
     public Transform playerBody;            // Oyuncu gövdesi (Sağa/Sola)
     public Transform playerCamera;          // Oyuncu kamerası (Yukarı/Aşağı)
@@ -18,6 +19,7 @@ public class KeyDialog : MonoBehaviour
     public float activationDelay = 2f; // Dialog bittikten kaç saniye sonra obje aktif olacak
 
     private DialogSystem dialogSystem;
+    private LookAtController kuruLookController;
 
     private bool hasTriggered = false;
     private bool dialogCompleted = false; // Dialog tamamlandı mı?
@@ -33,6 +35,12 @@ public class KeyDialog : MonoBehaviour
     {
         // DialogSystem'i otomatik bul
         dialogSystem = FindFirstObjectByType<DialogSystem>();
+        
+        // Kuru'nun LookAtController'ını referans alıyoruz
+        if (lookAtTarget != null)
+        {
+            kuruLookController = lookAtTarget.GetComponent<LookAtController>();
+        }
         BuildDialogTree();
     }
 
@@ -84,6 +92,12 @@ public class KeyDialog : MonoBehaviour
 
             // Dönüşün tamamlanması için süre tanı (rotationDuration kadar bekle)
             yield return new WaitForSeconds(rotationDuration);
+            
+            // Dialog bitince Kuru'nun kafasını tekrar oyuncuya çevirmesi için override'ı kaldır
+            if (kuruLookController != null)
+            {
+                kuruLookController.ClearOverrideLookTarget();
+            }
 
             // Trigger box işlevini tamamladı, artık silinebilir.
             Destroy(gameObject);
@@ -106,6 +120,18 @@ public class KeyDialog : MonoBehaviour
         if (playerCamera != null)
         {
             playerCamera.DOLookAt(lookAtTarget.position, rotationDuration).SetEase(Ease.OutQuad);
+        }
+        
+        // C. Kuru'nun (NPC) Atanan Hedefe Dönmesi
+        if (lookAtTarget != null && kuruLookTarget != null)
+        {
+            lookAtTarget.DOLookAt(kuruLookTarget.position, rotationDuration, AxisConstraint.Y).SetEase(Ease.OutQuad);
+            
+            // Eğer LookAtController varsa kafasını da oraya çevirsin
+            if (kuruLookController != null)
+            {
+                kuruLookController.SetOverrideLookTarget(kuruLookTarget);
+            }
         }
     }
 
