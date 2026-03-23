@@ -362,13 +362,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf207b59252374499a2515caa0ee4ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 3
-  runSpeed: 6
+  walkSpeed: 2
   starisSpeed: 1.5
   gravity: -9.81
   mouseSensitivity: 10
   cameraTransform: {fileID: 9169657910967153612}
   sittingLookLimit: 45
+  stepInterval: 0.5
+  defaultStepSounds: []
+  surfaceFootsteps: []
   headBobFrequency: 2.5
   headBobVerticalAmp: 0.05
   headBobHorizontalAmp: 0.07

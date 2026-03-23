@@ -29,7 +29,7 @@ public class KeyDialog : MonoBehaviour
     private Quaternion startCamRotation;
 
     [System.NonSerialized] private DialogNode introNode;
-    [System.NonSerialized] private DialogNode afterDialogNode;
+    //[System.NonSerialized] private DialogNode afterDialogNode;
 
     void Start()
     {
@@ -175,11 +175,11 @@ public class KeyDialog : MonoBehaviour
         );
 
         // === AFTER DIALOG NODE (Dialog tamamlandıktan sonra) ===
-        afterDialogNode = DialogBuilder.CreateEndNode(
-            "I gave you your key, go to your room.",
-            "Anahtarını verdim, odana git.",
-            "Kuru"
-        );
+        //afterDialogNode = DialogBuilder.CreateEndNode(
+        //    "I gave you your key, go to your room.",
+        //    "Anahtarını verdim, odana git.",
+        //    "Kuru"
+        //);
 
         // === INTRO NODE'A "..." SEÇENEĞİNİ EKLE ===
         DialogOption introToContinue = DialogBuilder.CreateOptionWithEvent(

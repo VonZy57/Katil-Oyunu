@@ -1,14 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+
+[System.Serializable]
+public class SurfaceFootstep
+{
+    public string surfaceTag; // Unity'deki tag (Örn: "Tahta", "Beton")
+    public AudioClip[] stepSounds; // Bu zemin için rastgele çalınacak sesler
+}
 
 [RequireComponent(typeof(CharacterController))]
 public class FirstPersonController : MonoBehaviour
 {
     [Header("Hareket Ayarları")]
     public float walkSpeed = 3f;
-    public float runSpeed = 6f;
     public float starisSpeed = 1.5f;
     public float gravity = -9.81f;
 
@@ -24,20 +29,27 @@ public class FirstPersonController : MonoBehaviour
     private Vector2 moveInput;
     private Vector2 lookInput;
 
-    // Bak�� a��lar�
     private float xRotation = 0f; // Yukarı/Aşağı (Pitch)
     private float yRotation = 0f; // Sağa/Sola (Yaw) - Sadece otururken kullanılır
 
     private Vector3 velocity;
-    private bool isRunning;
+    private bool isOnStairs = false; // Oyuncunun merdivende olup olmadığını takip etmek için
 
     // Oturma durumu kontrol
     public bool IsSitting { get; private set; } = false;
+
+    [Header("Ayak Sesi Ayarları")]
+    public float stepInterval = 0.5f; // İki adım arası süre
+    public AudioClip[] defaultStepSounds; // Etiketsiz bir zeminde çalacak varsayılan sesler
+    public List<SurfaceFootstep> surfaceFootsteps; // Zemin tiplerine göre ses listesi
+    
+    private AudioSource footstepAudioSource;
 
     [Header("Head Bob Ayarları")]
     public float headBobFrequency = 1.5f;
     public float headBobVerticalAmp = 0.05f;
     public float headBobHorizontalAmp = 0.05f;
+    public float stairsBobMultiplier = 1.5f; // Merdivendeyken dikey sarsıntıyı artırma çarpanı
     private float headBobTimer = 0f;
     private Vector3 initialCameraPosition;
 
@@ -62,10 +74,10 @@ public class FirstPersonController : MonoBehaviour
         controls.Player.Look.performed += ctx => lookInput = ctx.ReadValue<Vector2>();
         controls.Player.Look.canceled += ctx => lookInput = Vector2.zero;
 
-        controls.Player.Sprint.performed += ctx => isRunning = true;
-        controls.Player.Sprint.canceled += ctx => isRunning = false;
-
         controller = GetComponent<CharacterController>();
+
+        footstepAudioSource = gameObject.AddComponent<AudioSource>();
+        footstepAudioSource.playOnAwake = false;
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -82,7 +94,6 @@ public class FirstPersonController : MonoBehaviour
     {
         HandleRotation();
 
-        // Eğer oturmuyorsak hareket et ve yerçekimi uygula
         if (!IsSitting)
         {
             HandleMovement();
@@ -134,21 +145,18 @@ public class FirstPersonController : MonoBehaviour
         float speed;
 
         RaycastHit hit;
+        string currentSurfaceTag = "Untagged";
 
         if (Physics.Raycast(transform.position, Vector3.down, out hit, 3f))
         {
-            if (hit.collider.CompareTag("Stairs"))
-            {
-                speed = starisSpeed;
-            }
-            else
-            {
-                speed = isRunning ? runSpeed : walkSpeed;
-            }
+            currentSurfaceTag = hit.collider.tag; // Bastığımız zeminin tag'ini al
+            isOnStairs = hit.collider.CompareTag("Stairs");
+            speed = isOnStairs ? starisSpeed : walkSpeed;
         }
         else
         {
-            speed = isRunning ? runSpeed : walkSpeed;
+            isOnStairs = false;
+            speed = walkSpeed;
         }
 
         // 1. Yerçekimi Hesaplaması (Henüz hareket ettirme)
@@ -181,7 +189,8 @@ public class FirstPersonController : MonoBehaviour
             {
                 headBobTimer += Time.deltaTime * currentRealSpeed * headBobFrequency;
 
-                float bobOffsetY = Mathf.Sin(headBobTimer) * headBobVerticalAmp;
+                float currentVerticalAmp = isOnStairs ? headBobVerticalAmp * stairsBobMultiplier : headBobVerticalAmp;
+                float bobOffsetY = Mathf.Sin(headBobTimer) * currentVerticalAmp;
                 float bobOffsetX = Mathf.Cos(headBobTimer / 2f) * headBobHorizontalAmp;
 
                 targetOffset = new Vector3(bobOffsetX, bobOffsetY, 0f);
