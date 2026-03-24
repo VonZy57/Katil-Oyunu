@@ -55,12 +55,12 @@ MonoBehaviour:
   message: Press "Space" to open your eyes
   messageDelay: 3
   maxBarValue: 100
-  increaseAmount: 20
-  decayRate: 40
+  increaseAmount: 50
+  decayRate: 100
   transparencyLevel: 0
   globalVolume: {fileID: 0}
-  minIntensity: 0.5
+  minIntensity: 0.3
   maxIntensity: 1
-  vignetteSpeed: 5
+  vignetteSpeed: 10
   loopSound: {fileID: 8300000, guid: 4aad882a9574e0448bce653f724d14d0, type: 3}
   phonePickupSound: {fileID: 8300000, guid: a1e753003661deb4eba067097c3820b6, type: 3}
