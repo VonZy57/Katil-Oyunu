@@ -3865,7 +3865,8 @@ MonoBehaviour:
   promptMessage: 
   openAngle: 125
   doorDuration: 1
-  doorSound: {fileID: 8300000, guid: e286d704a9e6dc04385f3e9d4de67c12, type: 3}
+  doorOpenSound: {fileID: 8300000, guid: e286d704a9e6dc04385f3e9d4de67c12, type: 3}
+  doorCloseSound: {fileID: 8300000, guid: 2d98f5bca81a37a4f925b325a2c8fdcb, type: 3}
 --- !u!1 &7922946619100732764 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3376570517998541812, guid: fb5faa12fe53cde4d9286e5ee3e41f8a, type: 3}

@@ -8,7 +8,8 @@ public class DoorInteraction : Interactable
     public float doorDuration = 1f;        // Açılma süresi (DOTween için)
 
     [Header("Ses Ayarları")]
-    public AudioClip doorSound;            // Kapı açma/kapama sesi (ikisi için aynı)
+    public AudioClip doorOpenSound;
+    public AudioClip doorCloseSound;            
 
     private bool isOpen = false;           // Kapı açık mı?
                                            // isMoving değişkenini tamamen sildik
@@ -45,10 +46,11 @@ public class DoorInteraction : Interactable
 
         Debug.Log(isOpen ? "Kapı Açılıyor" : "Kapı Kapanıyor");
 
+        AudioClip clipToPlay = isOpen ? doorOpenSound : doorCloseSound;
         // Kapı sesi çal (açma ve kapama için aynı ses)
-        if (audioSource != null && doorSound != null)
+        if (audioSource != null && clipToPlay != null)
         {
-            audioSource.PlayOneShot(doorSound);
+            audioSource.PlayOneShot(clipToPlay);
         }
 
         // Hedef rotasyonu belirle
