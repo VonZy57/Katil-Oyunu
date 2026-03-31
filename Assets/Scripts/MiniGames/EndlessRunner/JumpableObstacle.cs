@@ -140,14 +140,11 @@ public class JumpableObstacle : MonoBehaviour
     void OnFail()
     {
         isInPromptZone = false;
-        HidePrompt();
+        hasJumped = true; // tekrar tetiklenmesini engelle
 
-        // EndlessRunner'a fail bildir
+        // EndlessRunner'a fail bildir (ResetObstacle orada çağrılır)
         if (endlessRunner != null)
             endlessRunner.OnObstacleHit();
-
-        // Reset
-        ResetObstacle();
     }
 
     void ShowPrompt()

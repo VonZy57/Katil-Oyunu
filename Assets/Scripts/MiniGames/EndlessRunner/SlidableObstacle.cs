@@ -147,12 +147,11 @@ public class SlidableObstacle : MonoBehaviour
     void OnFail()
     {
         isInPromptZone = false;
-        HidePrompt();
+        hasSlid = true; // tekrar tetiklenmesini engelle
 
+        // EndlessRunner'a fail bildir (ResetObstacle orada çağrılır)
         if (endlessRunner != null)
             endlessRunner.OnObstacleHit();
-
-        ResetObstacle();
     }
 
     void ShowPrompt()
