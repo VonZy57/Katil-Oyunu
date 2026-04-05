@@ -44,6 +44,30 @@ public class EndlessRunner : MonoBehaviour
     public float runFOV = 75f;
     public float fovChangeSpeed = 5f;
 
+    [Header("Sis Ayarları")]
+    public bool useFog = true;
+    public Color fogColor = new Color(0.1f, 0.1f, 0.1f, 1f);
+    public FogMode fogMode = FogMode.Linear;
+    [Tooltip("Koşarken sisin başladığı mesafe (metre)")]
+    public float fogStartDistance = 5f;
+    [Tooltip("Koşarken sisin tamamen kapattığı mesafe (metre)")]
+    public float fogEndDistance = 20f;
+    [Tooltip("Exponential mod için yoğunluk")]
+    public float fogDensity = 0.05f;
+
+    [Header("Karanlık Boşluk Sisi (Arkaya Dönünce)")]
+    [Tooltip("Void sisin başladığı mesafe — 0 yapılırsa anında kapanır")]
+    public float voidFogStartDistance = 0f;
+    [Tooltip("Void sisin bittiği mesafe — çok küçük yapılırsa tam karanlık")]
+    public float voidFogEndDistance = 2f;
+    public Color voidFogColor = new Color(0f, 0f, 0f, 1f);
+
+    // Orijinal sis ayarları (restore için)
+    private bool originalFogEnabled;
+    private Color originalFogColor;
+    private float originalFogDensity;
+    private FogMode originalFogMode;
+
     // Durum takibi
     private bool isControllingPlayer = false;
     private bool hasReachedSecondTrigger = false;
@@ -283,6 +307,61 @@ public class EndlessRunner : MonoBehaviour
         characterController.enabled = true;
     }
 
+    void EnableVoidFog()
+    {
+        if (!useFog) return;
+        originalFogEnabled = RenderSettings.fog;
+        originalFogColor = RenderSettings.fogColor;
+        originalFogDensity = RenderSettings.fogDensity;
+        originalFogMode = RenderSettings.fogMode;
+
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = FogMode.Linear;
+        StartCoroutine(LerpFog(
+            RenderSettings.fogColor, voidFogColor,
+            RenderSettings.fogStartDistance, voidFogStartDistance,
+            RenderSettings.fogEndDistance, voidFogEndDistance,
+            0.3f));
+    }
+
+    void EnableFog()
+    {
+        if (!useFog) return;
+        RenderSettings.fog = true;
+        RenderSettings.fogMode = fogMode;
+        StartCoroutine(LerpFog(
+            RenderSettings.fogColor, fogColor,
+            RenderSettings.fogStartDistance, fogStartDistance,
+            RenderSettings.fogEndDistance, fogEndDistance,
+            returnRotationDuration));
+    }
+
+    private IEnumerator LerpFog(Color fromColor, Color toColor, float fromStart, float toStart, float fromEnd, float toEnd, float duration)
+    {
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            RenderSettings.fogColor = Color.Lerp(fromColor, toColor, t);
+            RenderSettings.fogStartDistance = Mathf.Lerp(fromStart, toStart, t);
+            RenderSettings.fogEndDistance = Mathf.Lerp(fromEnd, toEnd, t);
+            yield return null;
+        }
+        RenderSettings.fogColor = toColor;
+        RenderSettings.fogStartDistance = toStart;
+        RenderSettings.fogEndDistance = toEnd;
+    }
+
+    void DisableFog()
+    {
+        if (!useFog) return;
+        RenderSettings.fog = originalFogEnabled;
+        RenderSettings.fogColor = originalFogColor;
+        RenderSettings.fogDensity = originalFogDensity;
+        RenderSettings.fogMode = originalFogMode;
+    }
+
     void TakeControlOfPlayer()
     {
         isControllingPlayer = true;
@@ -362,6 +441,7 @@ public class EndlessRunner : MonoBehaviour
         if (playerBody != null) startBodyRotation = playerBody.rotation;
 
         RotateBackwards();
+        EnableVoidFog();
         yield return new WaitForSeconds(rotationDuration);
 
         SetObstaclesActive(true);
@@ -374,6 +454,7 @@ public class EndlessRunner : MonoBehaviour
         isRotating = false;
         canUseInputAndHeadBob = true;
         walkSpeed = baseWalkSpeed * 1.5f;
+        EnableFog();
     }
 
     void SetObstaclesActive(bool active)
@@ -402,6 +483,7 @@ public class EndlessRunner : MonoBehaviour
 
     public void StopEndlessRunner()
     {
+        DisableFog();
         ReleaseControlOfPlayer();
         hasReachedSecondTrigger = false;
         isRotating = false;
