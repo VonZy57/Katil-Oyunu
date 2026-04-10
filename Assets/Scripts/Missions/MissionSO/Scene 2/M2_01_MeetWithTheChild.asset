@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d7f7082a0980e498bd54f334487eb1, type: 3}
-  m_Name: M2_03_GoToTheRoom
+  m_Name: M2_01_MeetWithTheChild
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
-  missionID: GoToTheRoom
-  description: "Anahtarlar\u0131 resepsiyondan al ve odana \xE7\u0131k."
-  nextMission: {fileID: 11400000, guid: a5f7a5edd3b929447beafbd1c0a27e13, type: 2}
+  missionID: CheckThePhone
+  description: Telefonu kontrol et
+  nextMission: {fileID: 11400000, guid: f475935b580a5be4193439dcef2799fd, type: 2}
   isFinalMission: 0

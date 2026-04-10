@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d7f7082a0980e498bd54f334487eb1, type: 3}
-  m_Name: M2_05_HangUpThePhone
+  m_Name: M2_06_CheckTheNoise
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
-  missionID: WakeUpAndHangUpThePhone
-  description: 'Telefona cevap ver '
-  nextMission: {fileID: 11400000, guid: c8df92fd2e48bce49a8d28cfc1820b91, type: 2}
-  isFinalMission: 0
+  missionID: CheckTheNoises
+  description: "D\u0131\u015Far\u0131dan gelen g\xFCr\xFClt\xFCy\xFC kontrol et"
+  nextMission: {fileID: 0}
+  isFinalMission: 1

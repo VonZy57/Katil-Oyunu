@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d7f7082a0980e498bd54f334487eb1, type: 3}
-  m_Name: M2_04_Sleep
+  m_Name: M2_00_GettingToMotel
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
-  missionID: Sleep
-  description: "I\u015F\u0131klar\u0131 kapat ve uyu"
-  nextMission: {fileID: 11400000, guid: ba0d10af208ac4f4a8d4a0252c30e0a5, type: 2}
+  missionID: GettingToMotel
+  description: Otele git ve bir oda kirala
+  nextMission: {fileID: 11400000, guid: 4fd02f660e3f8d14f98a7f5b12377151, type: 2}
   isFinalMission: 0
