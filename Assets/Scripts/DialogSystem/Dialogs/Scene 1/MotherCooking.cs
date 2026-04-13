@@ -1,39 +1,67 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using DG.Tweening;
 
 public class MotherCooking : MonoBehaviour
 {
+    [SerializeField] private DialogSystem dialogSystem;
+    [SerializeField] private DialogNode carryTheBodies;
+    [SerializeField] private TextMeshProUGUI subtitleText;
+    [SerializeField] private MissionObjective missionObj;
+
+    [System.Serializable]
+    public struct SongLine
+    {
+        public LocalizedText lineText;
+        public float displayDuration;
+    }
+
+    [Header("Şarkı Sözleri")]
+    [SerializeField] private List<SongLine> songLines;
+
+
+    [Header("Animasyon Ayarları")]
+    [SerializeField] private Transform motherTransform;
+    [SerializeField] private GameObject playerCamera;
+    [SerializeField] private GameObject playerBody;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        BuildDialogTree();   
+        StartCoroutine(PlaySongAfterStartDialog()); // Şuanlık 5 saniye sonra diyalog başlıyor. Şarkı bitince başlayacak. Şarkı altyazı şeklinde olacak.
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator PlaySongAfterStartDialog()
     {
-        
+        foreach (SongLine line in songLines)
+        {
+            bool isTurkish = dialogSystem.GetCurrentLanguage();
+            subtitleText.text = line.lineText.GetText(isTurkish);
+            yield return new WaitForSeconds(line.displayDuration);
+        }
+        subtitleText.text = "";
+
+        yield return new WaitForSeconds(2f); // Şarkı bittiğinde kısa bir bekleme süresi.
+        playerBody.transform.DOLookAt(motherTransform.position, 1f, AxisConstraint.Y);
+        playerCamera.transform.DOLookAt(motherTransform.position, 1f); // Şarkı bittiğinde anneye bakar.
+        dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
     }
 
     void BuildDialogTree()
     {
-        DialogNode firstPart = DialogBuilder.CreateNode
-        ("I sh*t on neighbor's bed, I sh*t on neighbor's bed, I,I thougt he loved me, I thought he loved me!",
-        "Komşunun yatağına s*çtım, Komşunun yatağına s*çtım, Beni, beni seviyor sandım, Beni seviyor sandım!",
+        carryTheBodies = DialogBuilder.CreateNode
+        ("We're gonna eat, you son of a b*tch. Don't just sit there all curled up!",
+        "Yemek yicez soysuzun çocuğu. Ne diye büzüşüp oturuyon!",
         "Anne");
 
-        DialogNode secondPart = DialogBuilder.CreateNode
-        ("I made beans in the pot, I made tzatziki to go with, I put pickles next to it, I left my son an orphan, I left my son an orphan!",
-        "Ocağa fasulye attım attım, Yanına cacık yaptım, Yanına turşu koydum, Oğlumu yetim koydum, Oğlumu yetim koydum!",
+        DialogNode carryTheBodies2 = DialogBuilder.CreateEndNode
+        ("Stand up, do something usefull you lazy piece of sh*t. Carry the bodies to the bathroom. We can't eat like this. My dear son, just like his father. Come on, help yor poor mother.",
+        "Kalk da bir boka yara. Cesetleri sırtlan da banyoya koy. Midemiz kaldırmaz ellam. Babası kılıklı canım oğluşum benim. Hadi garip anana bir yardım et.",
         "Anne");
 
-        DialogNode thirdPart = DialogBuilder.CreateNode
-        ("I sh*t on my neighbor's bed, I put tzatziki next to it, My son is my darling, I won't let you get sl*tty woman!",
-        "Komşunun yatağına sıçtım, yanına cacık koydum, Oğlum benim canım, Salmam sana sana k*şar kadın kadın",
-        "Anne");
-
-        DialogNode finalPart = DialogBuilder.CreateNode
-        ("I left my son an orphan, I f*cked my neighbor's p*ssy",
-        "Oğlumu yetim koydum, Komşumun a*ına koydum.",
-        "Anne");
+        DialogOption silentOption = DialogBuilder.CreateOptionWithEvent("...", "...", carryTheBodies2, () => {missionObj.OnInteracted();}, true);
+        DialogBuilder.AddOption(carryTheBodies, silentOption);
     }
 }

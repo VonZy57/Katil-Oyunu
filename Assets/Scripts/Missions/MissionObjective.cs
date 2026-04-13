@@ -20,7 +20,7 @@ public class MissionObjective : MonoBehaviour
             // G�revi tamamla ve sonrakine ge�
             MissionManager.Instance.CompleteCurrentMission();
 
-            Debug.Log($"{gameObject.name} ile etkile�ime girildi, g�rev ilerledi.");
+            Debug.Log($"{gameObject.name} ile etkileşime girildi, görev ilerledi.");
 
             // E�er bu bir toplama g�reviyse (anahtar vb.) objeyi sahneden kald�r
             if (destroyAfterInteract)
@@ -31,7 +31,7 @@ public class MissionObjective : MonoBehaviour
         else
         {
             // Opsiyonel: Oyuncuya "Bunu �u an almama gerek yok" gibi bir feedback verebilirsin.
-            Debug.Log("Bu obje �u anki g�rev i�in gerekli de�il.");
+            Debug.Log("Bu obje bu anki görev için gerekli değil.");
         }
     }
 }

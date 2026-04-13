@@ -44,7 +44,7 @@ public class MissionManager : MonoBehaviour
     public void StartMission(MissionSO mission)
     {
         CurrentMission = mission;
-        Debug.Log($"G�rev Ba�lad�: {mission.description}");
+        Debug.Log($"Görev Başladı: {mission.description}");
 
         // Event'i tetikle (UI bunu duyup g�ncelleyecek)
         OnMissionStart?.Invoke(mission);

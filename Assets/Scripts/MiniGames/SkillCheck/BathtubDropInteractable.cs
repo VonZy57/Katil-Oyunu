@@ -5,6 +5,7 @@ public class BathtubDropInteractable : Interactable
     [Header("Referanslar")]
     public BodyDragController dragController;
     public MissionSO nextMissionSO;
+    public GameObject chairInteractable; // Eğer bu nesneyle etkileşim sağlanırsa sandalyeye oturma eylemi de aktifleşecekse, sandalyenin scriptini referans olarak alıyoruz.
 
     void Start()
     {

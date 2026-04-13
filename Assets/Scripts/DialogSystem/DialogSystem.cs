@@ -46,7 +46,6 @@ public class DialogSystem : MonoBehaviour
 
     [Header("Dil Ayarları")]
     public bool isTurkish = false;
-    // public KeyCode languageToggleKey = KeyCode.L; ARTIK İHTİYACIMIZ YOK, INPUT SYSTEM KULLANACAĞIZ
 
     [Header("Görsel Ayarlar")]
     public float typewriterSpeed = 0.1f;
@@ -98,15 +97,6 @@ public class DialogSystem : MonoBehaviour
             }
         }
 
-        //// 2. YAZIYI HIZLICA GEÇME KONTROLÜ (Input System: Confirm - Space)
-        //if (isTyping && controls.Player.SpaceButton.triggered)
-        //{
-        //    StopAllCoroutines();
-        //    dialogText.text = currentNode.dialogText.GetText(isTurkish);
-        //    isTyping = false;
-        //    ShowOptions();
-        //}
-
         // 2. YAZIYI HIZLICA GEÇME KONTROLÜ (Input System: Confirm - Space)
         if (isTyping && controls.Player.SpaceButton.triggered)
         {
@@ -144,43 +134,6 @@ public class DialogSystem : MonoBehaviour
 
         ShowDialog();
     }
-
-    //private void ShowDialog()
-    //{
-    //    // Konuşan karakterin ismini göster
-    //    if (speakerNameText != null && !string.IsNullOrEmpty(currentNode.speakerName))
-    //    {
-    //        speakerNameText.text = currentNode.speakerName;
-    //    }
-
-    //    string textToShow = currentNode.dialogText.GetText(isTurkish);
-
-    //    if (useTypewriterEffect)
-    //    {
-    //        StartCoroutine(TypewriterEffect(textToShow));
-    //    }
-    //    else
-    //    {
-    //        dialogText.text = textToShow;
-    //        ShowOptions();
-    //    }
-
-    //}
-
-    //private System.Collections.IEnumerator TypewriterEffect(string text)
-    //{
-    //    isTyping = true;
-    //    dialogText.text = "";
-
-    //    for (int i = 0; i <= text.Length; i++)
-    //    {
-    //        dialogText.text = text.Substring(0, i);
-    //        yield return new UnityEngine.WaitForSeconds(typewriterSpeed);
-    //    }
-
-    //    isTyping = false;
-    //    ShowOptions();
-    //}
 
     private void ShowDialog()
     {
