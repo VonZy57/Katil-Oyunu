@@ -30,6 +30,10 @@ public class EndlessRunner : MonoBehaviour
     [Header("Kararma Efekti")]
     public GameObject blackScreenObject;
 
+    [Header("Ses Ayarları")]
+    public AudioClip turnBackSound;
+    public AudioSource audioSource;
+
     [Header("Kapı Dönüş Sistemi")]
     public float doorPromptTimeout = 2f;
     public float doorSlowSpeed = 1f;
@@ -449,6 +453,8 @@ public class EndlessRunner : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
 
         ReturnToOriginal();
+        if (turnBackSound != null && audioSource != null)
+            audioSource.PlayOneShot(turnBackSound);
         yield return new WaitForSeconds(returnRotationDuration);
 
         isRotating = false;
