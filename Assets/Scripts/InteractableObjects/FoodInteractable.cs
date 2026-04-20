@@ -55,6 +55,7 @@ public class FoodInteractable : Interactable
     {
         canEat = false;
         currentBiteIndex++;
+        DoEventsWhileEating();
 
         // Meshi bir sonraki ısırık meshiyle değiştir
         if (meshFilter != null && currentBiteIndex < foodStages.Length && foodStages[currentBiteIndex].foodMesh != null)
@@ -65,6 +66,7 @@ public class FoodInteractable : Interactable
                 meshRenderer.materials = foodStages[currentBiteIndex].foodMaterials;
             promptMessage = ""; // Yeme işlemi sırasında etkileşim promptunu gizle
         }
+
 
         // Son ısırık alındıysa (Yiyecek bittiyse)
         if (currentBiteIndex >= foodStages.Length - 1)
@@ -81,10 +83,15 @@ public class FoodInteractable : Interactable
         }
     }
 
-    // Bu metodu daha sonradan içini istediğin gibi doldurabilirsin
-    // virtual yapıyoruz ki istersen başka scriptlerde inherit edip override edebilesin.
+    //Yemek bittiğinde hangi olaylar gerçekleşeceği buraya yazılacak.
     protected virtual void OnFinishedEating()
     {
         Debug.Log("Yiyecek tamamen yenildi!");
+    }
+
+    //Yemek yerken gerçekleşecek olaylar buraya yazılacak.
+    protected virtual void DoEventsWhileEating()
+    {
+        
     }
 }
