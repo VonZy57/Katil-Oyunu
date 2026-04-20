@@ -232,5 +232,11 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    
+    // Dışarıdan kamera açısını (örneğin DOTween animasyonu sonrası) güncellemek için eklendi
+    public void AddXRotation(float angleOffset)
+    {
+        xRotation += angleOffset;
+        // Sınırların dışına çıkmaması için clamp uyguluyoruz
+        xRotation = Mathf.Clamp(xRotation, -90f, 90f);
+    }
 }
