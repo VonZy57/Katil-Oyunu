@@ -87,6 +87,13 @@ public class BodyDragController : MonoBehaviour
 
         isDragging = false;
 
+        if (dragCoroutine != null)
+        {
+            StopCoroutine(dragCoroutine);
+            dragCoroutine = null;
+        }
+        skillCheckSystem.ForceStop();
+
         // 3. Küvetle etkileşime girildi, ceset bırakıldı. (Emin olmak için hareket kilidini tekrar açıyoruz)
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;

@@ -19,6 +19,11 @@ public class HaveDinner : Interactable
 
     [Header("Oyuncu Referansı")]
     public GameObject player;
+    public GameObject playerCamera;
+
+    [Header("NPC Referansları")]
+    public Transform motherTransform;
+    public Transform cenkTransform;
 
     private bool isSitting = false;
     private bool isMoving = false;
@@ -116,6 +121,7 @@ public class HaveDinner : Interactable
             });
         yield return new WaitForSeconds(2f);
         dialogSystem.StartDialog(putTheGamePadNode);
+        RotateCameraToSpeaker(motherTransform);
     }
 
     private void StandUp()
@@ -137,6 +143,11 @@ public class HaveDinner : Interactable
                 if (playerController) playerController.enabled = true;
                 if (playerFPS) playerFPS.enabled = true;
             });
+    }
+
+    void RotateCameraToSpeaker(Transform speakerTransform)
+    {
+        playerCamera.transform.DOLookAt(speakerTransform.position, 1f); // Yalnızca yatay eksende dön
     }
 
     void BuildDialogTree()
@@ -166,10 +177,26 @@ public class HaveDinner : Interactable
         "Kapa çeneni. Yemeğini ye!",
         "Anne");
         
-        DialogOption silentOption = DialogBuilder.CreateOption("...", "...", brotherKilledNode, true);
-        DialogOption silentOption2 = DialogBuilder.CreateOption("...", "...", motherSaysLiarsNode, true);
-        DialogOption silentOption3 = DialogBuilder.CreateOption("...", "...", cenkSaysEnginStrong, true);
-        DialogOption silentOption4 = DialogBuilder.CreateOption("...", "...", motherSaysShutNode, true);
+        DialogOption silentOption = DialogBuilder.CreateOptionWithEvent("...", "...", brotherKilledNode,
+        () => 
+            {
+                RotateCameraToSpeaker(cenkTransform);
+            }, true);
+        DialogOption silentOption2 = DialogBuilder.CreateOptionWithEvent("...", "...", motherSaysLiarsNode,
+        () =>
+            {
+                RotateCameraToSpeaker(motherTransform);
+            }, true);
+        DialogOption silentOption3 = DialogBuilder.CreateOptionWithEvent("...", "...", cenkSaysEnginStrong,
+        () =>
+            {
+                RotateCameraToSpeaker(cenkTransform);
+            }, true);
+        DialogOption silentOption4 = DialogBuilder.CreateOptionWithEvent("...", "...", motherSaysShutNode,
+        () =>
+            {
+                RotateCameraToSpeaker(motherTransform);
+            }, true);
 
         DialogBuilder.AddOption(putTheGamePadNode, silentOption);
         DialogBuilder.AddOption(brotherKilledNode, silentOption2);
