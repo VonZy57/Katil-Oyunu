@@ -218,8 +218,6 @@ public class EndlessRunner : MonoBehaviour
                 OnDoorInput(false);  // E - sağ
         }
 
-        if (isWaitingForDoorOpen && Input.GetKeyDown(KeyCode.E))
-            OnDoorOpenPressed();
     }
 
     public void OnFirstTriggerEnter()
@@ -560,33 +558,26 @@ public class EndlessRunner : MonoBehaviour
 
         if (pressedLeft == requireLeft)
         {
-            // Doğru yön → timeout iptal, kapı open trigger'ını bekle
+            // Doğru yön → timeout iptal, kapıyı hemen aç
             if (doorTimeoutCoroutine != null)
             {
                 StopCoroutine(doorTimeoutCoroutine);
                 doorTimeoutCoroutine = null;
             }
+            currentDoorCheckpoint?.OpenCorrectDoor();
+            currentDoorCheckpoint?.TurnOffLights();
+            currentDoorCheckpoint = null;
         }
         // Yanlış yön → timeout çalışmaya devam eder, kapıya çarpar → fail
     }
 
     public void OnDoorOpenZoneEntered(bool isLeftDoor)
     {
-        if (currentDoorCheckpoint == null || isWaitingForDoorOpen) return;
+if (currentDoorCheckpoint == null || isWaitingForDoorOpen) return;
         if (isLeftDoor != requireLeft) return;  // Yanlış kapının trigger'ı, yok say
-
-        isWaitingForDoorOpen = true;
-        isDoorSlowed = true;
-        if (promptOpenDoor) promptOpenDoor.SetActive(true);
-    }
-
-    void OnDoorOpenPressed()
-    {
-        if (!isWaitingForDoorOpen) return;
 
         isWaitingForDoorOpen = false;
         isDoorSlowed = false;
-        if (promptOpenDoor) promptOpenDoor.SetActive(false);
 
         currentDoorCheckpoint?.OpenCorrectDoor();
         currentDoorCheckpoint?.TurnOffLights();
