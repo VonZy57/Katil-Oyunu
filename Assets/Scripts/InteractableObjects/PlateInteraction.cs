@@ -39,4 +39,10 @@ public class PlateInteraction : FoodInteractable
         }
             
     }
+
+    protected override void OnFinishedEating()
+    {
+        if(gameObject.GetComponent<TalkWithCenkOnTable>() != null)
+            gameObject.GetComponent<TalkWithCenkOnTable>().StartTheDialog();
+    }
 }

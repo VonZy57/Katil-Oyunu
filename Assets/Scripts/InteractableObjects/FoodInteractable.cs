@@ -72,6 +72,7 @@ public class FoodInteractable : Interactable
         if (currentBiteIndex >= foodStages.Length - 1)
         {
             promptMessage = ""; // Artık etkileşim promptu çıkmasın
+            yield return new WaitForSeconds(eatCooldown);
             OnFinishedEating(); // Senin daha sonradan içini dolduracağın metot!
         }
         else
