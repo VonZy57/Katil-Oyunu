@@ -50,6 +50,24 @@ public class LightSwitchInteractable : Interactable
         }
     }
     
+    public void TurnOnLights()
+    {
+        // Eğer ışıklar kapalıysa aç
+        if (bedInteraction != null && bedInteraction.isLightsOff)
+        {
+            bedInteraction.isLightsOff = false;
+            switchButton.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            lightsBulps.ForEach(bulb => bulb.SetActive(true)); // Tüm ışıkları aç
+            promptMessage = GetPrompt();
+
+            // Işık açılınca ses çal
+            if (audioSource != null && lightSwitchSound != null)
+            {
+                audioSource.PlayOneShot(lightSwitchSound);
+            }
+        }
+    }
+
     public string GetPrompt()
     {
         return bedInteraction.isLightsOff ? "E - Switch On" : "E-Switch Off";

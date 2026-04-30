@@ -118,4 +118,13 @@ public class MotelRoomDoorInteraction : Interactable
             }
         }
     }
+
+    // Dışarıdan kapıyı kapatmak için kullanılabilecek metod
+    public void CloseDoor()
+    {
+        if (isOpen)
+        {
+            Interact();
+        }
+    }
 }

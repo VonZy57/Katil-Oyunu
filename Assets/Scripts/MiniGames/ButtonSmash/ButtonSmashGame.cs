@@ -47,6 +47,13 @@ public class ButtonSmashGame : MonoBehaviour
     private AudioSource audioSource;
     private AudioSource oneShotAudioSource; // Tek seferlik sesler için
 
+    [Header("Işık Ayarları")]
+    public LightSwitchInteractable lightSwitch; // Oyun bitince açılacak ışık anahtarı
+
+    [Header("Kapı Ayarları")]
+    public DoorInteraction roomDoor; // Oyun bitince kapanacak normal kapı (varsa)
+    public MotelRoomDoorInteraction motelRoomDoor; // Oyun bitince kapanacak motel kapısı (varsa)
+
     // --- YENİ INPUT SYSTEM DEĞİŞKENİ ---
     private PlayerControls controls;
 
@@ -250,6 +257,22 @@ public class ButtonSmashGame : MonoBehaviour
         if (oneShotAudioSource != null && phonePickupSound != null)
         {
             oneShotAudioSource.PlayOneShot(phonePickupSound);
+        }
+
+        // Oyun bittiğinde ışıkları aç
+        if (lightSwitch != null)
+        {
+            lightSwitch.TurnOnLights();
+        }
+
+        // Oyun bittiğinde kapıyı kapat
+        if (roomDoor != null)
+        {
+            roomDoor.CloseDoor();
+        }
+        if (motelRoomDoor != null)
+        {
+            motelRoomDoor.CloseDoor();
         }
 
         Debug.Log("Oyun Bitti! Skor (Bar Doluluğu): " + currentBarValue);

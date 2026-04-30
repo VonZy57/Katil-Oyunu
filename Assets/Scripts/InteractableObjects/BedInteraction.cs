@@ -22,23 +22,31 @@ public class BedInteraction : Interactable
     public string lightOnMessage = "I need the turn off the light";
     public float messageDisplayTime = 3f;  // Mesaj ne kadar süre görünsün
     private bool isShowingMessage = false; // Mesaj gösteriliyor mu?
+    private MissionObjective missionObj;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         promptMessage = "E - Sleep";
+        missionObj = GetComponent<MissionObjective>();
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 
     protected override void Interact()
     {
+        // Eğer bu etkileşimle ilişkili görev artık aktif değilse (yani tamamlanmışsa), hiçbir şey yapma.
+        if (missionObj != null && MissionManager.Instance != null && MissionManager.Instance.CurrentMission != missionObj.requiredMission)
+        {
+            // Oyuncu yatağa tekrar tıklarsa etkileşim olmasın diye prompt'u kaldırıyoruz.
+            promptMessage = "";
+            return;
+        }
 
-        if (!isLightsOff) // I��k kapal� de�ilse engelle.
+        if (!isLightsOff) // Işık kapalı değilse engelle.
         {
             if (!isShowingMessage)
             {
@@ -47,14 +55,13 @@ public class BedInteraction : Interactable
             return;
         }
 
-        //Uyuyup uyanma cutscene'i ba�lar
+        //Uyuyup uyanma cutscene'i başlar
         StartCoroutine(PlayClockFade());
 
-        //Sonraki g�revi tetikler
-        MissionObjective missionObj = GetComponent<MissionObjective>();
+        //Sonraki görevi tetikler
         if (missionObj != null)
         {
-            // Varsa, g�rev sistemini tetikle!
+            // Varsa, görev sistemini tetikle!
             missionObj.OnInteracted();
         }
     }

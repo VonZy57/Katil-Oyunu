@@ -71,4 +71,13 @@ public class DoorInteraction : Interactable
             missionObj.OnInteracted();
         }
     }
+
+    // Dışarıdan kapıyı kapatmak için kullanılabilecek metod
+    public void CloseDoor()
+    {
+        if (isOpen)
+        {
+            Interact();
+        }
+    }
 }
