@@ -8,22 +8,29 @@ public class JumpableObstacle : MonoBehaviour
     public EndlessRunner endlessRunner;
 
     [Header("UI")]
-    public GameObject promptUI; // "Press Space to Jump" yazısı için UI objesi
+    public GameObject promptUI;
     public TextMeshProUGUI promptText;
 
     [Header("Jump Ayarları")]
     public float jumpForce = 8f;
-    public float jumpForwardForce = 4f; // İleri momentum
-    public float timeToReact = 1.5f; // Kaç saniye içinde basmalı
+    public float jumpForwardForce = 4f;
+    public float timeToReact = 1.5f;
 
     [Header("Trigger Ayarları")]
-    public Collider promptTrigger; // Prompt'un gösterileceği alan
-    public Collider failTrigger;   // Atlamayı başaramazsa fail olacağı alan
+    public Collider promptTrigger;
+    public Collider failTrigger;
+
+    [Header("Grace / Collision Ayarları")]
+    public Collider obstacleCollider;          // Oyuncuyu fiziksel olarak durduran collider
+    public float failGraceDuration = 0.4f;     // Fail zone içinde tuşa basma süresi
+    public float colliderDisableDuration = 1f; // Başarılı basışta collider kapalı kalma süresi
 
     // Durum
     private bool isInPromptZone = false;
+    private bool isInFailZone = false;
     private bool hasJumped = false;
     private float promptTimer = 0f;
+    private float failGraceTimer = 0f;
     private CharacterController characterController;
     private Vector3 jumpVelocity;
     private bool isJumping = false;
@@ -48,11 +55,9 @@ public class JumpableObstacle : MonoBehaviour
         if (endlessRunner != null && endlessRunner.characterController != null)
             characterController = endlessRunner.characterController;
 
-        // UI'ı başta kapat
         if (promptUI != null)
             promptUI.SetActive(false);
 
-        // Trigger'lara helper ekle
         SetupTrigger(promptTrigger, true);
         SetupTrigger(failTrigger, false);
     }
@@ -68,7 +73,6 @@ public class JumpableObstacle : MonoBehaviour
 
     void Update()
     {
-        // Jump sırasında yerçekimi uygula
         if (isJumping && characterController != null)
         {
             jumpVelocity.y += Physics.gravity.y * Time.deltaTime;
@@ -81,27 +85,40 @@ public class JumpableObstacle : MonoBehaviour
             }
         }
 
-        // Prompt zone'dayken timer'ı çalıştır
         if (isInPromptZone && !hasJumped)
         {
             promptTimer += Time.deltaTime;
-
-            // Süre dolduysa fail
             if (promptTimer >= timeToReact)
-            {
                 OnFail();
-            }
+        }
+
+        if (isInFailZone && !hasJumped)
+        {
+            failGraceTimer += Time.deltaTime;
+            if (failGraceTimer >= failGraceDuration)
+                OnFail();
         }
     }
 
     void OnJumpPressed()
     {
-        if (!isInPromptZone || hasJumped) return;
+        if (hasJumped) return;
+        if (!isInPromptZone && !isInFailZone) return;
 
-        // Başarılı zıplama
         hasJumped = true;
+        isInFailZone = false;
         HidePrompt();
         PerformJump();
+
+        if (obstacleCollider != null)
+            StartCoroutine(DisableColliderTemporarily(obstacleCollider, colliderDisableDuration));
+    }
+
+    System.Collections.IEnumerator DisableColliderTemporarily(Collider col, float duration)
+    {
+        col.enabled = false;
+        yield return new WaitForSeconds(duration);
+        col.enabled = true;
     }
 
     void PerformJump()
@@ -134,15 +151,16 @@ public class JumpableObstacle : MonoBehaviour
     {
         if (hasJumped) return;
 
-        OnFail();
+        isInFailZone = true;
+        failGraceTimer = 0f;
     }
 
     void OnFail()
     {
         isInPromptZone = false;
-        hasJumped = true; // tekrar tetiklenmesini engelle
+        isInFailZone = false;
+        hasJumped = true;
 
-        // EndlessRunner'a fail bildir (ResetObstacle orada çağrılır)
         if (endlessRunner != null)
             endlessRunner.OnObstacleHit();
     }
@@ -166,9 +184,13 @@ public class JumpableObstacle : MonoBehaviour
     {
         hasJumped = false;
         isInPromptZone = false;
+        isInFailZone = false;
         promptTimer = 0f;
+        failGraceTimer = 0f;
         isJumping = false;
         jumpVelocity = Vector3.zero;
+        if (failTrigger != null) failTrigger.enabled = true;
+        if (obstacleCollider != null) obstacleCollider.enabled = true;
         HidePrompt();
     }
 }

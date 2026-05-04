@@ -1,6 +1,7 @@
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SlidableObstacle : MonoBehaviour
 {
@@ -12,20 +13,27 @@ public class SlidableObstacle : MonoBehaviour
     public TextMeshProUGUI promptText;
 
     [Header("Slide Ayarları")]
-    public float slideDuration = 1f;      // Slide süresi
-    public float cameraDipAmount = 0.6f;    // Kamera kaç birim aşağı inecek
-    public float cameraDownSpeed = 0.1f;    // İniş hızı
-    public float cameraUpSpeed = 0.25f;     // Çıkış hızı
-    public float timeToReact = 1.5f;        // Kaç saniye içinde basmalı
+    public float slideDuration = 1f;
+    public float cameraDipAmount = 0.6f;
+    public float cameraDownSpeed = 0.1f;
+    public float cameraUpSpeed = 0.25f;
+    public float timeToReact = 1.5f;
 
     [Header("Trigger Ayarları")]
     public Collider promptTrigger;
     public Collider failTrigger;
 
+    [Header("Grace / Collision Ayarları")]
+    public Collider obstacleCollider;          // Oyuncuyu fiziksel olarak durduran collider
+    public float failGraceDuration = 0.4f;
+    public float colliderDisableDuration = 2f;
+
     // Durum
     private bool isInPromptZone = false;
+    private bool isInFailZone = false;
     private bool hasSlid = false;
     private float promptTimer = 0f;
+    private float failGraceTimer = 0f;
     private Vector3 originalCameraLocalPos;
     private float originalCCHeight;
     private Vector3 originalCCCenter;
@@ -79,21 +87,44 @@ public class SlidableObstacle : MonoBehaviour
             if (promptTimer >= timeToReact)
                 OnFail();
         }
+
+        if (isInFailZone && !hasSlid)
+        {
+            failGraceTimer += Time.deltaTime;
+            if (failGraceTimer >= failGraceDuration)
+                OnFail();
+        }
+
+        // S tuşu desteği
+        if (Keyboard.current != null && Keyboard.current.sKey.wasPressedThisFrame)
+            OnSlidePressed();
     }
 
     void OnSlidePressed()
     {
-        if (!isInPromptZone || hasSlid) return;
+        if (hasSlid) return;
+        if (!isInPromptZone && !isInFailZone) return;
+
         hasSlid = true;
+        isInFailZone = false;
         HidePrompt();
         PerformSlide();
+
+        if (obstacleCollider != null)
+            StartCoroutine(DisableColliderTemporarily(obstacleCollider, colliderDisableDuration));
+    }
+
+    System.Collections.IEnumerator DisableColliderTemporarily(Collider col, float duration)
+    {
+        col.enabled = false;
+        yield return new WaitForSeconds(duration);
+        col.enabled = true;
     }
 
     void PerformSlide()
     {
         if (endlessRunner?.playerCamera == null) return;
 
-        // CC'yi kamera ile orantılı küçült
         var cc = endlessRunner.characterController;
         if (cc != null)
         {
@@ -102,7 +133,6 @@ public class SlidableObstacle : MonoBehaviour
             cc.center = new Vector3(originalCCCenter.x, cc.height / 2f, originalCCCenter.z);
         }
 
-        // Kamerayı aşağı indir, sonra geri çıkar
         float targetY = originalCameraLocalPos.y - cameraDipAmount;
         endlessRunner.playerCamera.DOLocalMoveY(targetY, cameraDownSpeed)
             .SetEase(Ease.OutQuad)
@@ -113,7 +143,6 @@ public class SlidableObstacle : MonoBehaviour
                     endlessRunner.playerCamera.DOLocalMoveY(originalCameraLocalPos.y, cameraUpSpeed)
                         .SetEase(Ease.OutQuad);
 
-                    // CC'yi geri büyüt
                     if (cc != null)
                     {
                         cc.height = originalCCHeight;
@@ -141,15 +170,16 @@ public class SlidableObstacle : MonoBehaviour
     public void OnFailTriggerEnter()
     {
         if (hasSlid) return;
-        OnFail();
+        isInFailZone = true;
+        failGraceTimer = 0f;
     }
 
     void OnFail()
     {
         isInPromptZone = false;
-        hasSlid = true; // tekrar tetiklenmesini engelle
+        isInFailZone = false;
+        hasSlid = true;
 
-        // EndlessRunner'a fail bildir (ResetObstacle orada çağrılır)
         if (endlessRunner != null)
             endlessRunner.OnObstacleHit();
     }
@@ -157,7 +187,7 @@ public class SlidableObstacle : MonoBehaviour
     void ShowPrompt()
     {
         if (promptUI != null) promptUI.SetActive(true);
-        if (promptText != null) promptText.text = "Press Ctrl to Slide";
+        if (promptText != null) promptText.text = "Press Ctrl / S to Slide";
     }
 
     void HidePrompt()
@@ -169,7 +199,11 @@ public class SlidableObstacle : MonoBehaviour
     {
         hasSlid = false;
         isInPromptZone = false;
+        isInFailZone = false;
         promptTimer = 0f;
+        failGraceTimer = 0f;
+        if (failTrigger != null) failTrigger.enabled = true;
+        if (obstacleCollider != null) obstacleCollider.enabled = true;
         HidePrompt();
 
         if (endlessRunner?.playerCamera != null)
