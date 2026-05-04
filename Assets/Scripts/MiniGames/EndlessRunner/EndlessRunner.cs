@@ -485,6 +485,21 @@ public class EndlessRunner : MonoBehaviour
         }
     }
 
+    public void SlowDownForExit(float speed)
+    {
+        walkSpeed = speed;
+        canUseInputAndHeadBob = false;
+        isWaitingForDoorInput = false;
+        isWaitingForDoorOpen = false;
+        isDoorSlowed = false;
+        if (doorTimeoutCoroutine != null)
+        {
+            StopCoroutine(doorTimeoutCoroutine);
+            doorTimeoutCoroutine = null;
+        }
+        HideDoorPrompts();
+    }
+
     public void StopEndlessRunner()
     {
         DisableFog();
