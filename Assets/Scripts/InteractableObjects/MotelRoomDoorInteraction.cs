@@ -10,7 +10,6 @@ public class MotelRoomDoorInteraction : Interactable
     public float doorDuration = 1f;         // Açılma/Kapanma süresi (DOTween için)
 
     private bool isOpen = false;            // Kapı açık mı?
-                                            // isMoving DEĞİŞKENİNİ TAMAMEN SİLDİK
 
     private Quaternion closedRotation;      // Kapalı pozisyon
     private Quaternion openRotation;        // Açık pozisyon
