@@ -81,9 +81,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7024965599737958287}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: -3.0114155, y: -3.6029384, z: -0.24290359}
-  m_LocalScale: {x: 1.25, y: 1.25, z: 1.25}
+  m_LocalScale: {x: 1.2499998, y: 1.25, z: 1.2499998}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 8662567758904443170}
@@ -178,8 +178,8 @@ MonoBehaviour:
   endlessRunner: {fileID: 0}
   promptUI: {fileID: 0}
   promptText: {fileID: 0}
-  jumpForce: 8
-  jumpForwardForce: 4
+  jumpForce: 6
+  jumpForwardForce: 2
   timeToReact: 1.5
   promptTrigger: {fileID: 4016389552517220657}
   failTrigger: {fileID: 8937017320705625663}
