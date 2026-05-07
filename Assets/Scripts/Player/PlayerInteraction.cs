@@ -100,15 +100,19 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactDistance, combinedMask) && !isDialogActive)
         {
-            Interactable interactable = hit.collider.GetComponent<Interactable>();
-            if (interactable != null)
+            // Işının çarptığı nesne gerçekten 'interactLayer' maskesine dahil mi diye kontrol et
+            if (((1 << hit.collider.gameObject.layer) & interactLayer) != 0)
             {
-                if (currentInteractable != interactable)
+                Interactable interactable = hit.collider.GetComponent<Interactable>();
+                if (interactable != null)
                 {
-                    currentInteractable = interactable;
-                    ShowPrompt(interactable.promptMessage);
+                    if (currentInteractable != interactable)
+                    {
+                        currentInteractable = interactable;
+                        ShowPrompt(interactable.promptMessage);
+                    }
+                    return;
                 }
-                return;
             }
         }
 

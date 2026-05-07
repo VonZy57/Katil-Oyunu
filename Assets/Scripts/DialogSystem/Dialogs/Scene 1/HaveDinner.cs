@@ -1,6 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 public class HaveDinner : Interactable
@@ -26,6 +27,10 @@ public class HaveDinner : Interactable
     [Header("NPC Referansları")]
     public Transform motherTransform;
     public Transform cenkTransform;
+
+    [Header("Tabak Referansları")]
+    public List<GameObject> emptyPlates; // Boş tabakların listesi
+    public List<GameObject> fullPlates;  // Dolu tabakların listesi
 
     private bool isSitting = false;
     private bool isMoving = false;
@@ -103,6 +108,12 @@ public class HaveDinner : Interactable
         isMoving = true;
         isSitting = true;
 
+        if (emptyPlates != null && emptyPlates.Count > 0)
+        {
+            foreach (GameObject plate in emptyPlates)
+                if (plate != null) plate.SetActive(true); // Oturma işlemi başladığında boş tabakları aktif et
+        }
+
         if (playerController)
             playerController.enabled = false;
 
@@ -124,6 +135,24 @@ public class HaveDinner : Interactable
         yield return new WaitForSeconds(2f);
         dialogSystem.StartDialog(putTheGamePadNode);
         RotateCameraToSpeaker(motherTransform);
+
+        // Diyalog panelinin aktif olmasını (açılmasını) bekle
+        yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
+        
+        // Diyalog panelinin kapanmasını (diyaloğun bitmesini) bekle
+        yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+
+        // Diyalog tamamen bittikten sonra tabakları değiştir
+        if (emptyPlates != null && emptyPlates.Count > 0)
+        {
+            foreach (GameObject plate in emptyPlates)
+                if (plate != null) plate.SetActive(false);
+        }
+        if (fullPlates != null && fullPlates.Count > 0)
+        {
+            foreach (GameObject plate in fullPlates)
+                if (plate != null) plate.SetActive(true);
+        }
     }
 
     private void StandUp()

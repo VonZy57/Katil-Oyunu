@@ -13,21 +13,21 @@ public class SittingInteraction : Interactable
     [Header("Oyuncu Referansı")]
     public GameObject player;
 
-    private bool isSitting = false;
-    private bool isMoving = false;
+    protected bool isSitting = false;
+    protected bool isMoving = false;
 
-    private FirstPersonController playerFPS;
-    private CharacterController playerController;
-    private PlayerControls controls;
+    protected FirstPersonController playerFPS;
+    protected CharacterController playerController;
+    protected PlayerControls controls;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         controls = new PlayerControls(); // Input system ile oluşturulmuş PlayerControls isimli script referansı
 
         controls.Player.Interact.performed += ctx => InteractInputForStandUp(); //Hangi tuş hangi etkiyi yapacak. Interact butonu kalkma eylemini başlatacak.
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         if (player == null) // Atanmamışsa player nesnesini ata
         {
@@ -44,12 +44,12 @@ public class SittingInteraction : Interactable
         promptMessage = "E - Otur";
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         controls.Enable(); // Script aktifse dinle
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         controls.Disable(); // Script aktif değilse dinlemeyi bırak. (Performans için)
     }
@@ -63,7 +63,7 @@ public class SittingInteraction : Interactable
 
     }
 
-    private void InteractInputForStandUp() // Kalkmayı başlatmak için
+    protected virtual void InteractInputForStandUp() // Kalkmayı başlatmak için
     {
         if(isSitting && !isMoving)
         {
@@ -71,7 +71,7 @@ public class SittingInteraction : Interactable
         }
     }
 
-    private void SitDown()
+    protected virtual void SitDown()
     {
         isMoving = true;
         isSitting = true;
@@ -100,7 +100,7 @@ public class SittingInteraction : Interactable
     
     }
 
-    private void StandUp()
+    protected virtual void StandUp()
     {
         isMoving = true;
         isSitting = false;

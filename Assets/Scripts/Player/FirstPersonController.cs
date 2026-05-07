@@ -239,4 +239,30 @@ public class FirstPersonController : MonoBehaviour
         // Sınırların dışına çıkmaması için clamp uyguluyoruz
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
     }
+
+    // Kamera açısını okuyup FirstPersonController'ın dahili değişkenlerine (xRotation, yRotation) kaydeder.
+    public void SyncCameraRotation()
+    {
+        if (cameraTransform == null) return;
+
+        Vector3 localAngles = cameraTransform.localEulerAngles;
+        
+        float newX = localAngles.x;
+        if (newX > 180f) newX -= 360f;
+        
+        float newY = localAngles.y;
+        if (newY > 180f) newY -= 360f;
+
+        if (IsSitting)
+        {
+            xRotation = Mathf.Clamp(newX, -sittingLookLimit, sittingLookLimit);
+            yRotation = Mathf.Clamp(newY, -sittingLookLimit, sittingLookLimit);
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
+        }
+        else
+        {
+            xRotation = Mathf.Clamp(newX, -90f, 90f);
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
+        }
+    }
 }

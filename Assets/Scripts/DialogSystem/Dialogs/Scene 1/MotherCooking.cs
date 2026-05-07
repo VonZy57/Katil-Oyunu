@@ -44,9 +44,18 @@ public class MotherCooking : MonoBehaviour
         subtitleText.text = "";
 
         yield return new WaitForSeconds(2f); // Şarkı bittiğinde kısa bir bekleme süresi.
-        playerBody.transform.DOLookAt(motherTransform.position, 1f, AxisConstraint.Y);
-        playerCamera.transform.DOLookAt(motherTransform.position, 1f); // Şarkı bittiğinde anneye bakar.
-        dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
+        
+        // Karakter kontrollerini geçici kapat ki DOTween ile çakışmasın
+        FirstPersonController fps = playerBody.GetComponent<FirstPersonController>();
+        if (fps != null) fps.enabled = false;
+
+        // GÖVDEYİ (playerBody) DÖNDÜRMÜYORUZ! (Gövde dönerse koltuğun yönü/0 noktası bozulur).
+        // Sadece kamerayı anneye çeviriyoruz.
+        playerCamera.transform.DOLookAt(motherTransform.position, 1f).OnComplete(() =>
+        {
+            if (fps != null) { fps.SyncCameraRotation(); fps.enabled = true; } // Yeni açıyı sisteme kaydet ve kontrolleri geri ver
+            dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
+        });
     }
 
     void BuildDialogTree()
