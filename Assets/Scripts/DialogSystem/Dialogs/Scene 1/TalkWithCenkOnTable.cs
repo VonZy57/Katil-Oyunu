@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using DG.Tweening;
 
 public class TalkWithCenkOnTable : MonoBehaviour
 {
@@ -6,9 +8,20 @@ public class TalkWithCenkOnTable : MonoBehaviour
     [SerializeField] private DialogNode cenkStartsNode;
     [SerializeField] private MissionObjective missionObj;
 
+    [Header("Kamera ve Bakış Referansları")]
+    [SerializeField] private GameObject playerCamera;
+    [SerializeField] private Transform cenkTransform;
+    [SerializeField] private Transform moneyTransform; // Paranın (veya masadaki paranın olduğu yerin) referansı
+
     void Start()
     {
         BuildDialogTree();
+
+        // Başlangıçta parayı gizle (Cenk çıkarana kadar görünmesin)
+        if (moneyTransform != null)
+        {
+            moneyTransform.gameObject.SetActive(false);
+        }
     }
 
     void Update()
@@ -18,7 +31,50 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
     public void StartTheDialog()
     {
-        dialogSystem.StartDialog(cenkStartsNode);
+        if (dialogSystem != null)
+        {
+            dialogSystem.StartDialog(cenkStartsNode);
+            
+            // Diyalog başladığında kamerayı doğrudan Cenk'e döndür
+            if (playerCamera != null && cenkTransform != null)
+            {
+                playerCamera.transform.DOLookAt(cenkTransform.position, 1f);
+            }
+
+            StartCoroutine(CheckDialogEnd());
+        }
+    }
+
+    private IEnumerator LookAtMoneySequence()
+    {
+        // Kamera paraya ve Cenk'e bakmak için hazırsa
+        if (playerCamera != null && moneyTransform != null && cenkTransform != null)
+        {
+            // Parayı sahnede görünür yap
+            moneyTransform.gameObject.SetActive(true);
+
+            // 1. Önce paraya bak
+            playerCamera.transform.DOLookAt(moneyTransform.position, 1f);
+            yield return new WaitForSeconds(1.5f); // 1.5 saniye paraya baksın
+            
+            // 2. Tekrar Cenk'e dön
+            playerCamera.transform.DOLookAt(cenkTransform.position, 1f);
+        }
+    }
+
+    private IEnumerator CheckDialogEnd()
+    {
+        // Önce diyalog panelinin aktif olmasını bekle
+        yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
+
+        // Şimdi de diyalog panelinin kapanmasını bekle
+        yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+
+        // Diyalog bitti, görevi tamamla
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted();
+        }
     }
     
     void BuildDialogTree()
@@ -209,11 +265,11 @@ public class TalkWithCenkOnTable : MonoBehaviour
         "Cenk");
 
         // Ana düğüm - 2.1: Birinci dalın ana düğüme bağlantısı
-        DialogOption whatDoYouWantSilentOption = DialogBuilder.CreateOption("...", "...", leaveHereNode);
+        DialogOption whatDoYouWantSilentOption = DialogBuilder.CreateOption("...", "...", leaveHereNode, true);
         DialogBuilder.AddOption(whatDoYouWantNode, whatDoYouWantSilentOption);
 
         // Ana düğüm - 2.2: İkinci dalın ana düğüme bağlantısı
-        DialogOption enginSaysNoSilentOption = DialogBuilder.CreateOption("...", "...", leaveHereNode);
+        DialogOption enginSaysNoSilentOption = DialogBuilder.CreateOption("...", "...", leaveHereNode, true);
         DialogBuilder.AddOption(enginSaysNoNode, enginSaysNoSilentOption);
 
         DialogNode toWhereNode = DialogBuilder.CreateNode
@@ -222,7 +278,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
         "Engin");
         
         // Ana düğüm - 3: Bu evden git ile nereye bağlantısı
-        DialogOption leaveHereSilentOp = DialogBuilder.CreateOption("...", "...", toWhereNode);
+        DialogOption leaveHereSilentOp = DialogBuilder.CreateOption("...", "...", toWhereNode, true);
         DialogBuilder.AddOption(leaveHereNode, leaveHereSilentOp);
 
         DialogNode goToCousinNode = DialogBuilder.CreateNode
@@ -231,17 +287,18 @@ public class TalkWithCenkOnTable : MonoBehaviour
         "Cenk");
         
         // Ana düğüm - 4: Nereye ile kuzene git bağlantısı
-        DialogOption toWhereSilentOp = DialogBuilder.CreateOption("...", "...", goToCousinNode);
+        // Cenk parayı çıkardığı an çalışacak şekilde güncellendi (CreateOptionWithEvent kullanıldı)
+        DialogOption toWhereSilentOp = DialogBuilder.CreateOptionWithEvent("...", "...", goToCousinNode, () => { StartCoroutine(LookAtMoneySequence()); }, true);
         DialogBuilder.AddOption(toWhereNode, toWhereSilentOp);
 
         //Engin parayı aldıktan sonra
-        DialogNode cenksLastWords = DialogBuilder.CreateNode
+        DialogNode cenksLastWords = DialogBuilder.CreateEndNode
         ("The neighbor's cake must be almost finished by now, hurry up and get out of here.",
         "Üst komşunun keki bitmek üzeredir abi acele et. Kaç buradan.",
         "Cenk");
         
         // Ana düğüm - 5: Kuzene git ile cenkin son sözleri bağlantısı
-        DialogOption toCousinSilentOp = DialogBuilder.CreateOption("...", "...", cenksLastWords);
+        DialogOption toCousinSilentOp = DialogBuilder.CreateOption("...", "...", cenksLastWords, true);
         DialogBuilder.AddOption(goToCousinNode, toCousinSilentOp);
 
 

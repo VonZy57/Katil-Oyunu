@@ -9,7 +9,9 @@ public class HaveDinner : Interactable
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private MissionObjective missionObj;
 
-
+    [Header("Kalkma Görevi")]
+    public MissionSO leaveHomeMission;
+    
     [Header("Oturma/Kalkma Referansları")]
     public Transform sitReference;
     public Transform standReference;
@@ -63,7 +65,7 @@ public class HaveDinner : Interactable
 
         if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting)
             promptMessage = "E - Otur";
-        else if (isSitting && MissionManager.Instance.CurrentMission != missionObj.requiredMission)
+        else if (isSitting && MissionManager.Instance.CurrentMission == leaveHomeMission)
             promptMessage = "E - Kalk";
         else
             promptMessage = "";
@@ -90,7 +92,7 @@ public class HaveDinner : Interactable
 
     private void InteractInputForStandUp() // Kalkmayı başlatmak için
     {
-        if(isSitting && !isMoving && MissionManager.Instance.CurrentMission != missionObj.requiredMission)
+        if(isSitting && !isMoving && MissionManager.Instance.CurrentMission == leaveHomeMission)
         {
             StandUp();
         }
