@@ -27,7 +27,7 @@ public class HouseDoorInteraction : Interactable
     private void Start()
     {
         closedRotation = transform.rotation;
-        openRotation = closedRotation * Quaternion.Euler(0, openAngle, 0);
+        openRotation = closedRotation * Quaternion.Euler(0, 0, openAngle);
 
         promptMessage = "E - Evden Çık";
 

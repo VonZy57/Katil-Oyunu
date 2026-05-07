@@ -32,14 +32,51 @@ public class MotelRoomDoorInteraction : Interactable
         closedRotation = transform.rotation;
         openRotation = closedRotation * Quaternion.Euler(0, openAngle, 0);
 
-        promptMessage = "E - Kapıyı Aç";
-
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
         }
         audioSource.playOnAwake = false;
+
+        // Anahtar kontrolü ve olaya (Event) abone olma
+        if (haveKey != null)
+        {
+            if (haveKey.isKeyCollected)
+            {
+                promptMessage = "E - Kapıyı Aç";
+            }
+            else
+            {
+                promptMessage = ""; // Anahtar alınana kadar yazıyı gizle
+                haveKey.OnKeyCollected += OnKeyCollectedHandler; // Habercinin listesine yazıl
+            }
+        }
+        else
+        {
+            promptMessage = "E - Kapıyı Aç"; // Eğer kapıya bir anahtar bağlanmamışsa normal çalışsın
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // Obje yok olduğunda bellek sızıntısını önlemek için listeden çık
+        if (haveKey != null)
+        {
+            haveKey.OnKeyCollected -= OnKeyCollectedHandler;
+        }
+    }
+
+    private void OnKeyCollectedHandler()
+    {
+        // Anahtar alındığı haberi geldiğinde etkileşim yazısını göster!
+        promptMessage = "E - Kapıyı Aç";
+        
+        // Artık dinlemeye gerek kalmadı, listeden çık
+        if (haveKey != null)
+        {
+            haveKey.OnKeyCollected -= OnKeyCollectedHandler;
+        }
     }
 
     protected override void Interact()
