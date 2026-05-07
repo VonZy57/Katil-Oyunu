@@ -374,6 +374,7 @@ MonoBehaviour:
   headBobFrequency: 2.5
   headBobVerticalAmp: 0.05
   headBobHorizontalAmp: 0.07
+  stairsBobMultiplier: 1.5
   tiltAngle: 0.5
   tiltSpeed: 5
   breathFrequency: 4
@@ -393,3 +394,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillCheckSystem: {fileID: 0}
   playerMovementScript: {fileID: 773693103501013671}
+  normalSpeed: 2
+  dragSpeed: 1.4
+  verySlowSpeed: 0.4
