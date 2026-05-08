@@ -178,7 +178,17 @@ public class HaveDinner : Interactable
 
     void RotateCameraToSpeaker(Transform speakerTransform)
     {
-        playerCamera.transform.DOLookAt(speakerTransform.position, 1f); // Yalnızca yatay eksende dön
+        if (playerFPS != null) playerFPS.enabled = false; // DOTween ile çakışmaması için kontrolleri geçici kapat
+
+        playerCamera.transform.DOKill(); // Varsa önceki kamera animasyonunu durdur
+        playerCamera.transform.DOLookAt(speakerTransform.position, 1f).OnComplete(() =>
+        {
+            if (playerFPS != null)
+            {
+                playerFPS.SyncCameraRotation(); // Kameranın yeni açısını FPS controller'a kaydet
+                playerFPS.enabled = true; // Kontrolleri geri ver
+            }
+        });
     }
 
     void BuildDialogTree()
