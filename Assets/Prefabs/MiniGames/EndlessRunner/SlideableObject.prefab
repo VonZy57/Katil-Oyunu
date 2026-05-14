@@ -119,7 +119,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: af43bb626a0ce7243a04a33b4a206a5d, type: 3}
       propertyPath: m_Name
-      value: Hanger
+      value: SlideableObject
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: af43bb626a0ce7243a04a33b4a206a5d, type: 3}
       propertyPath: m_TagString
@@ -186,7 +186,7 @@ MonoBehaviour:
   endlessRunner: {fileID: 0}
   promptUI: {fileID: 0}
   promptText: {fileID: 0}
-  slideDuration: 0.8
+  slideDuration: 0.4
   cameraDipAmount: 0.8
   cameraDownSpeed: 0.1
   cameraUpSpeed: 0.25

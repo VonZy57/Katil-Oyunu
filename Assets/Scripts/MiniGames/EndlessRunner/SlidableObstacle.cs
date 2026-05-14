@@ -13,7 +13,7 @@ public class SlidableObstacle : MonoBehaviour
     public TextMeshProUGUI promptText;
 
     [Header("Slide Ayarları")]
-    public float slideDuration = 1f;
+    public float slideDuration = 0.5f;
     public float cameraDipAmount = 0.6f;
     public float cameraDownSpeed = 0.1f;
     public float cameraUpSpeed = 0.25f;
@@ -24,7 +24,7 @@ public class SlidableObstacle : MonoBehaviour
     public Collider failTrigger;
 
     [Header("Grace / Collision Ayarları")]
-    public Collider obstacleCollider;          // Oyuncuyu fiziksel olarak durduran collider
+    public Collider obstacleCollider;
     public float failGraceDuration = 0.4f;
     public float colliderDisableDuration = 2f;
 
@@ -34,9 +34,7 @@ public class SlidableObstacle : MonoBehaviour
     private bool hasSlid = false;
     private float promptTimer = 0f;
     private float failGraceTimer = 0f;
-    private Vector3 originalCameraLocalPos;
-    private float originalCCHeight;
-    private Vector3 originalCCCenter;
+    private Tween slideTween;
 
     // Input
     private PlayerControls controls;
@@ -54,15 +52,6 @@ public class SlidableObstacle : MonoBehaviour
     {
         if (endlessRunner == null)
             endlessRunner = FindFirstObjectByType<EndlessRunner>();
-
-        if (endlessRunner != null && endlessRunner.playerCamera != null)
-            originalCameraLocalPos = endlessRunner.playerCamera.localPosition;
-
-        if (endlessRunner != null && endlessRunner.characterController != null)
-        {
-            originalCCHeight = endlessRunner.characterController.height;
-            originalCCCenter = endlessRunner.characterController.center;
-        }
 
         if (promptUI != null)
             promptUI.SetActive(false);
@@ -123,33 +112,27 @@ public class SlidableObstacle : MonoBehaviour
 
     void PerformSlide()
     {
-        if (endlessRunner?.playerCamera == null) return;
+        if (endlessRunner == null) return;
 
-        var cc = endlessRunner.characterController;
-        if (cc != null)
+        slideTween?.Kill();
+        slideTween = DOTween.To(
+            () => endlessRunner.cameraSlideOffsetY,
+            x => endlessRunner.cameraSlideOffsetY = x,
+            -cameraDipAmount,
+            cameraDownSpeed
+        ).SetEase(Ease.OutQuad)
+        .OnComplete(() =>
         {
-            float newHeight = originalCCHeight - cameraDipAmount;
-            cc.height = Mathf.Max(newHeight, 0.1f);
-            cc.center = new Vector3(originalCCCenter.x, cc.height / 2f, originalCCCenter.z);
-        }
-
-        float targetY = originalCameraLocalPos.y - cameraDipAmount;
-        endlessRunner.playerCamera.DOLocalMoveY(targetY, cameraDownSpeed)
-            .SetEase(Ease.OutQuad)
-            .OnComplete(() =>
+            slideTween = DOVirtual.DelayedCall(slideDuration, () =>
             {
-                DOVirtual.DelayedCall(slideDuration, () =>
-                {
-                    endlessRunner.playerCamera.DOLocalMoveY(originalCameraLocalPos.y, cameraUpSpeed)
-                        .SetEase(Ease.OutQuad);
-
-                    if (cc != null)
-                    {
-                        cc.height = originalCCHeight;
-                        cc.center = originalCCCenter;
-                    }
-                });
+                slideTween = DOTween.To(
+                    () => endlessRunner.cameraSlideOffsetY,
+                    x => endlessRunner.cameraSlideOffsetY = x,
+                    0f,
+                    cameraUpSpeed
+                ).SetEase(Ease.InOutSine);
             });
+        });
     }
 
     public void OnPromptTriggerEnter()
@@ -206,18 +189,10 @@ public class SlidableObstacle : MonoBehaviour
         if (obstacleCollider != null) obstacleCollider.enabled = true;
         HidePrompt();
 
-        if (endlessRunner?.playerCamera != null)
-        {
-            endlessRunner.playerCamera.DOKill();
-            endlessRunner.playerCamera.DOLocalMoveY(originalCameraLocalPos.y, cameraUpSpeed);
-        }
-
-        var cc = endlessRunner?.characterController;
-        if (cc != null)
-        {
-            cc.height = originalCCHeight;
-            cc.center = originalCCCenter;
-        }
+        slideTween?.Kill();
+        slideTween = null;
+        if (endlessRunner != null)
+            endlessRunner.cameraSlideOffsetY = 0f;
     }
 }
 

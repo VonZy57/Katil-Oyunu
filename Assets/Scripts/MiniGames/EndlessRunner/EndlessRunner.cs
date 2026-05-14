@@ -1,4 +1,3 @@
-using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
@@ -39,14 +38,14 @@ public class EndlessRunner : MonoBehaviour
     public float doorSlowSpeed = 1f;
     [Tooltip("Trigger'a girince kaç saniye yavaşlar")]
     public float doorSlowDuration = 0.8f;
-    public GameObject promptLeft;   // "Sola Dön" UI
-    public GameObject promptRight;  // "Sağa Dön" UI
-    public GameObject promptOpenDoor; // "Kapıyı Aç" UI
+    public GameObject promptLeft;
+    public GameObject promptRight;
+    public GameObject promptOpenDoor;
 
     [Header("FOV Ayarları")]
     public float normalFOV = 60f;
     public float runFOV = 75f;
-    public float fovChangeSpeed = 5f;
+    public float fovChangeDuration = 0.3f;
 
     [Header("Sis Ayarları")]
     public bool useFog = true;
@@ -76,7 +75,21 @@ public class EndlessRunner : MonoBehaviour
     private bool isControllingPlayer = false;
     private bool hasReachedSecondTrigger = false;
     private bool isRotating = false;
-    private bool canUseInputAndHeadBob = false;
+
+    private bool _canUseInputAndHeadBob = false;
+    private bool CanUseInputAndHeadBob
+    {
+        get => _canUseInputAndHeadBob;
+        set
+        {
+            _canUseInputAndHeadBob = value;
+            if (playerCam != null)
+            {
+                fovTween?.Kill();
+                fovTween = playerCam.DOFieldOfView(value ? runFOV : normalFOV, fovChangeDuration).SetEase(Ease.OutQuad);
+            }
+        }
+    }
 
     // Orijinal rotasyon
     private Quaternion startBodyRotation;
@@ -91,6 +104,7 @@ public class EndlessRunner : MonoBehaviour
     // Head bob için
     private float headBobTimer = 0f;
     private Vector3 initialCameraPosition;
+    [HideInInspector] public float cameraSlideOffsetY = 0f;
 
     // 2. trigger pozisyonu (respawn için)
     private Vector3 secondTriggerPosition;
@@ -98,13 +112,14 @@ public class EndlessRunner : MonoBehaviour
 
     // FOV
     private Camera playerCam;
+    private Tween fovTween;
 
     // Kapı dönüş durumu
     private bool isWaitingForDoorInput = false;
     private bool isWaitingForDoorOpen = false;
     private bool isDoorSlowed = false;
     private bool requireLeft;
-    private Coroutine doorTimeoutCoroutine;
+    private Tween doorTimeoutTween;
     private DoorCheckpointTrigger currentDoorCheckpoint;
     private DoorCheckpointTrigger[] cachedDoorCheckpoints;
 
@@ -150,13 +165,11 @@ public class EndlessRunner : MonoBehaviour
         SetupTriggerZone(firstTriggerZone, true);
         SetupTriggerZone(secondTriggerZone, false);
 
-        // Player'a obstacle collision helper ekle
         if (playerBody != null)
             SetupObstacleDetection();
 
         baseWalkSpeed = walkSpeed;
 
-        // Obstacle'ları cache'e al ve gizle
         cachedObstacles = GameObject.FindGameObjectsWithTag("Obstacle");
         cachedJumpableObstacles = FindObjectsByType<JumpableObstacle>(FindObjectsSortMode.None);
         cachedSlidableObstacles = FindObjectsByType<SlidableObstacle>(FindObjectsSortMode.None);
@@ -204,20 +217,13 @@ public class EndlessRunner : MonoBehaviour
             HandleHeadBob();
         }
 
-        if (playerCam != null)
-        {
-            float targetFOV = canUseInputAndHeadBob ? runFOV : normalFOV;
-            playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, targetFOV, Time.deltaTime * fovChangeSpeed);
-        }
-
         if (isWaitingForDoorInput)
         {
             if (Input.GetKeyDown(KeyCode.Q))
-                OnDoorInput(true);   // Q - sol
+                OnDoorInput(true);
             else if (Input.GetKeyDown(KeyCode.E))
-                OnDoorInput(false);  // E - sağ
+                OnDoorInput(false);
         }
-
     }
 
     public void OnFirstTriggerEnter()
@@ -230,40 +236,34 @@ public class EndlessRunner : MonoBehaviour
     {
         if (!isControllingPlayer || hasReachedSecondTrigger) return;
 
-        // 2. trigger pozisyonunu kaydet (respawn için)
         secondTriggerPosition = playerBody.position;
         secondTriggerRotation = playerBody.rotation;
 
         hasReachedSecondTrigger = true;
-        StartCoroutine(HandleSecondTrigger());
+        HandleSecondTrigger();
     }
 
     public void OnObstacleHit()
     {
-        if (!canUseInputAndHeadBob) return;
-        StartCoroutine(ObstacleHitSequence());
+        if (!CanUseInputAndHeadBob) return;
+        ObstacleHitSequence();
     }
 
-    private IEnumerator ObstacleHitSequence()
+    private void ObstacleHitSequence()
     {
-        canUseInputAndHeadBob = false;
+        CanUseInputAndHeadBob = false;
 
-        // Kapı bekleme durumunu temizle
         isWaitingForDoorInput = false;
         isWaitingForDoorOpen = false;
         isDoorSlowed = false;
-        if (doorTimeoutCoroutine != null)
-        {
-            StopCoroutine(doorTimeoutCoroutine);
-            doorTimeoutCoroutine = null;
-        }
+        doorTimeoutTween?.Kill();
+        doorTimeoutTween = null;
         HideDoorPrompts();
         if (promptOpenDoor) promptOpenDoor.SetActive(false);
         currentDoorCheckpoint?.TurnOffLights();
         currentDoorCheckpoint = null;
 
         blackScreenObject?.SetActive(true);
-
         TeleportToSecondTrigger();
 
         if (cachedJumpableObstacles != null)
@@ -280,32 +280,25 @@ public class EndlessRunner : MonoBehaviour
 
         ResetAllDoorCheckpoints();
 
-        yield return new WaitForSeconds(0.5f);
-
-        blackScreenObject?.SetActive(false);
-
-        canUseInputAndHeadBob = true;
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            blackScreenObject?.SetActive(false);
+            CanUseInputAndHeadBob = true;
+        });
     }
 
     void TeleportToSecondTrigger()
     {
         if (characterController == null || secondTriggerZone == null) return;
 
-        // CharacterController'ı geçici olarak kapat (teleport için gerekli)
         characterController.enabled = false;
-
-        // Pozisyonu ve rotasyonu ayarla
         playerBody.position = secondTriggerPosition;
         playerBody.rotation = secondTriggerRotation;
 
-        // Kamerayı sıfırla
         if (playerCamera != null)
             playerCamera.localRotation = Quaternion.identity;
 
-        // Velocity'yi sıfırla
         velocity = Vector3.zero;
-
-        // CharacterController'ı tekrar aç
         characterController.enabled = true;
     }
 
@@ -319,11 +312,9 @@ public class EndlessRunner : MonoBehaviour
 
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.Linear;
-        StartCoroutine(LerpFog(
-            RenderSettings.fogColor, voidFogColor,
-            RenderSettings.fogStartDistance, voidFogStartDistance,
-            RenderSettings.fogEndDistance, voidFogEndDistance,
-            0.3f));
+        DOTween.To(() => RenderSettings.fogColor, x => RenderSettings.fogColor = x, voidFogColor, 0.3f);
+        DOTween.To(() => RenderSettings.fogStartDistance, x => RenderSettings.fogStartDistance = x, voidFogStartDistance, 0.3f);
+        DOTween.To(() => RenderSettings.fogEndDistance, x => RenderSettings.fogEndDistance = x, voidFogEndDistance, 0.3f);
     }
 
     void EnableFog()
@@ -331,28 +322,9 @@ public class EndlessRunner : MonoBehaviour
         if (!useFog) return;
         RenderSettings.fog = true;
         RenderSettings.fogMode = fogMode;
-        StartCoroutine(LerpFog(
-            RenderSettings.fogColor, fogColor,
-            RenderSettings.fogStartDistance, fogStartDistance,
-            RenderSettings.fogEndDistance, fogEndDistance,
-            returnRotationDuration));
-    }
-
-    private IEnumerator LerpFog(Color fromColor, Color toColor, float fromStart, float toStart, float fromEnd, float toEnd, float duration)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);
-            RenderSettings.fogColor = Color.Lerp(fromColor, toColor, t);
-            RenderSettings.fogStartDistance = Mathf.Lerp(fromStart, toStart, t);
-            RenderSettings.fogEndDistance = Mathf.Lerp(fromEnd, toEnd, t);
-            yield return null;
-        }
-        RenderSettings.fogColor = toColor;
-        RenderSettings.fogStartDistance = toStart;
-        RenderSettings.fogEndDistance = toEnd;
+        DOTween.To(() => RenderSettings.fogColor, x => RenderSettings.fogColor = x, fogColor, returnRotationDuration);
+        DOTween.To(() => RenderSettings.fogStartDistance, x => RenderSettings.fogStartDistance = x, fogStartDistance, returnRotationDuration);
+        DOTween.To(() => RenderSettings.fogEndDistance, x => RenderSettings.fogEndDistance = x, fogEndDistance, returnRotationDuration);
     }
 
     void DisableFog()
@@ -367,7 +339,7 @@ public class EndlessRunner : MonoBehaviour
     void TakeControlOfPlayer()
     {
         isControllingPlayer = true;
-        canUseInputAndHeadBob = false;
+        CanUseInputAndHeadBob = false;
         isRotating = true;
 
         if (firstPersonController != null)
@@ -401,7 +373,7 @@ public class EndlessRunner : MonoBehaviour
         Vector3 forward = playerBody.forward * speed;
 
         Vector3 strafe = Vector3.zero;
-        if (canUseInputAndHeadBob && !doorSlow)
+        if (CanUseInputAndHeadBob && !doorSlow)
             strafe = playerBody.right * moveInput.x * walkSpeed;
 
         Vector3 move = (forward + strafe) * Time.deltaTime;
@@ -422,43 +394,48 @@ public class EndlessRunner : MonoBehaviour
         float amplitude = headBobAmplitudeBetween;
         float horizontalAmp = headBobHorizontalAmpBetween;
 
+        Vector3 slideBase = initialCameraPosition + Vector3.up * cameraSlideOffsetY;
+
         if (characterController.isGrounded)
         {
             headBobTimer += Time.deltaTime * walkSpeed * frequency;
             float bobOffsetY = Mathf.Sin(headBobTimer) * amplitude;
             float bobOffsetX = Mathf.Cos(headBobTimer / 2) * horizontalAmp;
-            playerCamera.localPosition = initialCameraPosition + new Vector3(bobOffsetX, bobOffsetY, 0);
+            playerCamera.localPosition = slideBase + new Vector3(bobOffsetX, bobOffsetY, 0);
         }
         else
         {
             headBobTimer = 0f;
-            playerCamera.localPosition = Vector3.Lerp(playerCamera.localPosition, initialCameraPosition, Time.deltaTime * 5f);
+            playerCamera.localPosition = Vector3.Lerp(playerCamera.localPosition, slideBase, Time.deltaTime * 5f);
         }
     }
 
-    private System.Collections.IEnumerator HandleSecondTrigger()
+    private void HandleSecondTrigger()
     {
         isRotating = true;
-
         if (playerBody != null) startBodyRotation = playerBody.rotation;
 
         RotateBackwards();
         EnableVoidFog();
-        yield return new WaitForSeconds(rotationDuration);
 
-        SetObstaclesActive(true);
-
-        yield return new WaitForSeconds(0.5f);
-
-        ReturnToOriginal();
-        if (turnBackSound != null && audioSource != null)
-            audioSource.PlayOneShot(turnBackSound);
-        yield return new WaitForSeconds(returnRotationDuration);
-
-        isRotating = false;
-        canUseInputAndHeadBob = true;
-        walkSpeed = baseWalkSpeed * 1.5f;
-        EnableFog();
+        DOTween.Sequence()
+            .AppendInterval(rotationDuration)
+            .AppendCallback(() => SetObstaclesActive(true))
+            .AppendInterval(0.5f)
+            .AppendCallback(() =>
+            {
+                ReturnToOriginal();
+                if (turnBackSound != null && audioSource != null)
+                    audioSource.PlayOneShot(turnBackSound);
+            })
+            .AppendInterval(returnRotationDuration)
+            .AppendCallback(() =>
+            {
+                isRotating = false;
+                CanUseInputAndHeadBob = true;
+                walkSpeed = baseWalkSpeed * 1.5f;
+                EnableFog();
+            });
     }
 
     void SetObstaclesActive(bool active)
@@ -488,15 +465,12 @@ public class EndlessRunner : MonoBehaviour
     public void SlowDownForExit(float speed)
     {
         walkSpeed = speed;
-        canUseInputAndHeadBob = false;
+        CanUseInputAndHeadBob = false;
         isWaitingForDoorInput = false;
         isWaitingForDoorOpen = false;
         isDoorSlowed = false;
-        if (doorTimeoutCoroutine != null)
-        {
-            StopCoroutine(doorTimeoutCoroutine);
-            doorTimeoutCoroutine = null;
-        }
+        doorTimeoutTween?.Kill();
+        doorTimeoutTween = null;
         HideDoorPrompts();
     }
 
@@ -508,18 +482,19 @@ public class EndlessRunner : MonoBehaviour
         isRotating = false;
         walkSpeed = baseWalkSpeed;
 
-        if (playerCam != null)
-            playerCam.fieldOfView = normalFOV;
+        cameraSlideOffsetY = 0f;
 
-        // Kapı girdisini temizle
+        if (playerCam != null)
+        {
+            fovTween?.Kill();
+            playerCam.fieldOfView = normalFOV;
+        }
+
         isWaitingForDoorInput = false;
         isWaitingForDoorOpen = false;
         isDoorSlowed = false;
-        if (doorTimeoutCoroutine != null)
-        {
-            StopCoroutine(doorTimeoutCoroutine);
-            doorTimeoutCoroutine = null;
-        }
+        doorTimeoutTween?.Kill();
+        doorTimeoutTween = null;
         HideDoorPrompts();
         if (promptOpenDoor) promptOpenDoor.SetActive(false);
         currentDoorCheckpoint?.TurnOffLights();
@@ -527,7 +502,6 @@ public class EndlessRunner : MonoBehaviour
         ResetAllDoorCheckpoints();
     }
 
-    // Kapı checkpoint trigger'ından çağrılır
     public void OnDoorCheckpointReached(DoorCheckpointTrigger checkpoint, bool leftRequired)
     {
         if (!isControllingPlayer || isWaitingForDoorInput) return;
@@ -540,14 +514,16 @@ public class EndlessRunner : MonoBehaviour
         if (promptLeft) promptLeft.SetActive(true);
         if (promptRight) promptRight.SetActive(true);
 
-        doorTimeoutCoroutine = StartCoroutine(DoorPromptTimeout());
-        StartCoroutine(DoorSlowTimeout());
-    }
+        doorTimeoutTween = DOVirtual.DelayedCall(doorPromptTimeout, () =>
+        {
+            if (isWaitingForDoorInput)
+            {
+                isWaitingForDoorInput = false;
+                DoorFailSequence();
+            }
+        });
 
-    private IEnumerator DoorSlowTimeout()
-    {
-        yield return new WaitForSeconds(doorSlowDuration);
-        isDoorSlowed = false;
+        DOVirtual.DelayedCall(doorSlowDuration, () => isDoorSlowed = false);
     }
 
     void HideDoorPrompts()
@@ -563,7 +539,6 @@ public class EndlessRunner : MonoBehaviour
         isWaitingForDoorInput = false;
         HideDoorPrompts();
 
-        // Her iki durumda da oyuncu döner
         float angle = pressedLeft ? -90f : 90f;
         isRotating = true;
         Vector3 target = playerBody.eulerAngles + new Vector3(0f, angle, 0f);
@@ -573,23 +548,18 @@ public class EndlessRunner : MonoBehaviour
 
         if (pressedLeft == requireLeft)
         {
-            // Doğru yön → timeout iptal, kapıyı hemen aç
-            if (doorTimeoutCoroutine != null)
-            {
-                StopCoroutine(doorTimeoutCoroutine);
-                doorTimeoutCoroutine = null;
-            }
+            doorTimeoutTween?.Kill();
+            doorTimeoutTween = null;
             currentDoorCheckpoint?.OpenCorrectDoor();
             currentDoorCheckpoint?.TurnOffLights();
             currentDoorCheckpoint = null;
         }
-        // Yanlış yön → timeout çalışmaya devam eder, kapıya çarpar → fail
     }
 
     public void OnDoorOpenZoneEntered(bool isLeftDoor)
     {
-if (currentDoorCheckpoint == null || isWaitingForDoorOpen) return;
-        if (isLeftDoor != requireLeft) return;  // Yanlış kapının trigger'ı, yok say
+        if (currentDoorCheckpoint == null || isWaitingForDoorOpen) return;
+        if (isLeftDoor != requireLeft) return;
 
         isWaitingForDoorOpen = false;
         isDoorSlowed = false;
@@ -599,19 +569,9 @@ if (currentDoorCheckpoint == null || isWaitingForDoorOpen) return;
         currentDoorCheckpoint = null;
     }
 
-    private IEnumerator DoorPromptTimeout()
+    private void DoorFailSequence()
     {
-        yield return new WaitForSeconds(doorPromptTimeout);
-        if (isWaitingForDoorInput)
-        {
-            isWaitingForDoorInput = false;
-            StartCoroutine(DoorFailSequence());
-        }
-    }
-
-    private IEnumerator DoorFailSequence()
-    {
-        canUseInputAndHeadBob = false;
+        CanUseInputAndHeadBob = false;
         HideDoorPrompts();
         currentDoorCheckpoint?.TurnOffLights();
         currentDoorCheckpoint = null;
@@ -620,10 +580,11 @@ if (currentDoorCheckpoint == null || isWaitingForDoorOpen) return;
         ResetAllDoorCheckpoints();
         TeleportToSecondTrigger();
 
-        yield return new WaitForSeconds(0.5f);
-
-        blackScreenObject?.SetActive(false);
-        canUseInputAndHeadBob = true;
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            blackScreenObject?.SetActive(false);
+            CanUseInputAndHeadBob = true;
+        });
     }
 
     void ResetAllDoorCheckpoints()
@@ -668,4 +629,3 @@ public class EndlessRunnerObstacleHelper : MonoBehaviour
         }
     }
 }
-

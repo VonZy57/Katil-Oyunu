@@ -1,4 +1,3 @@
-using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,7 +26,7 @@ public class EndlessRunnerExit : MonoBehaviour
 
     [Header("FOV")]
     public float normalFOV = 60f;
-    public float fovChangeSpeed = 2f;
+    public float fovChangeDuration = 0.5f;
 
     // Dahili
     private bool isActive = false;
@@ -49,6 +48,9 @@ public class EndlessRunnerExit : MonoBehaviour
 
         SetupTrigger(entryTrigger, true);
         SetupTrigger(exitTrigger, false);
+
+        loadOperation = SceneManager.LoadSceneAsync(sceneToLoad);
+        loadOperation.allowSceneActivation = false;
     }
 
     void SetupTrigger(Collider col, bool isEntry)
@@ -59,14 +61,6 @@ public class EndlessRunnerExit : MonoBehaviour
         helper.isEntry = isEntry;
     }
 
-    void Update()
-    {
-        if (!isActive) return;
-
-        if (playerCam != null)
-            playerCam.fieldOfView = Mathf.Lerp(playerCam.fieldOfView, normalFOV, Time.deltaTime * fovChangeSpeed);
-    }
-
     public void OnEntryTriggerEnter()
     {
         if (isActive) return;
@@ -74,40 +68,41 @@ public class EndlessRunnerExit : MonoBehaviour
 
         endlessRunner?.SlowDownForExit(slowWalkSpeed);
 
-        loadOperation = SceneManager.LoadSceneAsync(sceneToLoad);
-        loadOperation.allowSceneActivation = false;
+        if (playerCam != null)
+            playerCam.DOFieldOfView(normalFOV, fovChangeDuration).SetEase(Ease.OutQuad);
 
-        StartCoroutine(EntrySequence());
+        EntrySequence();
     }
 
-    private IEnumerator EntrySequence()
+    private void EntrySequence()
     {
-        if (hallwayCenter != null && characterController != null)
+        if (hallwayCenter == null || characterController == null)
         {
-            Vector3 toCenter = hallwayCenter.position - playerBody.position;
-            Vector3 lateralOffset = toCenter - Vector3.Project(toCenter, playerBody.forward);
-            lateralOffset.y = 0f;
-
-            float elapsed = 0f;
-            Vector3 startPos = playerBody.position;
-            Vector3 targetPos = startPos + lateralOffset;
-
-            characterController.enabled = false;
-            while (elapsed < centeringDuration)
-            {
-                elapsed += Time.deltaTime;
-                playerBody.position = Vector3.Lerp(startPos, targetPos, Mathf.SmoothStep(0f, 1f, elapsed / centeringDuration));
-                yield return null;
-            }
-            characterController.enabled = true;
+            OpenDoor();
+            return;
         }
 
-        if (door != null)
+        Vector3 toCenter = hallwayCenter.position - playerBody.position;
+        Vector3 lateralOffset = toCenter - Vector3.Project(toCenter, playerBody.forward);
+        lateralOffset.y = 0f;
+
+        float prevT = 0f;
+        DOTween.To(() => prevT, x =>
         {
-            Vector3 targetEuler = door.transform.eulerAngles;
-            targetEuler.y = doorOpenAngle;
-            door.transform.DORotate(targetEuler, doorOpenDuration).SetEase(Ease.OutQuad);
-        }
+            float delta = x - prevT;
+            prevT = x;
+            characterController.Move(lateralOffset * delta);
+        }, 1f, centeringDuration)
+        .SetEase(Ease.InOutSine)
+        .OnComplete(() => OpenDoor());
+    }
+
+    private void OpenDoor()
+    {
+        if (door == null) return;
+        Vector3 targetEuler = door.transform.eulerAngles;
+        targetEuler.y = doorOpenAngle;
+        door.transform.DORotate(targetEuler, doorOpenDuration).SetEase(Ease.OutQuad);
     }
 
     public void OnExitTriggerEnter()
