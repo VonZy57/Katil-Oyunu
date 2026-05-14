@@ -12,6 +12,9 @@ public class TalkWithCenkOnTable : MonoBehaviour
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform cenkTransform;
     [SerializeField] private Transform moneyTransform; // Paranın (veya masadaki paranın olduğu yerin) referansı
+    [SerializeField] private TalkWithNeighbor talkWithNeighbor;
+
+    private FirstPersonController playerFPS;
 
     void Start()
     {
@@ -22,6 +25,12 @@ public class TalkWithCenkOnTable : MonoBehaviour
         {
             moneyTransform.gameObject.SetActive(false);
         }
+
+        // Oyuncu kamerasından FPS kontrolcüsünü bul
+        if (playerCamera != null)
+        {
+            playerFPS = playerCamera.GetComponentInParent<FirstPersonController>();
+        }
     }
 
     void Update()
@@ -31,13 +40,27 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
     public void StartTheDialog()
     {
+        StartCoroutine(WaitAndStartDialog());
+    }
+
+    private IEnumerator WaitAndStartDialog()
+    {
+        // Eğer komşu diyaloğu atanmışsa ve henüz bitmemişse, bitmesini bekle
+        if (talkWithNeighbor != null)
+        {
+            yield return new WaitUntil(() => talkWithNeighbor.isFinished);
+        }
+
         if (dialogSystem != null)
         {
+            if (playerFPS != null) playerFPS.enabled = false; // Kontrolleri kapat ki kamera dönmesi çakışmasın
+
             dialogSystem.StartDialog(cenkStartsNode);
             
             // Diyalog başladığında kamerayı doğrudan Cenk'e döndür
             if (playerCamera != null && cenkTransform != null)
             {
+                playerCamera.transform.DOKill(); // Olası önceki animasyonları durdur
                 playerCamera.transform.DOLookAt(cenkTransform.position, 1f);
             }
 
@@ -50,14 +73,22 @@ public class TalkWithCenkOnTable : MonoBehaviour
         // Kamera paraya ve Cenk'e bakmak için hazırsa
         if (playerCamera != null && moneyTransform != null && cenkTransform != null)
         {
+            Camera cam = playerCamera.GetComponent<Camera>();
+            float originalFOV = cam != null ? cam.fieldOfView : 60f;
+            float zoomFOV = originalFOV - 20f; // Yaklaşmak için FOV değerini küçült
+
             // Parayı sahnede görünür yap
             moneyTransform.gameObject.SetActive(true);
 
             // 1. Önce paraya bak
+            playerCamera.transform.DOKill();
+            if (cam != null) { cam.DOKill(); cam.DOFieldOfView(zoomFOV, 1f); }
             playerCamera.transform.DOLookAt(moneyTransform.position, 1f);
             yield return new WaitForSeconds(1.5f); // 1.5 saniye paraya baksın
             
             // 2. Tekrar Cenk'e dön
+            playerCamera.transform.DOKill();
+            if (cam != null) { cam.DOKill(); cam.DOFieldOfView(originalFOV, 1f); }
             playerCamera.transform.DOLookAt(cenkTransform.position, 1f);
         }
     }
@@ -69,6 +100,12 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         // Şimdi de diyalog panelinin kapanmasını bekle
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+
+        if (playerFPS != null)
+        {
+            playerFPS.SyncCameraRotation(); // Açıyı eşitle ki ani atlama olmasın
+            playerFPS.enabled = true; // Oyuncuya kontrolü geri ver
+        }
 
         // Diyalog bitti, görevi tamamla
         if (missionObj != null)

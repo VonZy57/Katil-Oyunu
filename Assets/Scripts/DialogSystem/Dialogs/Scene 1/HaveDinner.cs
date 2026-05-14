@@ -2,6 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.ProBuilder.Shapes;
 
 
 public class HaveDinner : Interactable
@@ -32,6 +33,14 @@ public class HaveDinner : Interactable
     public List<GameObject> emptyPlates; // Boş tabakların listesi
     public List<GameObject> fullPlates;  // Dolu tabakların listesi
 
+    [Header("Komşu Diyalog Referansı")]
+    public TalkWithNeighbor talkWithNeighbor;
+
+    [Header("Anne ve Kapı Animasyonu (Komşu Diyaloğu Öncesi)")]
+    public Transform motherDoorPosition; // Annenin kapıda duracağı yer
+    public Transform doorTransform;      // Açılacak kapı
+    private float doorOpenZAngle = 95f;  // Kapının açılma Z açısı (Local)
+
     private bool isSitting = false;
     private bool isMoving = false;
 
@@ -61,7 +70,7 @@ public class HaveDinner : Interactable
             playerFPS = player.GetComponent<FirstPersonController>();
             playerController = player.GetComponent<CharacterController>(); 
         }
-        
+
     }
 
     void Update()
@@ -75,6 +84,7 @@ public class HaveDinner : Interactable
         else
             promptMessage = "";
     }
+
 
     private void OnEnable()
     {
@@ -128,7 +138,6 @@ public class HaveDinner : Interactable
                 isMoving = false; // Hareket bitti
                 if (playerFPS)
                 {
-                    playerFPS.enabled = true;
                     playerFPS.SetSittingState(true);
                 }
             });
@@ -152,6 +161,40 @@ public class HaveDinner : Interactable
         {
             foreach (GameObject plate in fullPlates)
                 if (plate != null) plate.SetActive(true);
+        }
+
+        // Diyalog bitti, FPS controller'ı aktif et (oyuncu masada etrafa bakabilsin)
+        if (playerFPS != null)
+        {
+            playerFPS.enabled = true;
+            playerFPS.SyncCameraRotation(); // Kameranın son açısını senkronize et
+        }
+
+        StartCoroutine(motherWalksToDoor()); // Diyalog bittikten sonra annenin kapıya yürüyüp komşu diyalogunu başlatması için coroutine'i başlat
+    }
+
+    IEnumerator motherWalksToDoor()
+    {
+        yield return new WaitForSeconds(3f);
+
+        // Önce anne kapıya yürüsün, sonra kapı açılsın, ardından komşu diyaloğu başlasın
+        if (talkWithNeighbor != null)
+        {
+            if (motherTransform != null && motherDoorPosition != null)
+            {
+                yield return motherTransform.DORotateQuaternion(motherDoorPosition.rotation, 0.5f).WaitForCompletion();
+                // Annenin yüksekliğini korumak için sadece X ve Z ekseninde hedef pozisyon oluştur
+                Vector3 targetPosition = new Vector3(motherDoorPosition.position.x, motherTransform.position.y, motherDoorPosition.position.z);
+                yield return motherTransform.DOMove(targetPosition, 2f).SetEase(Ease.InOutSine).WaitForCompletion();
+            }
+            
+            if (doorTransform != null)
+            {
+                Vector3 openRot = new Vector3(doorTransform.localEulerAngles.x, doorTransform.localEulerAngles.y, doorOpenZAngle);
+                yield return doorTransform.DOLocalRotate(openRot, 1f).SetEase(Ease.OutQuad).WaitForCompletion();
+            }
+            
+            talkWithNeighbor.StartNeighborDialog();
         }
     }
 
@@ -178,17 +221,8 @@ public class HaveDinner : Interactable
 
     void RotateCameraToSpeaker(Transform speakerTransform)
     {
-        if (playerFPS != null) playerFPS.enabled = false; // DOTween ile çakışmaması için kontrolleri geçici kapat
-
         playerCamera.transform.DOKill(); // Varsa önceki kamera animasyonunu durdur
-        playerCamera.transform.DOLookAt(speakerTransform.position, 1f).OnComplete(() =>
-        {
-            if (playerFPS != null)
-            {
-                playerFPS.SyncCameraRotation(); // Kameranın yeni açısını FPS controller'a kaydet
-                playerFPS.enabled = true; // Kontrolleri geri ver
-            }
-        });
+        playerCamera.transform.DOLookAt(speakerTransform.position, 1f);
     }
 
     void BuildDialogTree()

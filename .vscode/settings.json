@@ -68,5 +68,12 @@
         "*.slnx": "*.csproj"
     },
     "dotnet.defaultSolution": "Katil-Oyunu.slnx",
-    "dotnet.enableWorkspaceBasedDevelopment": false
+    "dotnet.enableWorkspaceBasedDevelopment": false,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": true
+    },
+    "editor.suggestOnTriggerCharacters": true,
+    "editor.suggestSelection": "first"
 }

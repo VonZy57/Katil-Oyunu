@@ -1,4 +1,5 @@
 using Unity.VisualScripting;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -7,6 +8,9 @@ public class GetFeetDown : Interactable
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private DialogNode getFeetDownNode;
     [SerializeField] private MissionObjective missionObj;
+
+    public bool isDialogCompleted { get; private set; } = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -21,9 +25,22 @@ public class GetFeetDown : Interactable
 
     protected override void Interact()
     {
-        dialogSystem.StartDialog(getFeetDownNode); 
+        StartCoroutine(DialogRoutine()); 
     }
     
+    private IEnumerator DialogRoutine()
+    {
+        dialogSystem.StartDialog(getFeetDownNode);
+        
+        // Panelin açılması için 1 frame bekle
+        yield return null;
+        
+        // Panel kapanana kadar (diyalog bitene kadar) bekle
+        yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+        
+        isDialogCompleted = true;
+    }
+
     void BuildDialogTree()
     {
         getFeetDownNode = DialogBuilder.CreateNode
