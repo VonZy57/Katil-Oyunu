@@ -394,6 +394,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillCheckSystem: {fileID: 0}
   playerMovementScript: {fileID: 773693103501013671}
-  normalSpeed: 2
-  dragSpeed: 1.4
-  verySlowSpeed: 0.4
+  normalSpeed: 1.8
+  dragSpeed: 1.1
+  verySlowSpeed: 0.3

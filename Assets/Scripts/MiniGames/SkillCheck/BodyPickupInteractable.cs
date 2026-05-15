@@ -8,6 +8,7 @@ public class BodyPickupInteractable : Interactable
     [Tooltip("Oyuncunun üzerindeki BodyDragController scripti buraya atanacak")]
     public BodyDragController dragController;
     private MissionObjective missionObj;
+    public GameObject bodyCarryRef; // Cesedi taşıma sırasında oyuncunun elinde görünecek model
 
     [Header("Ön Koşul (Opsiyonel)")]
     [Tooltip("Eğer bu cesedi almak için önce bir diyalogun bitmesi gerekiyorsa buraya atayın (Örn: Cenk GetFeetDown)")]
@@ -39,7 +40,13 @@ public class BodyPickupInteractable : Interactable
 
             // Taşımayı başlat
             if (dragController != null)
+            {
                 dragController.StartDraggingTask();
+                if (bodyCarryRef != null)
+                {
+                    bodyCarryRef.SetActive(true); // Cesedi taşıma modelini aktif et
+                }
+            }
 
             gameObject.SetActive(false);
         }

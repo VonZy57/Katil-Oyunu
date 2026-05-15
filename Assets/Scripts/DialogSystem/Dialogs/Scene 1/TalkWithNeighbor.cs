@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using DG.Tweening;
 
 public class TalkWithNeighbor : MonoBehaviour
 {
@@ -18,6 +19,18 @@ public class TalkWithNeighbor : MonoBehaviour
 
     [Header("Diyalog Satırları")]
     [SerializeField] private List<SubtitleLine> dialogLines;
+
+    [Header("Diyalog Sonrası Animasyon Ayarları")]
+    public Transform neighborTransform; // Komşu objesi
+    public Transform motherTransform;   // Anne objesi
+    public Transform doorTransform;     // Kapı objesi
+
+    public Transform[] neighborPath;    // Komşunun gideceği noktalar
+    public Transform[] motherPath;      // Annenin gideceği noktalar
+
+    public float moveDurationPerNode = 1.5f; // Noktalar arası hareket süresi
+    public float doorCloseZAngle = 0f;       // Kapının kapanacağı Z açısı (Örn: 0)
+    public float doorCloseDuration = 1f;     // Kapının kapanma süresi
 
     public bool isFinished { get; private set; } = false;
 
@@ -78,5 +91,47 @@ public class TalkWithNeighbor : MonoBehaviour
         
         subtitleText.text = "";
         isFinished = true;
+        
+        // Diyalog altyazıları bittikten sonra hareketleri ve kapı kapanmasını başlat
+        yield return StartCoroutine(MoveAndCloseDoorSequence());
+
+    }
+
+    private IEnumerator MoveAndCloseDoorSequence()
+    {
+        // 1. Önce komşu hareket eder
+        if (neighborTransform != null && neighborPath != null)
+        {
+            foreach (Transform t in neighborPath)
+            {
+                if (t == null) continue;
+                Vector3 targetPos = new Vector3(t.position.x, neighborTransform.position.y, t.position.z);
+                neighborTransform.DOLookAt(targetPos, 0.2f);
+                yield return neighborTransform.DOMove(targetPos, moveDurationPerNode).SetEase(Ease.Linear).WaitForCompletion();
+            }
+        }
+
+        // 2. Sonra anne hareket eder
+        if (motherTransform != null && motherPath != null)
+        {
+            foreach (Transform t in motherPath)
+            {
+                if (t == null) continue;
+                Vector3 targetPos = new Vector3(t.position.x, motherTransform.position.y, t.position.z);
+                motherTransform.DOLookAt(targetPos, 0.2f);
+                yield return motherTransform.DOMove(targetPos, moveDurationPerNode).SetEase(Ease.Linear).WaitForCompletion();
+            }
+        }
+
+        // 3. Kapı kapanır
+        if (doorTransform != null)
+        {
+            Vector3 closeRot = new Vector3(doorTransform.localEulerAngles.x, doorTransform.localEulerAngles.y, doorCloseZAngle);
+            yield return doorTransform.DOLocalRotate(closeRot, doorCloseDuration).SetEase(Ease.InOutQuad).WaitForCompletion();
+        }
+
+        // 4. Nesneler kapatılır
+        if (neighborTransform != null) neighborTransform.gameObject.SetActive(false);
+        if (motherTransform != null) motherTransform.gameObject.SetActive(false);
     }
 }

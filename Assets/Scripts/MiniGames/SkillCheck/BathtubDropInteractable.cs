@@ -6,7 +6,13 @@ public class BathtubDropInteractable : Interactable
     public BodyDragController dragController;
     public MissionSO nextMissionSO;
     public GameObject chairInteractable; // Eğer bu nesneyle etkileşim sağlanırsa sandalyeye oturma eylemi de aktifleşecekse, sandalyenin scriptini referans olarak alıyoruz.
-
+    public GameObject maleBodyRef;
+    public GameObject femaleBodyRef;
+    public GameObject maleBodyCarry; // Erkek cesedi taşıma modeli
+    public GameObject femaleBodyCarry; // Kadın cesedi taşıma modeli     
+    private MissionObjective missionObj;
+    public MissionSO maleMission;
+    public MissionSO femaleMission;
     void Start()
     {
         promptMessage = "E - Cesedi Bırak";
@@ -17,10 +23,23 @@ public class BathtubDropInteractable : Interactable
         // Sadece ceset taşınıyorsa etkileşime izin ver
         if (dragController != null && dragController.isDragging)
         {
+            missionObj= GetComponent<MissionObjective>();
             dragController.DropBodyAndFinish();
-            
+
+            // Hangi ceset bırakıldığına göre ilgili modeli aktif et
+            if (missionObj.requiredMission == maleMission)
+            {
+                maleBodyRef.SetActive(true);
+                maleBodyCarry.SetActive(false); // Eğer erkek cesedi bırakılıyorsa, taşıma modelini kapat
+            }
+            else if (missionObj.requiredMission == femaleMission)
+            {                
+                femaleBodyRef.SetActive(true);
+                femaleBodyCarry.SetActive(false); // Eğer kadın cesedi bırakılıyorsa, taşıma modelini kapat
+            }
+
             // Eğer küvete bırakınca çalışacak ekstra bir MissionObjective varsa tetikle
-            MissionObjective missionObj = GetComponent<MissionObjective>();
+            
             if (missionObj != null)
             {
                 missionObj.OnInteracted();
