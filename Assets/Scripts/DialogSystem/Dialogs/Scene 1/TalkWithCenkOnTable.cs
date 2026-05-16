@@ -16,6 +16,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
     private FirstPersonController playerFPS;
 
+
     void Start()
     {
         BuildDialogTree();

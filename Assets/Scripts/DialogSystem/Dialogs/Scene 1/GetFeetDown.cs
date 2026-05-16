@@ -32,6 +32,7 @@ public class GetFeetDown : Interactable
         this.enabled = false;
     }
 
+
     public bool isDialogCompleted { get; private set; } = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created

@@ -9,40 +9,20 @@ public class MoneyInteraction : Interactable
     {
         missionObj = GetComponent<MissionObjective>();
         promptMessage = ""; // Başlangıçta etkileşim yazısını gizle
-
-        if (MissionManager.Instance != null)
-        {
-            // Eğer zaten doğru görevdeysek direkt aktifleştir
-            if (missionObj != null && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
-            {
-                promptMessage = "E - Parayı Al";
-            }
-            else
-            {
-                // Değilsek, yeni görev başladığında haber vermesi için Manager'a abone ol
-                MissionManager.Instance.OnMissionStart += OnMissionChanged;
-            }
-        }
     }
 
-    private void OnDestroy()
+    void Update()
     {
-        // Bellek sızıntısını (Memory Leak) önlemek için obje yok olduğunda aboneliği iptal et
-        if (MissionManager.Instance != null)
-        {
-            MissionManager.Instance.OnMissionStart -= OnMissionChanged;
-        }
-    }
+        if (MissionManager.Instance == null || missionObj == null) return;
 
-    private void OnMissionChanged(MissionSO newMission)
-    {
-        // Yeni başlayan görev bizim beklediğimiz görevse yazıyı göster
-        if (missionObj != null && newMission == missionObj.requiredMission && !isMoneyCollected)
+        // İlgili görev aktifse ve para henüz alınmadıysa yazıyı göster
+        if (!isMoneyCollected && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
         {
             promptMessage = "E - Parayı Al";
-            
-            // Artık görev başladı, daha fazla dinlemeye gerek yok
-            MissionManager.Instance.OnMissionStart -= OnMissionChanged;
+        }
+        else
+        {
+            promptMessage = ""; // Görev aktif değilse yazıyı gizle
         }
     }
 
