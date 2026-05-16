@@ -2,12 +2,35 @@ using Unity.VisualScripting;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Numerics;
 
 public class GetFeetDown : Interactable
 {
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private DialogNode getFeetDownNode;
     [SerializeField] private MissionObjective missionObj;
+
+    public Transform cenkTransform; // Cenk'in küvetten kalktıktan sonra gideceği pozisyon
+    public Transform cenksChairTransform; // Cenk'in sandalyeye oturacağı pozisyon
+    public GameObject chairForCenk; // Cenk'in oturacağı sandalyenin modeli
+
+    void OnEnable()
+    {
+        BathtubDropInteractable.OnLastBodyDropped += TeleportCenkToTable;
+    }
+    void OnDisable()
+    {
+        BathtubDropInteractable.OnLastBodyDropped -= TeleportCenkToTable;
+    }
+    void TeleportCenkToTable()
+    {
+        gameObject.transform.position = cenkTransform.position;
+        gameObject.transform.rotation = cenkTransform.rotation;
+        // Cenk'i sandalyeye oturtmak için sandalyenin pozisyonuna da
+        chairForCenk.transform.position = cenksChairTransform.position;
+        chairForCenk.transform.rotation = cenksChairTransform.rotation;
+        this.enabled = false;
+    }
 
     public bool isDialogCompleted { get; private set; } = false;
 

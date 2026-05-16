@@ -118,11 +118,6 @@ public class HaveDinner : Interactable
         isMoving = true;
         isSitting = true;
 
-        if (emptyPlates != null && emptyPlates.Count > 0)
-        {
-            foreach (GameObject plate in emptyPlates)
-                if (plate != null) plate.SetActive(true); // Oturma işlemi başladığında boş tabakları aktif et
-        }
 
         if (playerController)
             playerController.enabled = false;
@@ -141,6 +136,13 @@ public class HaveDinner : Interactable
                     playerFPS.SetSittingState(true);
                 }
             });
+
+        if (emptyPlates != null && emptyPlates.Count > 0)
+        {
+            foreach (GameObject plate in emptyPlates)
+                if (plate != null) plate.SetActive(true); // Oturma işlemi tamamlandığında boş tabakları aktif et
+        }
+
         yield return new WaitForSeconds(2f);
         dialogSystem.StartDialog(putTheGamePadNode);
         RotateCameraToSpeaker(motherTransform);

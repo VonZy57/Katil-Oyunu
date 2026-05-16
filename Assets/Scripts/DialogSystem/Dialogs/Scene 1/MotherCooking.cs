@@ -10,6 +10,8 @@ public class MotherCooking : MonoBehaviour
     [SerializeField] private DialogNode carryTheBodies;
     [SerializeField] private TextMeshProUGUI subtitleText;
     [SerializeField] private MissionObjective missionObj;
+    public Transform motherTableTransform; // Anne'nin yemek masasında duracağı pozisyon
+    public GameObject cookingPot; // Masadaki tencere modeli
 
     [System.Serializable]
     public struct SongLine
@@ -26,6 +28,23 @@ public class MotherCooking : MonoBehaviour
     [SerializeField] private Transform motherTransform;
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private GameObject playerBody;
+
+    void OnEnable()
+    {
+        BathtubDropInteractable.OnLastBodyDropped += TeleportMotherToTable;
+    }
+    void OnDisable()
+    {
+        BathtubDropInteractable.OnLastBodyDropped -= TeleportMotherToTable;
+    }
+
+    void TeleportMotherToTable()
+    {
+        gameObject.transform.position = motherTableTransform.position;
+        gameObject.transform.rotation = motherTableTransform.rotation;
+        cookingPot.SetActive(true); // Tencereyi görünür yap
+        this.enabled = false; // Teleport işlemi tamamlandıktan sonra bu scripti devre dışı bırakıyoruz, böylece oyuncu tekrar etkileşime giremez.
+    }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {

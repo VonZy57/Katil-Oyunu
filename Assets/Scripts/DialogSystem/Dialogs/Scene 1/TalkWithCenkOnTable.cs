@@ -60,8 +60,13 @@ public class TalkWithCenkOnTable : MonoBehaviour
             // Diyalog başladığında kamerayı doğrudan Cenk'e döndür
             if (playerCamera != null && cenkTransform != null)
             {
-                playerCamera.transform.DOKill(); // Olası önceki animasyonları durdur
-                playerCamera.transform.DOLookAt(cenkTransform.position, 1f);
+                Camera cam = playerCamera.GetComponent<Camera>();
+                if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+                if (cam == null) cam = Camera.main; // Fallback
+
+                Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+                camTransform.DOKill(); // Olası önceki animasyonları durdur
+                camTransform.DOLookAt(cenkTransform.position, 1f).SetEase(Ease.InOutSine);
             }
 
             StartCoroutine(CheckDialogEnd());
@@ -74,6 +79,10 @@ public class TalkWithCenkOnTable : MonoBehaviour
         if (playerCamera != null && moneyTransform != null && cenkTransform != null)
         {
             Camera cam = playerCamera.GetComponent<Camera>();
+            if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+            if (cam == null) cam = Camera.main; // Fallback olarak ana kamerayı bul
+
+            Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
             float originalFOV = cam != null ? cam.fieldOfView : 60f;
             float zoomFOV = originalFOV - 20f; // Yaklaşmak için FOV değerini küçült
 
@@ -81,15 +90,15 @@ public class TalkWithCenkOnTable : MonoBehaviour
             moneyTransform.gameObject.SetActive(true);
 
             // 1. Önce paraya bak
-            playerCamera.transform.DOKill();
-            if (cam != null) { cam.DOKill(); cam.DOFieldOfView(zoomFOV, 1f); }
-            playerCamera.transform.DOLookAt(moneyTransform.position, 1f);
-            yield return new WaitForSeconds(1.5f); // 1.5 saniye paraya baksın
+            camTransform.DOKill();
+            if (cam != null) { cam.DOKill(); cam.DOFieldOfView(zoomFOV, 1f).SetEase(Ease.InOutSine); }
+            camTransform.DOLookAt(moneyTransform.position, 1f).SetEase(Ease.InOutSine);
+            yield return new WaitForSeconds(2.5f); // Paraya tam odaklanabilmesi için süreyi uzattık
             
             // 2. Tekrar Cenk'e dön
-            playerCamera.transform.DOKill();
-            if (cam != null) { cam.DOKill(); cam.DOFieldOfView(originalFOV, 1f); }
-            playerCamera.transform.DOLookAt(cenkTransform.position, 1f);
+            camTransform.DOKill();
+            if (cam != null) { cam.DOKill(); cam.DOFieldOfView(originalFOV, 1f).SetEase(Ease.InOutSine); }
+            camTransform.DOLookAt(cenkTransform.position, 1f).SetEase(Ease.InOutSine);
         }
     }
 

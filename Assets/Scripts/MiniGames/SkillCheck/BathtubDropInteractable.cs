@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BathtubDropInteractable : Interactable
@@ -13,6 +14,7 @@ public class BathtubDropInteractable : Interactable
     private MissionObjective missionObj;
     public MissionSO maleMission;
     public MissionSO femaleMission;
+    public static event Action OnLastBodyDropped; // Son ceset bırakıldığında tetiklenecek event
     void Start()
     {
         promptMessage = "E - Cesedi Bırak";
@@ -36,6 +38,7 @@ public class BathtubDropInteractable : Interactable
             {                
                 femaleBodyRef.SetActive(true);
                 femaleBodyCarry.SetActive(false); // Eğer kadın cesedi bırakılıyorsa, taşıma modelini kapat
+                OnLastBodyDropped?.Invoke(); // Son ceset bırakıldığında event'i tetikle
             }
 
             // Eğer küvete bırakınca çalışacak ekstra bir MissionObjective varsa tetikle

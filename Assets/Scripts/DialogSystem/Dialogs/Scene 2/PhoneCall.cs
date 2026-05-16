@@ -41,6 +41,8 @@ public class PhoneCall : Interactable
     public AudioClip phoneHangupSound; // Telefon kapatma sesi
     private AudioSource audioSource;
 
+    [Header("Door References")]
+    public MotelRoomDoorInteraction motelRoomDoor; // Işınlanmadan hemen önce kapanacak motel kapısı
     public ButtonSmashGame buttonSmashGame;
     private DialogSystem dialogSystem;
     
@@ -394,6 +396,16 @@ public class PhoneCall : Interactable
         if (girlObject != null) girlObject.SetActive(false); // Girl object'i kaldır
         // 5 saniye karanlıkta bekle
         yield return new WaitForSeconds(2f);
+
+        // Işınlanmadan hemen önce kapı açıksa kapalı konuma getir
+        if (motelRoomDoor != null)
+        {
+            motelRoomDoor.CloseDoor();
+        }
+        else if (buttonSmashGame != null && buttonSmashGame.motelRoomDoor != null)
+        {
+            buttonSmashGame.motelRoomDoor.CloseDoor(); // Alternatif (Fallback) kontrol
+        }
 
         // Oyuncuyu yatağa/uyanma noktasına ışınla
         if (playerObjectToTeleport != null && wakePosition != null)
