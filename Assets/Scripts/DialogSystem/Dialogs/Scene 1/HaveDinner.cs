@@ -240,7 +240,7 @@ public class HaveDinner : Interactable
         "Cenk");
 
         DialogNode motherSaysLiarsNode = DialogBuilder.CreateNode
-        ("Liars! I'll shit on the leg of anyone who tries to insult our family.",
+        ("Liars! I'll sh*t on the leg of anyone who tries to insult our family.",
         "Yalancılar! Ailemize dil uzatmaya çalışnanın bacağına sıçarım.",
         "Mother");
 
