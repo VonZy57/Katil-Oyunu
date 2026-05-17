@@ -68,12 +68,12 @@ public class GetFeetDown : Interactable
     void BuildDialogTree()
     {
         getFeetDownNode = DialogBuilder.CreateNode
-        ("Can you get your feet down? Mother gave duty.",
+        ("Can you get your feet down? Mother gave me a task.",
         "Ayaklarını indirir misin? Anne görev verdi.",
         "Engin");
 
         DialogNode playingGameNode = DialogBuilder.CreateNode
-        ("I'm playing now. Do it later.",
+        ("I'm playing. Do it later.",
         "Oyun oynuyorum. Sonra hallet.",
         "Cenk");
 
@@ -88,12 +88,12 @@ public class GetFeetDown : Interactable
 
         //1.Dal "YEMEKTEN SONRA OYNARSIN" SEÇENEĞİ
         DialogNode afterDinnerNode = DialogBuilder.CreateNode
-        ("You can play after dinner. Mother said carry the bodies to the bathroom.",
+        ("You can play that after dinner. Mother said carry the bodies to the bathroom.",
         "Yemekten sonra devam edersin. Anne ölü bedenleri banyoya taşı dedi.",
         "Engin");
 
         DialogNode cenksAnswerNode = DialogBuilder.CreateNode
-        ("You are no fun at all, bro. Or do you? Carrying the bodies to the bathroom is a game for you. Isn't it?",
+        ("You are no fun at all, bro. Or are you? Carrying the bodies to the bathroom is a game for you. Isn't it?",
         "Hiç eğlenceli değilsin abi. Ya da öylesin. Cesetleri taşımak senin için bir oyun. Öyle değil mi?",
         "Cenk");
 
@@ -121,7 +121,7 @@ public class GetFeetDown : Interactable
         "Engin");
 
         DialogNode cenksAnswerLevelNode = DialogBuilder.CreateNode
-        ("It is not a game that is based on the level. It's a game based story that you discover by talking with NPCs and completing the tasks. It is even hard to say that is a game.",
+        ("It is not a level based game. It's a story based game where you discover and complete tasks by talking with NPCs. It is  hard to say that it is a game.",
         "Bu seviye kasarak ilerleme kat ettiğin bir oyun değil. Daha çok insanlar ile konuşarak yapman gereken görevleri tamamladığın hikaye temelli bir oyun. Oyun demek bile zor.",
         "Cenk");
 
@@ -143,9 +143,9 @@ public class GetFeetDown : Interactable
 
         // === ORTAK SON: ANNE BÖLÜYOR ===
         DialogNode motherWarnsNode = DialogBuilder.CreateEndNode
-        ("MOTHERF*CKERS! DINNER IS ALMOST READY! If the bodies are still there when i come, i'm gonna torture you two until morning!",
+        ("MOTHERF*CKERS! DINNER IS ALMOST READY! If the bodies are still there when I come there, I'm gonna torture you two until morning!",
         "AĞZINA S*ÇTIKLARIM! YEMEK NEREDEYSE HAZIR! Oraya geldiğimde eğer o cesetler hala oradaysa, sabaha kadar döverim sizi!",
-        "Anne");
+        "Mother");
 
         // İki dalın son cümlesini de Anne'ye bağlıyoruz
         DialogOption enginToMother1 = DialogBuilder.CreateOption("...", "...", motherWarnsNode, true);

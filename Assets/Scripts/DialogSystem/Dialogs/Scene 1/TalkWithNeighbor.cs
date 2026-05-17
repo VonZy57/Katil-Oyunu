@@ -64,7 +64,7 @@ public class TalkWithNeighbor : MonoBehaviour
             new SubtitleLine
             {
                 speakerName = "Mother",
-                lineText = new LocalizedText { english = "Okay, let's go get it one more. But if you touch raw cake, I'll shit on your bed again.", turkish = "Tamam hadi bir bardak daha olsun. Ama elin pişmemiş keke giderse gene sıçarım yatağına." },
+                lineText = new LocalizedText { english = "Okay, let's go get it one more time. But if you touch the raw cake, I'll sh*t on your bed again.", turkish = "Tamam hadi bir bardak daha olsun. Ama elin pişmemiş keke giderse gene sıçarım yatağına." },
                 displayDuration = 5f
             }
         };

@@ -230,19 +230,19 @@ public class HaveDinner : Interactable
     void BuildDialogTree()
     {
         putTheGamePadNode = DialogBuilder.CreateNode
-        ("Put that damn thing and eat. Thankless bastard! Do you know how much mother worked hard to put food on the table?",
+        ("Put that damn thing down and eat. Thankless bastard! Do you know how much mother worked hard to put food on the table?",
         "Anne masaya yemek koymak için ne kadar debelendi haberiniz var mı?",
-        "Anne");
+        "Mother");
 
         DialogNode brotherKilledNode = DialogBuilder.CreateNode
-        ("Big brother killed betrayers well. Right mother? Liars!",
+        ("Big brother killed the traitors beautifully. Right mother?",
         "Abim çok güzel öldürdü hainleri. Değil mi anne?",
         "Cenk");
 
         DialogNode motherSaysLiarsNode = DialogBuilder.CreateNode
         ("Liars! I'll shit on the leg of anyone who tries to insult our family.",
         "Yalancılar! Ailemize dil uzatmaya çalışnanın bacağına sıçarım.",
-        "Anne");
+        "Mother");
 
         DialogNode cenkSaysEnginStrong = DialogBuilder.CreateNode
         ("Big brother is so strong. Isn't he mother? Engin is the strongest",
@@ -252,7 +252,7 @@ public class HaveDinner : Interactable
         DialogNode motherSaysShutNode = DialogBuilder.CreateEndNode
         ("Shut the f*ck up. Eat!",
         "Kapa çeneni. Yemeğini ye!",
-        "Anne");
+        "Mother");
         
         DialogOption silentOption = DialogBuilder.CreateOptionWithEvent("...", "...", brotherKilledNode,
         () => 
