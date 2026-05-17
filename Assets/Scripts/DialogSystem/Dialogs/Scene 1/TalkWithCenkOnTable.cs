@@ -127,7 +127,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
     void BuildDialogTree()
     {
         cenkStartsNode = DialogBuilder.CreateNode
-        ("You are not belonging here, brother. Deads was right, last night. Mother is a cracky. Look, what she made you do.",
+        ("You do not belong here, brother. The dead was right, last night. Mother is crazy. Look, what she made you do.",
         "Abi... Sen buraya ait değilsin. Ölüler haklıydı, dün gece. Anne bir deli. Bak neler yaptırdı sana.",
         "Cenk");
 
@@ -178,7 +178,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         //1.2 "AİLEMİZE ZARAR VERECEKLERDİ" CEVABI
         DialogNode theyWouldHarmUs = DialogBuilder.CreateNode
-        ("They would harm our family, Cenk. You know what they said about us. They weren't good.",
+        ("They would have harmed our family, Cenk. You know what they said about us. They weren't good.",
         "Ailemize zarar vereceklerdi Cenk. Bizim hakkımızda ne dediklerini duydun. İyi insan değillerdi.",
         "Engin");
 
@@ -219,7 +219,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
 
         //Bu dalı ana dala bağlayan seçeneği ekler.
-        DialogOption enginSaysWatchYourWordsOption = DialogBuilder.CreateOption("Watch your words! Who is murderer?", "Ağzını topla. Kim katilmiş?", enginSaysWatchYourWordsNode);
+        DialogOption enginSaysWatchYourWordsOption = DialogBuilder.CreateOption("Watch your words! Who is a murderer?", "Ağzını topla. Kim katilmiş?", enginSaysWatchYourWordsNode);
         DialogBuilder.AddOption(sheKilledTwoNode, enginSaysWatchYourWordsOption);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -239,7 +239,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
         
         //2.1 "BOĞAZINI KESTİM" CEVABI
         DialogNode cutTheThroatNode = DialogBuilder.CreateNode
-        ("I slited his throat. With a paring knife. It was hard.",
+        ("I slited his throat. With a fruit knife. It was hard.",
         "Boğazını kestim. Bir meyve bıçağıyla. Çok zordu.",
         "Engin");
 
@@ -249,7 +249,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         //2.2 "HATIRLAMAK İSTEMİYORUM" CEVABI
         DialogNode dontWantRememberNode = DialogBuilder.CreateNode
-        ("I don't even want to think about it. He had writhed a lot.",
+        ("I don't even want to think about it. He had struggled a lot.",
         "Hatırlamak bile istemiyorum. Çok debelenmişti.",
         "Engin");
 
@@ -307,7 +307,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         //ANA DAL DEVAM
         DialogNode leaveHereNode = DialogBuilder.CreateNode
-        ("You need to leave this house. Here isn't right for you.",
+        ("You need to leave this house. this house isn't for you.",
         "Bu evden git abi. Sana göre değil bu ev.",
         "Cenk");
 
@@ -329,7 +329,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
         DialogBuilder.AddOption(leaveHereNode, leaveHereSilentOp);
 
         DialogNode goToCousinNode = DialogBuilder.CreateNode
-        ("Here, I've put the cousin's number from Bursa right here. He will take you in, mom won't find out. And take this, here some money I set aside for you.",
+        ("Here, I've put cousin's number from Bursa here. He will take you in, mom won't find out. And take this, here is some money I set aside for you.",
         "Bursa'daki kuzenin telefon numarasını buraya yazdım. O seni evine alır, anne duymaz. Senin için ayırdığım biraz para. Al bu parayı da.",
         "Cenk");
         
