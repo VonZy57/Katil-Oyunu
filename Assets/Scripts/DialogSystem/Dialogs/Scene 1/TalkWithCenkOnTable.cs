@@ -307,7 +307,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         //ANA DAL DEVAM
         DialogNode leaveHereNode = DialogBuilder.CreateNode
-        ("You need to leave this house. this house isn't for you.",
+        ("You need to leave this house. This house isn't for you.",
         "Bu evden git abi. Sana göre değil bu ev.",
         "Cenk");
 
