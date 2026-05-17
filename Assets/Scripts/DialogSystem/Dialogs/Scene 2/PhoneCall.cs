@@ -310,13 +310,13 @@ public class PhoneCall : Interactable
 
         // Need car -> Second set of options (No money / Can't drive)
         DialogOption noMoneyOpt = DialogBuilder.CreateOption(
-            "How will I find a car? I have 50 YTL at most in my pocket.",
-            "Nasıl bir araba bulacağım ben. Cebimde toplasan 50 YTL var",
+            "How will I find a car?",
+            "Nasıl bir araba bulacağım.",
             noMoneyOption1
         );
         DialogOption cantDriveOpt = DialogBuilder.CreateOption(
-            "I can't drive well. I can't get there with a car. Plus I don't even have a car.",
-            "Ben iyi araba süremem. Ben bir arabayla oraya kadar gelemem. Zaten araba da yok.",
+            "I can't drive well.",
+            "Ben iyi araba süremem.",
             cantDriveOption1
         );
         DialogBuilder.AddOption(needCar, noMoneyOpt);
