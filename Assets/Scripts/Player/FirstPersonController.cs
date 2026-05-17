@@ -111,6 +111,7 @@ public class FirstPersonController : MonoBehaviour
             fadeImage.DOFade(0f, fadeDuration).SetDelay(fadeDelay).OnComplete(() =>
             {
                 fadeImage.gameObject.SetActive(false); // İşlem bitince objeyi kapat
+                fadeImage.color = startColor; // Bir sonraki kullanım için alpha'yı tekrar 1 yap
             });
         }
     }
