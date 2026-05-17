@@ -30,6 +30,7 @@ public class GetFeetDown : Interactable
         chairForCenk.transform.position = cenksChairTransform.position;
         chairForCenk.transform.rotation = cenksChairTransform.rotation;
         promptMessage = ""; // Etkileşim mesajını temizle
+        this.gameObject.layer = LayerMask.NameToLayer("Default"); // Cenk'in layer'ını değiştirme (örneğin "Default" yapabilirsiniz)
         this.enabled = false;
     }
 

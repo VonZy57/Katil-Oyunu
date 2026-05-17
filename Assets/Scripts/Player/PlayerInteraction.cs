@@ -8,7 +8,7 @@ public class PlayerInteraction : MonoBehaviour
     public Transform cameraTransform;
 
     [Header("Etkileşim Ayarları")]
-    public float interactDistance = 3f;
+    public float interactDistance = 2f;
     public LayerMask interactLayer;
     public LayerMask obstacleLayer;
 
