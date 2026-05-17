@@ -1,6 +1,7 @@
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class EndlessRunnerExit : MonoBehaviour
 {
@@ -13,6 +14,10 @@ public class EndlessRunnerExit : MonoBehaviour
 
     [Header("Sahne")]
     public int sceneToLoad = 2;
+
+    [Header("Geçiş Ayarları")]
+    public Image fadeImage; // Ekranı kaplayan siyah UI resmi
+    public float fadeDuration = 2f; // Kararma süresi
 
     [Header("Yürüyüş Ayarları")]
     public float slowWalkSpeed = 1.2f;
@@ -30,6 +35,7 @@ public class EndlessRunnerExit : MonoBehaviour
 
     // Dahili
     private bool isActive = false;
+    private bool isExitActive = false;
     private AsyncOperation loadOperation;
     private Camera playerCam;
     private CharacterController characterController;
@@ -107,8 +113,25 @@ public class EndlessRunnerExit : MonoBehaviour
 
     public void OnExitTriggerEnter()
     {
-        if (loadOperation == null) return;
-        loadOperation.allowSceneActivation = true;
+        if (isExitActive || loadOperation == null) return;
+        isExitActive = true; // Geçişi birden fazla tetiklememek için kilitliyoruz
+
+        if (fadeImage != null)
+        {
+            fadeImage.gameObject.SetActive(true);
+            Color color = fadeImage.color;
+            color.a = 0f; // Siyah resmi başlangıçta tamamen saydam yap
+            fadeImage.color = color;
+
+            fadeImage.DOFade(1f, fadeDuration).OnComplete(() =>
+            {
+                loadOperation.allowSceneActivation = true; // Ekran karardıktan sonra yeni sahneye geç
+            });
+        }
+        else
+        {
+            loadOperation.allowSceneActivation = true; // Image atanmamışsa beklemeden direkt geç
+        }
     }
 }
 
