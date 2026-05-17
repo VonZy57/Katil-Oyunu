@@ -29,11 +29,13 @@ public class GetFeetDown : Interactable
         // Cenk'i sandalyeye oturtmak için sandalyenin pozisyonuna da
         chairForCenk.transform.position = cenksChairTransform.position;
         chairForCenk.transform.rotation = cenksChairTransform.rotation;
+        promptMessage = ""; // Etkileşim mesajını temizle
         this.enabled = false;
     }
 
 
     public bool isDialogCompleted { get; private set; } = false;
+    private bool isDialogActive = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -44,16 +46,32 @@ public class GetFeetDown : Interactable
     // Update is called once per frame
     void Update()
     {
-        
+        if (MissionManager.Instance == null || missionObj == null) return;
+
+        // İlgili görev aktifse ve henüz konuşulmadıysa yazıyı göster
+        if (!isDialogCompleted && !isDialogActive && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
+        {
+            promptMessage = "E - Talk";
+        }
+        else
+        {
+            promptMessage = ""; // Görev aktif değilse veya diyalogdaysa yazıyı gizle
+        }
     }
 
     protected override void Interact()
     {
-        StartCoroutine(DialogRoutine()); 
+        // Sadece ilgili görev aktifken etkileşime izin ver
+        if (missionObj != null && MissionManager.Instance != null && MissionManager.Instance.CurrentMission != missionObj.requiredMission)
+            return;
+
+        if (!isDialogCompleted && !isDialogActive)
+            StartCoroutine(DialogRoutine()); 
     }
     
     private IEnumerator DialogRoutine()
     {
+        isDialogActive = true;
         dialogSystem.StartDialog(getFeetDownNode);
         
         // Panelin açılması için 1 frame bekle
@@ -62,7 +80,14 @@ public class GetFeetDown : Interactable
         // Panel kapanana kadar (diyalog bitene kadar) bekle
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
         
+        isDialogActive = false;
         isDialogCompleted = true;
+        promptMessage = ""; // Diyalog bittikten sonra mesajı temizle
+
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted(); // Görevi tamamla ve sonrakine geç
+        }
     }
 
     void BuildDialogTree()

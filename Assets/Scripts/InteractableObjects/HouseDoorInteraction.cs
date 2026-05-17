@@ -82,6 +82,7 @@ public class HouseDoorInteraction : Interactable
         {
             notificationText.text = noMoneyMessage;
             notificationText.gameObject.SetActive(true);
+            notificationText.transform.parent.gameObject.SetActive(true); // Paneli de aktif et
         }
 
         yield return new WaitForSeconds(messageDisplayTime);
@@ -89,6 +90,7 @@ public class HouseDoorInteraction : Interactable
         if (notificationText != null)
         {
             notificationText.gameObject.SetActive(false);
+            notificationText.transform.parent.gameObject.SetActive(false); // Paneli de kapat
         }
 
         isShowingMessage = false;

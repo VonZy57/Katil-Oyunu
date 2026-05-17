@@ -90,7 +90,6 @@ public class TalkWithNeighbor : MonoBehaviour
         }
         
         subtitleText.text = "";
-        isFinished = true;
         
         // Diyalog altyazıları bittikten sonra hareketleri ve kapı kapanmasını başlat
         yield return StartCoroutine(MoveAndCloseDoorSequence());
@@ -133,5 +132,7 @@ public class TalkWithNeighbor : MonoBehaviour
         // 4. Nesneler kapatılır
         if (neighborTransform != null) neighborTransform.gameObject.SetActive(false);
         if (motherTransform != null) motherTransform.gameObject.SetActive(false);
+
+        isFinished = true;
     }
 }

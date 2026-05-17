@@ -362,6 +362,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf207b59252374499a2515caa0ee4ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fadeImage: {fileID: 0}
+  fadeDuration: 2
+  fadeDelay: 1
   walkSpeed: 2
   starisSpeed: 1.5
   gravity: -9.81
@@ -396,4 +399,4 @@ MonoBehaviour:
   playerMovementScript: {fileID: 773693103501013671}
   normalSpeed: 1.8
   dragSpeed: 1.1
-  verySlowSpeed: 0.3
+  verySlowSpeed: 0.4
