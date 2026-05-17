@@ -244,13 +244,13 @@ public class LittleGirl : Interactable
 
         // Main Node Options
         DialogOption mainOption1 = DialogBuilder.CreateOption(
-            "Did you really see me talking on the phone?",
-            "Beni gerçekten gördün mü telefonla konuşurken?",
+            "Did you really see me?",
+            "Beni gerçekten gördün mü?",
             option1Engin
         );
         DialogOption mainOption2 = DialogBuilder.CreateOption(
-            "I was talking to my cousin on the phone. He called me.",
-            "Telefonda kuzenimle konuşuyordum. O beni aramıştı.",
+            "I was talking to my cousin.",
+            "Kuzenimle konuşuyordum.",
             option2Engin
         );
         DialogBuilder.AddOption(mainDialogNode, mainOption1);

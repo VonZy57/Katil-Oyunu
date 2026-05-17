@@ -132,14 +132,14 @@ public class KuruGreeting : Interactable
         // Bursa Seçeneği - Engin'in cevabı
         bursaOption1Response = DialogBuilder.CreateNode(
             "I need to go to Bursa. How can I get there?",
-            "Benim Bursa'ya gitmem gerek. Nasıl gidebilirim?",
+            "Bursa'ya gitmem lazım. Nasıl gidebilirim?",
             "Engin"
         );
 
         // Bursa Seçeneği - Kuru'nun yanıtı
         bursaOption2Response = DialogBuilder.CreateNode(
             "You can't even go out to the square at this hour. Buses to Bursa leave from Esenler. Ferries from Eminönü. Trying to go to those places at this hour is not wise. I'd say wait for the morning.",
-            "Bu saatte meydana bile çıkamazsın sen. Bursa'ya giden otobüsler Esenler'den kalkar. Vapurlar Eminönü'nden. Bu saatte o taraflara gitmeye çalışmak akıl karı değil. Sabahı bekle derim.",
+            "Bu saatte meydana bile çıkamazsın sen. Bursa'ya giden otobüsler Esenler'den kalkar. Vapurlar Eminönü'nden. Bu saatte o taraflara gitmeye çalışmak akıl kârı değil. Sabahı bekle derim.",
             "Kuru"
         );
 
@@ -149,8 +149,8 @@ public class KuruGreeting : Interactable
 
         // Ana seçenek
         DialogOption bursaOption = DialogBuilder.CreateOption(
-            "I need to go to Bursa. How can I get there?",
-            "Benim Bursa'ya gitmem gerek. Nasıl gidebilirim?",
+            "I need to go to Bursa.",
+            "Bursa'ya gitmem lazım.",
 
             bursaOption1Response // Direkt Engin'in cevabına git
         );
@@ -215,8 +215,8 @@ public class KuruGreeting : Interactable
 
         // Ana seçenek
         DialogOption whereOption = DialogBuilder.CreateOption(
-            "Sorry man, I'm not sure where I am.",
-            "Pardon abi, ben nerde olduğumdan emin değilim sanırım.",
+            "I'm not sure where I am.",
+            "Nerede olduğumdan emin değilim.",
             whereOption1Response // Direkt Engin'in cevabına git
         );
 
