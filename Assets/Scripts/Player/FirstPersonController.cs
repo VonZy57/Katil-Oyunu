@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using DG.Tweening;
 
 [System.Serializable]
 public class SurfaceFootstep
@@ -12,6 +14,11 @@ public class SurfaceFootstep
 [RequireComponent(typeof(CharacterController))]
 public class FirstPersonController : MonoBehaviour
 {
+    [Header("Başlangıç Efekti")]
+    public Image fadeImage; // Siyah ekran resmi (UI Image)
+    public float fadeDuration = 2f; // Fade efekti süresi
+    public float fadeDelay = 1f; // Fade efekti öncesi bekleme süresi
+
     [Header("Hareket Ayarları")]
     public float walkSpeed = 3f;
     public float starisSpeed = 1.5f;
@@ -89,6 +96,24 @@ public class FirstPersonController : MonoBehaviour
     private void OnEnable() => controls.Player.Enable();
     private void OnDisable() => controls.Player.Disable();
 
+    private void Start()
+    {
+        // Sahne başladığında ekranın siyahtan normale dönmesi (Fade In/Out)
+        if (fadeImage != null)
+        {
+            // Başlangıçta tamamen siyah yap ve aktif et
+            Color startColor = fadeImage.color;
+            startColor.a = 1f;
+            fadeImage.color = startColor;
+            fadeImage.gameObject.SetActive(true);
+
+            // DOTween kullanarak belirtilen süre kadar bekledikten sonra alpha değerini 0'a indir (Saydamlaştır)
+            fadeImage.DOFade(0f, fadeDuration).SetDelay(fadeDelay).OnComplete(() =>
+            {
+                fadeImage.gameObject.SetActive(false); // İşlem bitince objeyi kapat
+            });
+        }
+    }
 
     private void Update()
     {
