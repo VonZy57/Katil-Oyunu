@@ -74,7 +74,21 @@ public class MotherCooking : MonoBehaviour
         {
             if (fps != null) { fps.SyncCameraRotation(); fps.enabled = true; } // Yeni açıyı sisteme kaydet ve kontrolleri geri ver
             dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
+            StartCoroutine(WaitForDialogEnd()); // Diyalogun bitmesini bekleyecek sistemi başlat
         });
+    }
+
+    private IEnumerator WaitForDialogEnd()
+    {
+        // Panelin açılması için 1 frame bekle (erken tetiklenmeyi önlemek için)
+        yield return null;
+        
+        // Diyalog paneli kapanana kadar (EndDialog çağrılana kadar) döngüyü beklet
+        yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+        
+        // Diyalog kapandığında görevi ilerlet
+        if (missionObj != null)
+            missionObj.OnInteracted();
     }
 
     void BuildDialogTree()
@@ -89,7 +103,7 @@ public class MotherCooking : MonoBehaviour
         "Kalk da bir boka yara. Cesetleri sırtlan da banyoya koy. Midemiz kaldırmaz ellam. Babası kılıklı canım oğluşum benim. Hadi garip anana bir yardım et.",
         "Mother");
 
-        DialogOption silentOption = DialogBuilder.CreateOptionWithEvent("...", "...", carryTheBodies2, () => {missionObj.OnInteracted();}, true);
+        DialogOption silentOption = DialogBuilder.CreateOption("...", "...", carryTheBodies2, true);
         DialogBuilder.AddOption(carryTheBodies, silentOption);
     }
 }
