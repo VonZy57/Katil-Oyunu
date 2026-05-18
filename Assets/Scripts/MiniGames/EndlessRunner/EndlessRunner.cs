@@ -1,4 +1,5 @@
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 
 public class EndlessRunner : MonoBehaviour
@@ -32,6 +33,10 @@ public class EndlessRunner : MonoBehaviour
     [Header("Ses Ayarları")]
     public AudioClip turnBackSound;
     public AudioSource audioSource;
+
+    [Header("Altyazı Ayarları")]
+    public TextMeshProUGUI subtitleText;
+    public DialogSystem dialogSystem;
 
     [Header("Kapı Dönüş Sistemi")]
     public float doorPromptTimeout = 2f;
@@ -417,6 +422,7 @@ public class EndlessRunner : MonoBehaviour
 
         RotateBackwards();
         EnableVoidFog();
+        ShowTurnBackSubtitle();
 
         DOTween.Sequence()
             .AppendInterval(rotationDuration)
@@ -436,6 +442,26 @@ public class EndlessRunner : MonoBehaviour
                 walkSpeed = baseWalkSpeed * 1.5f;
                 EnableFog();
             });
+    }
+
+    void ShowTurnBackSubtitle()
+    {
+        if (subtitleText == null) return;
+
+        bool isTurkish = false;
+        if (dialogSystem != null)
+            isTurkish = dialogSystem.GetCurrentLanguage();
+
+        string trText = "Kaçma gel buraya babası kılıklı hain oğlum.";
+        string enText = "Don't run away, you traitorous son, just like your father.";
+
+        subtitleText.text = isTurkish ? trText : enText;
+
+        DOVirtual.DelayedCall(1f, () =>
+        {
+            if (subtitleText != null)
+                subtitleText.text = "";
+        });
     }
 
     void SetObstaclesActive(bool active)
