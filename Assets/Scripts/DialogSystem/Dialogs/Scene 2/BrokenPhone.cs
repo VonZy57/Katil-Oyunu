@@ -26,8 +26,10 @@ public class BrokenPhone : Interactable
         missionObj = GetComponent<MissionObjective>();
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
+
         if (!hasInteracted && missionObj != null && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
         {
             promptMessage = "E - Telephone";

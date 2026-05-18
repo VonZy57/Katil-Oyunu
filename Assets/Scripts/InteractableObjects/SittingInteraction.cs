@@ -20,7 +20,7 @@ public class SittingInteraction : Interactable
     protected CharacterController playerController;
     protected PlayerControls controls;
 
-    protected virtual void Awake()
+    protected override void Awake()
     {
         controls = new PlayerControls(); // Input system ile oluşturulmuş PlayerControls isimli script referansı
 

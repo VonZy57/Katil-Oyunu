@@ -44,8 +44,9 @@ public class GetFeetDown : Interactable
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
+        base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
         if (missionObj != null && MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isDialogCompleted)
         {
             promptMessage = "E - Talk";

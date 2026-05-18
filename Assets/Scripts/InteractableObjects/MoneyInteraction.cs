@@ -11,8 +11,9 @@ public class MoneyInteraction : Interactable
         promptMessage = ""; // Başlangıçta etkileşim yazısını gizle
     }
 
-    void Update()
+    protected override void Update()
     {
+        base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
         if (MissionManager.Instance == null || missionObj == null) return;
 
         // İlgili görev aktifse ve para henüz alınmadıysa yazıyı göster

@@ -3,12 +3,12 @@ using UnityEngine.UIElements;
 
 public class SittingTestScript : Interactable
 {
-    [Header("Oturma Ayarlarý")]
+    [Header("Oturma Ayarlarï¿½")]
     public Transform sitReference;
     public Transform standReference;
     public float sitSpeed = 2f;
 
-    [Header("Oyuncu Referansý")]
+    [Header("Oyuncu Referansï¿½")]
     public GameObject player;
 
     private bool isSitting = false;
@@ -35,7 +35,7 @@ public class SittingTestScript : Interactable
 
     protected override void Interact()
     {
-        // Eðer hareket halindeysek (oturuyor veya kalkýyorsak) komutu reddet
+        // Eï¿½er hareket halindeysek (oturuyor veya kalkï¿½yorsak) komutu reddet
         if (isMoving) return;
 
         isSitting = !isSitting;
@@ -43,7 +43,7 @@ public class SittingTestScript : Interactable
 
         if (isSitting)
         {
-            // --- OTURMA BAÞLADI ---
+            // --- OTURMA BAï¿½LADI ---
             originalPosition = player.transform.position;
             originalRotation = player.transform.rotation;
 
@@ -54,7 +54,7 @@ public class SittingTestScript : Interactable
         }
         else
         {
-            // --- KALKMA BAÞLADI ---
+            // --- KALKMA BAï¿½LADI ---
             if (playerController) playerController.enabled = false;
 
             if (playerFPS)
@@ -67,10 +67,12 @@ public class SittingTestScript : Interactable
         }
     }
 
-    private void Update()
+    protected override void Update()
     {
-        // 1. DÜZELTME: EÐER OTURUYORSAK, RAYCAST'E ÝHTÝYAÇ DUYMADAN E'YÝ DÝNLE
-        // Oyuncu otururken koltuða bakmýyor olabilir, bu yüzden manuel input kontrolü ekliyoruz.
+        base.Update(); // Ãœst sÄ±nÄ±ftaki (Interactable) outline mesafe kontrolÃ¼nÃ¼ Ã§alÄ±ÅŸtÄ±r
+
+        // 1. Dï¿½ZELTME: Eï¿½ER OTURUYORSAK, RAYCAST'E ï¿½HTï¿½YAï¿½ DUYMADAN E'Yï¿½ Dï¿½NLE
+        // Oyuncu otururken koltuï¿½a bakmï¿½yor olabilir, bu yï¿½zden manuel input kontrolï¿½ ekliyoruz.
         if (isSitting && !isMoving)
         {
             if (Input.GetKeyDown(KeyCode.E))
@@ -86,7 +88,7 @@ public class SittingTestScript : Interactable
 
         float dist = Vector3.Distance(player.transform.position, targetPosition);
 
-        // HEDEFE GÝDÝÞ (LERP)
+        // HEDEFE Gï¿½Dï¿½ï¿½ (LERP)
         if (dist > 0.05f)
         {
             player.transform.position = Vector3.Lerp(player.transform.position, targetPosition, Time.deltaTime * sitSpeed);
@@ -102,7 +104,7 @@ public class SittingTestScript : Interactable
 
             if (isSitting)
             {
-                // Koltuða oturdu
+                // Koltuï¿½a oturdu
                 if (playerFPS)
                 {
                     playerFPS.enabled = true;
@@ -111,7 +113,7 @@ public class SittingTestScript : Interactable
             }
             else
             {
-                // Ayaða kalktý
+                // Ayaï¿½a kalktï¿½
                 if (playerController) playerController.enabled = true;
                 if (playerFPS)
                 {

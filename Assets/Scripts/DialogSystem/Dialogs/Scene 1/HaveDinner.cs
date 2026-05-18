@@ -48,7 +48,7 @@ public class HaveDinner : Interactable
     private CharacterController playerController;
     private PlayerControls controls;
 
-    private void Awake()
+    protected override void Awake()
     {
         controls = new PlayerControls(); // Input system ile oluşturulmuş PlayerControls isimli script referansı
 
@@ -73,8 +73,9 @@ public class HaveDinner : Interactable
 
     }
 
-    void Update()
-    {   
+    protected override void Update()
+    {
+        base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
         if (MissionManager.Instance == null) return;
 
         if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting)

@@ -32,8 +32,9 @@ public class BedInteraction : Interactable
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
+        base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
     }
 
     protected override void Interact()
