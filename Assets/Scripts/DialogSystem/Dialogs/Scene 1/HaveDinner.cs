@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.ProBuilder.Shapes;
+using TMPro;
 
 
 public class HaveDinner : Interactable
@@ -81,9 +82,13 @@ public class HaveDinner : Interactable
         if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting)
             promptMessage = "E - Otur";
         else if (isSitting && MissionManager.Instance.CurrentMission == leaveHomeMission)
+        {
             promptMessage = "E - Kalk";
+        }
         else
+        {
             promptMessage = "";
+        }
     }
 
 

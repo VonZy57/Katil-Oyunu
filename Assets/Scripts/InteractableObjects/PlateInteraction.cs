@@ -24,12 +24,13 @@ public class PlateInteraction : FoodInteractable
             DG.Tweening.Sequence eatSequence = DOTween.Sequence();
 
             // 1. Kamera 15 derece yukarı kalksın (1 saniyede)
-            eatSequence.Append(playerCamera.transform.DORotate(new Vector3(-15f, 0f, 0f), 1f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
+            eatSequence.Append(playerCamera.transform.DORotate(new Vector3(-20f, 0f, 0f), 1f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
 
             // 2. Çiğneme efekti (4 saniye boyunca)
             // DOPunchRotation kameranın X ekseninde ufak ritmik vuruşlar yapmasını sağlar (kafa sallama/çiğneme hissi).
             // 1 saniyelik bir sarsıntıyı 4 kere tekrar ederek toplam 4 saniye boyunca yukarıda çiğniyor gibi görünür.
-            eatSequence.Append(playerCamera.transform.DOPunchRotation(new Vector3(3f, 0f, 1f), 1f, 1, 0.5f).SetLoops(4));
+            //eatSequence.Append(playerCamera.transform.DOPunchRotation(new Vector3(3f, 0f, 0f), 1f, 1, 0.5f).SetLoops(4));
+            eatSequence.Append(playerCamera.transform.DOShakeRotation(1f, new Vector3(1.5f, 0f, 0f), 3, 20f).SetLoops(4));
 
             // 3. Kamera orijinal pozisyonuna geri dönsün (+15 derece ekleyerek çıktığımız kadar iniyoruz)
             //eatSequence.Append(playerCamera.transform.DORotate(new Vector3(15f, 0f, 0f), 1f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
@@ -38,7 +39,7 @@ public class PlateInteraction : FoodInteractable
             eatSequence.OnComplete(() => 
             {
                 FirstPersonController fpsController = player.GetComponent<FirstPersonController>();
-                fpsController.AddXRotation(-15f); // Animasyonda verdiğimiz -15 derecelik açıyı Controller'a da bildiriyoruz
+                fpsController.AddXRotation(-20f); // Animasyonda verdiğimiz -20 derecelik açıyı Controller'a da bildiriyoruz
                 fpsController.enabled = true;
             });
         }
