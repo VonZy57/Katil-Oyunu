@@ -32,6 +32,7 @@ public class EndlessRunner : MonoBehaviour
 
     [Header("Ses Ayarları")]
     public AudioClip turnBackSound;
+    public AudioClip obstacleHitSound;
     public AudioSource audioSource;
 
     [Header("Altyazı Ayarları")]
@@ -267,6 +268,9 @@ public class EndlessRunner : MonoBehaviour
         if (promptOpenDoor) promptOpenDoor.SetActive(false);
         currentDoorCheckpoint?.TurnOffLights();
         currentDoorCheckpoint = null;
+
+        if (obstacleHitSound != null && audioSource != null)
+            audioSource.PlayOneShot(obstacleHitSound);
 
         blackScreenObject?.SetActive(true);
         TeleportToSecondTrigger();
