@@ -197,7 +197,7 @@ public class PhoneCall : Interactable
         );
 
         DialogNode ferryResponse = DialogBuilder.CreateNode(
-            "There was an accident at the dock here. Ferry services are cancelled. Plus ferries are too crowded. Too dangerous, Mom might hear.",
+            "There was an accident at the dock here. Ferry services are cancelled. Plus ferries are too crowded. Too dangerous, Mother might hear.",
             "İskelede kaza oldu burada. Vapur seferleri iptal. Hem fazla kalabalık vapur. Fazla tehlikeli Anne duyabilir.",
             "Cousin at Bursa"
         );

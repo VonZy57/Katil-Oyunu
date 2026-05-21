@@ -13,7 +13,7 @@ public class CheckOutSideTrigger : MonoBehaviour
     void EndScene()
     {
         MissionObjective missionObj = GetComponent<MissionObjective>();
-        //Sonraki görevi tetikler ve sahne deðiþtirir
+        //Sonraki gï¿½revi tetikler ve sahne deï¿½iï¿½tirir
         if (missionObj != null)
             missionObj.OnInteracted();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
