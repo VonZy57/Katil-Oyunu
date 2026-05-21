@@ -27,6 +27,8 @@ public class PhoneCall : Interactable
     public Image clockImage;
     public TextMeshProUGUI clockText;
     public GameObject girlObject;
+    public GameObject objectToActivateOnBlackscreen; // ClockImage açılınca aktif edilecek obje
+    public Material skyboxMaterial; // ClockImage açılınca geçilecek skybox materyali
     
 
     [Header("Rotation Settings")]
@@ -392,6 +394,8 @@ public class PhoneCall : Interactable
         yield return new WaitForSeconds(1f);
         // Siyah ekranı aç
         clockImage.gameObject.SetActive(true);
+        if (objectToActivateOnBlackscreen != null) objectToActivateOnBlackscreen.SetActive(true);
+        if (skyboxMaterial != null) RenderSettings.skybox = skyboxMaterial;
         clockText.gameObject.SetActive(false);
         if (girlObject != null) girlObject.SetActive(false); // Girl object'i kaldır
         // 5 saniye karanlıkta bekle
