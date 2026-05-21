@@ -103,7 +103,7 @@ public class BrokenPhone : Interactable
     {
         // Kız'ın telefon hakkındaki diyaloğu (tek seferlik)
         phoneDialogNode = DialogBuilder.CreateEndNode(
-            "Big brother, that phone is broken.",
+            "Sir, that phone is broken.",
             "Abi o telefon bozuk.",
             "Little Girl"
         );

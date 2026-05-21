@@ -246,7 +246,7 @@ public class HaveDinner : Interactable
         "Cenk");
 
         DialogNode motherSaysLiarsNode = DialogBuilder.CreateNode
-        ("Liars! I'll sh*t on the leg of anyone who tries to insult our family.",
+        ("Liars! I'll f*ck up anyone who tries to insult our family.",
         "Yalancılar! Ailemize dil uzatmaya çalışnanın bacağına sıçarım.",
         "Mother");
 
@@ -256,7 +256,7 @@ public class HaveDinner : Interactable
         "Cenk");
 
         DialogNode motherSaysShutNode = DialogBuilder.CreateEndNode
-        ("Shut the f*ck up. Eat!",
+        ("Shut the f*ck up and eat!",
         "Kapa çeneni. Yemeğini ye!",
         "Mother");
         

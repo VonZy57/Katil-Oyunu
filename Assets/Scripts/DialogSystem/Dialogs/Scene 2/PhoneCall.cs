@@ -157,9 +157,9 @@ public class PhoneCall : Interactable
     {
         // === PHONE CALL START ===
         phoneCallNode = DialogBuilder.CreateNode(
-            "Cousin? Is that you? Cenk told me you finally escaped.",
+            "Cousin? That's you, isn't it? Cenk told me you finally escaped.",
             "Kuzen? Sensin değil mi? Cenk söyledi sonunda kaçmışsın.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // Engin'in cevabı
@@ -173,20 +173,20 @@ public class PhoneCall : Interactable
         DialogNode cousinAddress = DialogBuilder.CreateNode(
             "My house is in Nilüfer, Minareliçavuş. When you get there, anyone you ask can show you where I am.",
             "Benim evim Nilüfer, Minareliçavuş'ta. Oraya gelince kime sorsan beni gösterir.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // === OPTION 1: OTOBUS ===
         DialogNode busOption1 = DialogBuilder.CreateNode(
-            "I'll catch the first bus tomorrow and come.",
+            "I'll catch the first bus tomorrow and make my way over.",
             "Yarın ilk otobüse atlayıp geliyorum.",
             "Engin"
         );
 
         DialogNode busResponse = DialogBuilder.CreateNode(
-            "No. You can't use the bus. Mom will hear. They check IDs, it's too risky.",
+            "No. You can't use the bus. Mother will hear. They check IDs, it's too risky.",
             "Hayır. Otobüs kullanamazsın. Anne duyar. Kimliğine bakıyorlar fazla riskli.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // === OPTION 2: VAPUR ===
@@ -199,7 +199,7 @@ public class PhoneCall : Interactable
         DialogNode ferryResponse = DialogBuilder.CreateNode(
             "There was an accident at the dock here. Ferry services are cancelled. Plus ferries are too crowded. Too dangerous, Mom might hear.",
             "İskelede kaza oldu burada. Vapur seferleri iptal. Hem fazla kalabalık vapur. Fazla tehlikeli Anne duyabilir.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // === AFTER OPTIONS (SAME FOR BOTH) ===
@@ -212,7 +212,7 @@ public class PhoneCall : Interactable
         DialogNode needCar = DialogBuilder.CreateNode(
             "You need to find a car. A path away from crowds, a road no one knows the name of, Engin. There's no other way.",
             "Bir araba bulman gerekiyor. Kalabalıktan uzak, kimsenin adını bilmediği bir yol Engin. Başka çare yok.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // === SECOND SET OF OPTIONS ===
@@ -226,7 +226,7 @@ public class PhoneCall : Interactable
         DialogNode signsWillAppear = DialogBuilder.CreateNode(
             "Don't worry, signs will appear before you. You've always been special. You'll succeed, don't be afraid.",
             "Merak etme önüne işaretler çıkacaktır. Sen her zaman özel biri oldun. Başaracaksın korkma.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // Option 2: Can't drive
@@ -239,7 +239,7 @@ public class PhoneCall : Interactable
         DialogNode listenToVoice = DialogBuilder.CreateNode(
             "Listen to the voice inside you. It will guide you. You are special. You've always been special. You can do it.",
             "İçindeki sesi dinle. O seni yönlendirecek. Sen özel birisin. Her zaman özel oldun. Yapabilirsin.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // === FINAL NODES (SAME FOR BOTH) ===
@@ -252,7 +252,7 @@ public class PhoneCall : Interactable
         DialogNode goodLuck = DialogBuilder.CreateNode(
             "May your path be clear, cousin.",
             "Yolun açık olsun kuzen.",
-            "Bursa'daki Kuzen"
+            "Cousin at Bursa"
         );
 
         // === AFTER PHONE CALL - GIRL ARRIVES ===

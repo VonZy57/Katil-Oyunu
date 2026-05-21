@@ -127,7 +127,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
     void BuildDialogTree()
     {
         cenkStartsNode = DialogBuilder.CreateNode
-        ("You do not belong here, brother. The dead was right, last night. Mother is crazy. Look, what she made you do.",
+        ("You do not belong here, brother. The dead were right, last night. Mother is crazy. Look, what she made you do.",
         "Abi... Sen buraya ait değilsin. Ölüler haklıydı, dün gece. Anne bir deli. Bak neler yaptırdı sana.",
         "Cenk");
 
@@ -156,7 +156,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         //1.Dal "AĞZINI TOPLA" SEÇENEĞİ
         DialogNode enginSaysWatchYourWordsNode = DialogBuilder.CreateNode
-        ("Watch your words, you're talking with your elder brother. What do you think you're talking about? Murderer???",
+        ("Watch your words, you're talking to your elder brother. What the hell do you think you're talking about? Murderer???",
         "Ağzını topla, abinle konuşuyorsun. Katil matil ne zırvalıyorsun?!",
         "Engin");
 
@@ -168,7 +168,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         //1.1 "ANNE SÖYLEDİ" CEVABI
         DialogNode motherSaidThat = DialogBuilder.CreateNode
-        ("Mother said that, Cenk. Mother never wants bad things. So, they were bad.",
+        ("Mother said that, Cenk. Mother never wants bad things. That means they were bad.",
         "Anne söyledi Cenk Anne asla kötü bir şey istemez. Demek ki kötü insanlarmış.",
         "Engin");
 
@@ -178,11 +178,11 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         //1.2 "AİLEMİZE ZARAR VERECEKLERDİ" CEVABI
         DialogNode theyWouldHarmUs = DialogBuilder.CreateNode
-        ("They would have harmed our family, Cenk. You know what they said about us. They weren't good.",
+        ("They would have harmed our family, Cenk. You know what they said about us. They weren't good people.",
         "Ailemize zarar vereceklerdi Cenk. Bizim hakkımızda ne dediklerini duydun. İyi insan değillerdi.",
         "Engin");
 
-        DialogOption theyWouldHarmOption = DialogBuilder.CreateOption("They would harm our family.", "Ailemize zarar vereceklerdi.", theyWouldHarmUs);
+        DialogOption theyWouldHarmOption = DialogBuilder.CreateOption("They would have harmed our family.", "Ailemize zarar vereceklerdi.", theyWouldHarmUs);
         DialogBuilder.AddOption(cenkSaysYouKilled, theyWouldHarmOption);
 
         // 1 - Devam
@@ -192,7 +192,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
         "Cenk"); 
 
         DialogNode enginSaysWhyHeKilledNode = DialogBuilder.CreateNode
-        ("He was walking crookedly. He was never gonna be a strong and handsome like you and me.",
+        ("He was walking crookedly. He was never gonna be strong and handsome like you and me.",
         "Yamuk yürüyordu. Senin ve benim gibi güçlü ve yakışıklı olamayacaktı.",
         "Engin");
 
@@ -219,7 +219,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
 
         //Bu dalı ana dala bağlayan seçeneği ekler.
-        DialogOption enginSaysWatchYourWordsOption = DialogBuilder.CreateOption("Watch your words! Who is a murderer?", "Ağzını topla. Kim katilmiş?", enginSaysWatchYourWordsNode);
+        DialogOption enginSaysWatchYourWordsOption = DialogBuilder.CreateOption("Watch your mouth! Who's a murderer?", "Ağzını topla. Kim katilmiş?", enginSaysWatchYourWordsNode);
         DialogBuilder.AddOption(sheKilledTwoNode, enginSaysWatchYourWordsOption);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,24 +232,24 @@ public class TalkWithCenkOnTable : MonoBehaviour
         "Engin");
 
         DialogNode cenkSaysDoYouRememberNode = DialogBuilder.CreateNode
-        ("You will murder until you leave this house, brother. You will kill a lot. Do you remember that man, the fat one?",
+        ("You will murder until you leave this house, brother. And you will murder a lot. Do you remember that man, the fat one?",
         "Bu evde kaldığın sürece öldüreceksin abi. Hem de çok öldüreceksin. Hatırlıyor musun o şişman adamı?",
         "Cenk");
 
         
         //2.1 "BOĞAZINI KESTİM" CEVABI
         DialogNode cutTheThroatNode = DialogBuilder.CreateNode
-        ("I slited his throat. With a fruit knife. It was hard.",
+        ("I slit his throat. With a fruit knife. It was hard.",
         "Boğazını kestim. Bir meyve bıçağıyla. Çok zordu.",
         "Engin");
 
-        DialogOption cutTheThroatOption = DialogBuilder.CreateOption("I slited his throat", "Boğazını kestim", cutTheThroatNode);
+        DialogOption cutTheThroatOption = DialogBuilder.CreateOption("I slit his throat", "Boğazını kestim", cutTheThroatNode);
         DialogBuilder.AddOption(cenkSaysDoYouRememberNode, cutTheThroatOption);
 
 
         //2.2 "HATIRLAMAK İSTEMİYORUM" CEVABI
         DialogNode dontWantRememberNode = DialogBuilder.CreateNode
-        ("I don't even want to think about it. He had struggled a lot.",
+        ("I don't even want to think about it. He was struggling a lot.",
         "Hatırlamak bile istemiyorum. Çok debelenmişti.",
         "Engin");
 
@@ -259,7 +259,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         // 2 - Devam
         DialogNode motherDontLikeFatsNode = DialogBuilder.CreateNode
-        ("You killed someone simply because Mother doesn't like fat people as if he could harm our family.",
+        ("You killed someone simply because Mother doesn't like fat people. Supposedly because he could 'harm' our family.",
         "Sırf Anne şişman insanları sevmiyor diye birini öldürdün sen. Güya ailemize zarar verebilir diye.",
         "Cenk");
 
@@ -329,7 +329,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
         DialogBuilder.AddOption(leaveHereNode, leaveHereSilentOp);
 
         DialogNode goToCousinNode = DialogBuilder.CreateNode
-        ("Here, I've put cousin's number from Bursa here. He will take you in, mom won't find out. And take this, here is some money I set aside for you.",
+        ("Here, I've put cousin's number from Bursa here. He will take you in, mother won't find out. And take this, here is some money I set aside for you.",
         "Bursa'daki kuzenin telefon numarasını buraya yazdım. O seni evine alır, anne duymaz. Senin için ayırdığım biraz para. Al bu parayı da.",
         "Cenk");
         

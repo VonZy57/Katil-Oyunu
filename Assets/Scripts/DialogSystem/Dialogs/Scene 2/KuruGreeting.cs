@@ -116,14 +116,14 @@ public class KuruGreeting : Interactable
     {
         //  (Kuru'nun eşinin bağırması) 
         introNode = DialogBuilder.CreateNode(
-            "KURUUUU! Are you sleeping again, damn it. Don't make the customer wait. Be useful for once.",
+            "KURUUUU! Are you sleeping again, damn it. Don't make the customer wait. Be worth a damn for once.",
             "KURUUUU! Gene mi uyuyorsun Allah'ın belası. Müşteriyi bekletme. Bir boka yara.",
-            "Kuru'nun Eşi"
+            "Kuru's Wife"
         );
 
         // === MAIN NODE (Kuru'nun karşılaması) ===
         mainNode = DialogBuilder.CreateNode(
-            "Welcome to Sevda Motel. This is the most honorable motel in the neighborhood. This motel is as honorable as a girl who just entered puberty. If you try to bring a woman in, I'll beat you badly with my stick. How many days will you stay?",
+            "Welcome to Sevda Motel. This is the most honorable motel in the neighborhood. This motel is as honorable as a girl who just entered puberty. If you try to bring a woman in, I'll rough you up badly with my stick. How many days will you stay?",
             "Sevda Motel'e hoş geldiniz. Semtin en namuslu moteli burasıdır. Ergenliğine yeni girmiş bir kız kadar namusludur bu motel. İçeri kadın sokmaya çalışırsan seni sopamla çok pis döverim. Kaç gün kalacaksın?",
             "Kuru"
         );
@@ -138,7 +138,7 @@ public class KuruGreeting : Interactable
 
         // Bursa Seçeneği - Kuru'nun yanıtı
         bursaOption2Response = DialogBuilder.CreateNode(
-            "You can't even go out to the square at this hour. Buses to Bursa leave from Esenler. Ferries from Eminönü. Trying to go to those places at this hour is not wise. I'd say wait for the morning.",
+            "You can't even go out to the center at this hour. Buses to Bursa leaves from Esenler. Ferries from Eminönü. Trying to go to those places at this hour is not wise. I'd say wait for the morning.",
             "Bu saatte meydana bile çıkamazsın sen. Bursa'ya giden otobüsler Esenler'den kalkar. Vapurlar Eminönü'nden. Bu saatte o taraflara gitmeye çalışmak akıl kârı değil. Sabahı bekle derim.",
             "Kuru"
         );
@@ -157,7 +157,7 @@ public class KuruGreeting : Interactable
 
         // Bursa yanıtından sonraki seçenekler
         DialogNode bursaContinue1 = DialogBuilder.CreateNode(
-            "Okay. If I stay here tonight, how much would it cost?",
+            "Okay. If I stay for the night, how much would it cost?",
             "Peki. Ben bu geceyi burada geçirsem ne kadar tutar?",
             "Engin"
         );
@@ -175,7 +175,7 @@ public class KuruGreeting : Interactable
         );
 
         DialogNode bursaEnd = DialogBuilder.CreateEndNode(
-            "In the common area, in the back. It hasn't been working for 3 months, but you can give it a try.",
+            "There is one in the common area, in the back. It hasn't been working for 3 months, but you can try your luck.",
             "Ortak alanda, arkada. 3 aydır çalışmıyor ama sen bir şansını dene.",
             "Kuru"
         );
@@ -197,14 +197,14 @@ public class KuruGreeting : Interactable
         // === WHERE OPTION ===
         // Neredeyim Seçeneği - Engin'in cevabı
         whereOption1Response = DialogBuilder.CreateNode(
-            "Sorry man, I'm not sure where I am.",
+            "Sorry man, I'm not really sure where I am.",
             "Pardon abi, ben nerde olduğumdan emin değilim sanırım.",
             "Engin"
         );
 
         // Neredeyim Seçeneği - Kuru'nun yanıtı
         whereOption2Response = DialogBuilder.CreateNode(
-            "This is one of Istanbul's most dishonorable neighborhoods. Here everyone found their life on the street, continues to live by chance, and there is no purpose other than pleasures. People are not trustworthy, even the cats and dogs are different here.",
+            "This is one of Istanbul's most dishonorable neighborhoods. Everyone here found their lives on the street, continues to live by chance, and there is no purpose to their lives other than pleasure. People are not trustworthy, even the cats and dogs act different here.",
             "Burası İstanbul'un en namussuz semtlerinden biridir. Burada herkes canını sokakta bulmuştur, şans eseri yaşamaya devam eder ve zevklerden başka bir gaye bulunmaz. İnsanına güvenilmez, hatta kedisi köpeği bile bir başkadır burada.",
             "Kuru"
         );
@@ -222,8 +222,8 @@ public class KuruGreeting : Interactable
 
         // Neredeyim yanıtından sonraki seçenekler
         DialogNode whereContinue1 = DialogBuilder.CreateNode(
-            "Then I'll spend the night at this neighborhood's most honorable motel. Exactly how honorable is this hotel?",
-            "Ben o zaman bu semtin en namuslu motelinde geceyi geçireyim. Tam olarak ne kadar namuslu bu otel?",
+            "Then I'll spend the night at this neighborhood's most honorable motel. Exactly how honorable is this motel?",
+            "Ben o zaman bu semtin en namuslu motelinde geceyi geçireyim. Tam olarak ne kadar namuslu bu motel?",
             "Engin"
         );
 
@@ -240,7 +240,7 @@ public class KuruGreeting : Interactable
         );
 
         DialogNode whereEnd = DialogBuilder.CreateEndNode(
-            "In the common area, in the back. It hasn't been working for 3 months, but you can give it a try.",
+            "There is one in the common area, in the back. It hasn't been working for 3 months, but you can try your luck.",
             "Ortak alanda, arkada. 3 aydır çalışmıyor ama sen bir şansını dene.",
             "Kuru"
         );

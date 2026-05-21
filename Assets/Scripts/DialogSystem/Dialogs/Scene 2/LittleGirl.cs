@@ -78,7 +78,7 @@ public class LittleGirl : Interactable
     {
         // === MAIN DIALOG START ===
         mainDialogNode = DialogBuilder.CreateNode(
-            "Bro, bro, bro. Why did you yell at me last night? You scared me so much. Who were you talking to? I've never seen that phone work before?",
+            "Sir, sir, sir. Why did you yell at me last night? You scared me so much. Who were you talking to? I've never seen that phone work before?",
             "Abi, abi, abi. Dün gece bana niye bağırdın. Çok korkuttun beni. Kiminle konuşuyordun? Ben bu telefonun daha önce çalıştığını görmemiştim?",
             "Little Girl"
         );
@@ -91,7 +91,7 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option1GirlResponse = DialogBuilder.CreateNode(
-            "Yes bro. You screamed in my face and went upstairs. Don't you remember?",
+            "Yes sir. You screamed in my face and went upstairs. Don't you remember?",
             "Evet abi. Suratıma çığlık atıp yukarı çıktın. Hatırlamıyor musun?",
             "Little Girl"
         );
@@ -117,20 +117,20 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option11GirlResponse = DialogBuilder.CreateNode(
-            "My mom would say it's not possible. Everyone lives only inside their own head. No one loves or understands anyone because of this. That's why my bastard father left us.",
+            "My mom would say it's not possible. Everyone only lives inside their own head. No one loves or understands anyone because of this. And that's also why my b*stard of a father left us.",
             "Annem olamaz derdi. Herkes sadece kendi kafasının içinde yaşarmış. Kimse kimseyi bu yüzden sevmez ve anlamazmış. Yavşak babam da bu yüzden bizi terk etmiş.",
             "Little Girl"
         );
 
         // Option 1.2: If you saw me...
         DialogNode option12Engin = DialogBuilder.CreateNode(
-            "If you saw me, I really talked to my cousin.",
+            "If you saw me, that means I really was talking to my cousin.",
             "Beni gördüysen ben gerçekten kuzenimle konuştum demektir.",
             "Engin"
         );
 
         DialogNode option12GirlResponse = DialogBuilder.CreateNode(
-            "So you talked to your cousin. Does your cousin live in Bursa, in Nilüfer, Minareliçavuş?",
+            "So you talked with your cousin. Does your cousin live in Bursa, in Nilüfer, Minareliçavuş?",
             "Demek kuzeninle konuştun. Bursa'da mı yaşıyor kuzenin, Nilüfer, Minareliçavuş'ta?",
             "Little Girl"
         );
@@ -149,13 +149,13 @@ public class LittleGirl : Interactable
 
         // === OPTION 2 BRANCH: I was talking to my cousin ===
         DialogNode option2Engin = DialogBuilder.CreateNode(
-            "I was talking to my cousin on the phone. He called me.",
+            "I was talking to my cousin on the phone. He was the one that called me.",
             "Telefonda kuzenimle konuşuyordum. O beni aramıştı.",
             "Engin"
         );
 
         DialogNode option2GirlResponse = DialogBuilder.CreateNode(
-            "You yelled at me and ran because of your cousin? It's not a problem for me. My mom always yells at me. She warned me about men who yell first and then leave.",
+            "You yelled at me and ran off because of your cousin? Not that it's a problem for me. My mom always yells at me. And she already warned me about men who yell first and then leave.",
             "Kuzenin yüzünden mi benim yüzüme bağırdın ve koştun? Benim için sorun olduğundan değil. Annem bana sürekli bağırır. Beni de önce bağıran sonra giden erkekler hakkında uyarmıştı.",
             "Little Girl"
         );
@@ -168,7 +168,7 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option21GirlResponse = DialogBuilder.CreateNode(
-            "I'm scared of my mom too. Was your mom on the phone?",
+            "I'm scared of my mom too. Was that your mom on the phone?",
             "Ben de annemden korkarım. Annen telefonda mıydı?",
             "Little Girl"
         );
@@ -180,7 +180,7 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option21GirlNo = DialogBuilder.CreateNode(
-            "No bro. There was only us here. If there was a mother, I would definitely remember. My mom hasn't come back for a while either.",
+            "No sir. It was only us here. If there was a mother here, I would definitely remember that. My mom hasn't come back for a while either.",
             "Hayır abi. Burada sadece biz vardık. Bir anne olsa kesinlikle hatırlardım. Benim annem de bir süredir geri dönmedi.",
             "Little Girl"
         );
@@ -193,7 +193,7 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option22GirlResponse = DialogBuilder.CreateNode(
-            "My father left us before I was born. My mom says his love and body were defeated by a bastard and he left me behind. Only I remained from him.",
+            "My father left us before I was born. My mom says her love and body were taken over by a b*stard and he left me behind. Only I remain from him.",
             "Benim babam bizi ben doğmadan önce bırakmış. Annem sevgisinin ve bedeninin bir yavşak tarafından yendiğini geriye de beni bıraktığını söylüyor. Ondan geriye yalnızca ben kalmışım.",
             "Little Girl"
         );
@@ -213,26 +213,26 @@ public class LittleGirl : Interactable
 
         // (DÜZELTME 2) İsim kısmı boş string. Eğer UI hala Little Girl gösteriyorsa, DialogUI scriptinde boş string kontrolü yapman gerekebilir.
         DialogNode commonNoise = DialogBuilder.CreateNode(
-            "A noise rises outside. The hum of a group of people fills the motel. Kuru talks outside the door as if giving advice to someone.",
+            "A noise increases outside. The hum of a group of people fills the motel. Kuru talks outside the door as if giving advice to someone.",
             "Dışarda bir gürültü yükselir. Bir gurup insanın uğultusu motelin içini doldurur. Kuru kapının dışarda birisine öğüt verir gibi konuşur.",
             "Noises"
         );
 
         DialogNode commonKuru = DialogBuilder.CreateNode(
-            "Dude, don't do it. The old man has no bad intentions.",
-            "Lavuk yapma etme. Yaşlı başlı adam, kötü niyeti yok.",
+            "Lavuk, don't do it. The old man has no bad intentions.",
+            "Lavuk, yapma etme. Yaşlı başlı adam, kötü niyeti yok.",
             "Kuru"
         );
 
         DialogNode commonGirlEnd = DialogBuilder.CreateEndNode(
-            "Asuman has come to the neighborhood again. A big incident is about to happen.",
+            "Asuman has come to the neighborhood again. A big incident is about to take place.",
             "Asuman gene mahalleye gelmiş. Büyük olay çıkmak üzere.",
             "Little Girl"
         );
 
         // After dialog
         afterDialogNode = DialogBuilder.CreateEndNode(
-            "Asuman has come to the neighborhood again. A big incident is about to happen.",
+            "Asuman has come to the neighborhood again. A big incident is about to take place.",
             "Asuman gene mahalleye gelmiş. Büyük olay çıkmak üzere.",
             "Little Girl"
         );
