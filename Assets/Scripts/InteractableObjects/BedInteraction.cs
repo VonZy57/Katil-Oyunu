@@ -16,12 +16,18 @@ public class BedInteraction : Interactable
     public float waitDuration = 3.0f;
 
     public bool isLightsOff = false;
+    public bool isDoorClosed = false;
 
-    [Header("Işık Açık Mesajı")]
-    public TextMeshProUGUI lightMessageText; // TextMeshPro referansı
+    [Header("Kapı Kontrolü")]
+    public Transform doorTransform;
+    public float doorClosedThreshold = 5f;
+
+    [Header("Uyuma Engel Mesajları")]
+    public TextMeshProUGUI lightMessageText;
     public string lightOnMessage = "I need the turn off the light";
-    public float messageDisplayTime = 3f;  // Mesaj ne kadar süre görünsün
-    private bool isShowingMessage = false; // Mesaj gösteriliyor mu?
+    public string doorOpenMessage = "I need to close the door";
+    public float messageDisplayTime = 3f;
+    private bool isShowingMessage = false;
     private MissionObjective missionObj;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -31,10 +37,12 @@ public class BedInteraction : Interactable
         missionObj = GetComponent<MissionObjective>();
     }
 
-    // Update is called once per frame
     protected override void Update()
     {
-        base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
+        base.Update();
+
+        if (doorTransform != null)
+            isDoorClosed = Quaternion.Angle(doorTransform.localRotation, Quaternion.identity) < doorClosedThreshold;
     }
 
     protected override void Interact()
@@ -47,12 +55,17 @@ public class BedInteraction : Interactable
             return;
         }
 
-        if (!isLightsOff) // Işık kapalı değilse engelle.
+        if (!isDoorClosed)
         {
             if (!isShowingMessage)
-            {
-                StartCoroutine(ShowLightOnMessage());
-            }
+                StartCoroutine(ShowBlockMessage(doorOpenMessage));
+            return;
+        }
+
+        if (!isLightsOff)
+        {
+            if (!isShowingMessage)
+                StartCoroutine(ShowBlockMessage(lightOnMessage));
             return;
         }
 
@@ -136,25 +149,20 @@ public class BedInteraction : Interactable
         }
     }
 
-    private IEnumerator ShowLightOnMessage()
+    private IEnumerator ShowBlockMessage(string message)
     {
         isShowingMessage = true;
 
-        // TextMeshPro'ya mesaj� yaz
         if (lightMessageText != null)
         {
-            lightMessageText.text = lightOnMessage;
+            lightMessageText.text = message;
             lightMessageText.gameObject.SetActive(true);
         }
 
-        // Belirtilen s�re kadar bekle
         yield return new WaitForSeconds(messageDisplayTime);
 
-        // TextMeshPro'yu gizle
         if (lightMessageText != null)
-        {
             lightMessageText.gameObject.SetActive(false);
-        }
 
         isShowingMessage = false;
     }

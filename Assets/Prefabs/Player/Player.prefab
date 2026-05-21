@@ -365,7 +365,7 @@ MonoBehaviour:
   fadeImage: {fileID: 0}
   fadeDuration: 2
   fadeDelay: 1
-  walkSpeed: 2
+  walkSpeed: 2.2
   starisSpeed: 1.5
   gravity: -9.81
   mouseSensitivity: 10
