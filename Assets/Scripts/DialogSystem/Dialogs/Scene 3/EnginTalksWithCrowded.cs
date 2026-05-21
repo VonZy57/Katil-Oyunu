@@ -1,22 +1,87 @@
 using UnityEngine;
+using DG.Tweening;
+using System.Collections;
 
 public class EnginTalksWithCrowded : MonoBehaviour
 {
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private DialogNode crowdStartNode;
     [SerializeField] private MissionObjective missionObj;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    [Header("Kamera ve Bakış Referansları")]
+    [SerializeField] private GameObject playerCamera;
+    [SerializeField] private Transform crowd1Transform; // Someone from the Crowd
+    [SerializeField] private Transform crowd2Transform; // Another from the Crowd
+    [SerializeField] private Transform crowd3Transform; // A Completely Different Person (Kadın)
+    [SerializeField] private Transform amcaTransform;   // Amca
+
+    private FirstPersonController playerFPS;
+
     void Start()
     {
+        if (playerCamera != null)
+        {
+            playerFPS = playerCamera.GetComponentInParent<FirstPersonController>();
+        }
         BuildDialog();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void StartCrowdDialog()
     {
-        
+        if (dialogSystem != null && crowdStartNode != null)
+        {
+            if (playerFPS != null) playerFPS.enabled = false;
+
+            if (playerCamera != null && crowd1Transform != null)
+            {
+                Camera cam = playerCamera.GetComponent<Camera>();
+                if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+                if (cam == null) cam = Camera.main; // Fallback
+
+                Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+                camTransform.DOKill();
+                camTransform.DOLookAt(crowd1Transform.position, 1f).SetEase(Ease.InOutSine); // İlk konuşana çevir
+            }
+
+            StartCoroutine(DialogSequence());
+        }
     }
-    
+
+    private IEnumerator DialogSequence()
+    {
+        dialogSystem.StartDialog(crowdStartNode);
+
+        yield return null;
+        yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
+        yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+
+        if (playerFPS != null)
+        {
+            playerFPS.SyncCameraRotation(); // Eski açıya dönmesini engelle
+            playerFPS.enabled = true; 
+        }
+
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted();
+        }
+    }
+
+    private IEnumerator LookAtTargetSequence(Transform targetTransform, float duration = 0.7f)
+    {
+        if (playerCamera != null && targetTransform != null)
+        {
+            Camera cam = playerCamera.GetComponent<Camera>();
+            if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+            if (cam == null) cam = Camera.main;
+
+            Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+            camTransform.DOKill();
+            camTransform.DOLookAt(targetTransform.position, duration).SetEase(Ease.InOutSine);
+        }
+        yield return null;
+    }
+
     void BuildDialog()
     {
         crowdStartNode = DialogBuilder.CreateNode
@@ -32,7 +97,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Another from the Crowd");
 
         // Silent Opt - 1
-        DialogOption crowd2Opt = DialogBuilder.CreateOption("...", "...", crowd2Node, true);
+        DialogOption crowd2Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd2Node, () => { StartCoroutine(LookAtTargetSequence(crowd2Transform)); }, true);
         DialogBuilder.AddOption(crowdStartNode, crowd2Opt);
 
         // Silent Opt - 2 Place
@@ -43,7 +108,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Someone from the Crowd");
 
         // Silent Opt - 2
-        DialogOption crowd3Opt = DialogBuilder.CreateOption("...", "...", crowd3Node, true);
+        DialogOption crowd3Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd3Node, () => { StartCoroutine(LookAtTargetSequence(crowd1Transform)); }, true);
         DialogBuilder.AddOption(crowd2Node, crowd3Opt);
 
         // Silent Opt - 3 Place
@@ -54,7 +119,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "A Completely Different Person");
 
         // Silent Opt - 3
-        DialogOption crowd4Opt = DialogBuilder.CreateOption("...", "...", crowd4Node, true);
+        DialogOption crowd4Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd4Node, () => { StartCoroutine(LookAtTargetSequence(crowd3Transform)); }, true);
         DialogBuilder.AddOption(crowd3Node, crowd4Opt);
 
         // Silent Opt - 4 Place
@@ -65,7 +130,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Someone from the Crowd");
 
         // Silent Opt - 4
-        DialogOption crowd5Opt = DialogBuilder.CreateOption("...", "...", crowd5Node, true);
+        DialogOption crowd5Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd5Node, () => { StartCoroutine(LookAtTargetSequence(crowd1Transform)); }, true);
         DialogBuilder.AddOption(crowd4Node, crowd5Opt);
 
         // ==============================
@@ -81,7 +146,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Helal olsun sana. Kalmadı senin gibi delikanlılar.",
         "Someone from the Crowd");
 
-        DialogOption sureEnginToCrowdOpt = DialogBuilder.CreateOption("...", "...", sureCrowdNode, true);
+        DialogOption sureEnginToCrowdOpt = DialogBuilder.CreateOptionWithEvent("...", "...", sureCrowdNode, () => { StartCoroutine(LookAtTargetSequence(crowd1Transform)); }, true);
         DialogBuilder.AddOption(sureEnginNode, sureEnginToCrowdOpt);
 
         // ==============================
@@ -97,7 +162,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "He biz tanırız bayılırız zaten. Bak benim tepemin tasını attırma. Ben bu hafta bir tane daha yaşlı taşımak istemiyorum.",
         "Someone from the Crowd");
         
-        DialogOption whyMeEnginToCrowdOpt = DialogBuilder.CreateOption("...", "...", whyMeCrowdNode, true);
+        DialogOption whyMeEnginToCrowdOpt = DialogBuilder.CreateOptionWithEvent("...", "...", whyMeCrowdNode, () => { StartCoroutine(LookAtTargetSequence(crowd1Transform)); }, true);
         DialogBuilder.AddOption(whyMeEnginNode, whyMeEnginToCrowdOpt);
 
         // Ana Düğümden Oyuncu Seçenekleri
@@ -117,10 +182,10 @@ public class EnginTalksWithCrowded : MonoBehaviour
 
         // İki dalı da Amca düğümüne bağlıyoruz.
         // Not: Burada 'Engin Amcayı kaldırır ve kalabalık dağılır' olayı için ileride DialogBuilder.CreateOptionWithEvent kullanılabilir.
-        DialogOption sureToAmcaOpt = DialogBuilder.CreateOption("...", "...", amcaStartNode, true);
+        DialogOption sureToAmcaOpt = DialogBuilder.CreateOptionWithEvent("...", "...", amcaStartNode, () => { StartCoroutine(LookAtTargetSequence(amcaTransform)); }, true);
         DialogBuilder.AddOption(sureCrowdNode, sureToAmcaOpt);
 
-        DialogOption whyMeToAmcaOpt = DialogBuilder.CreateOption("...", "...", amcaStartNode, true);
+        DialogOption whyMeToAmcaOpt = DialogBuilder.CreateOptionWithEvent("...", "...", amcaStartNode, () => { StartCoroutine(LookAtTargetSequence(amcaTransform)); }, true);
         DialogBuilder.AddOption(whyMeCrowdNode, whyMeToAmcaOpt);
 
         // ==============================

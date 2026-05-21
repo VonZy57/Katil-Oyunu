@@ -1,4 +1,6 @@
 using UnityEngine;
+using DG.Tweening;
+using System.Collections;
 
 public class BakeryDialog : MonoBehaviour
 {
@@ -6,10 +8,62 @@ public class BakeryDialog : MonoBehaviour
     [SerializeField] private DialogNode bakeryStartNode;
     [SerializeField] private MissionObjective missionObj;
 
+    [Header("Kamera ve Bakış Referansları")]
+    [SerializeField] private GameObject playerCamera;
+    [SerializeField] private Transform amcaTransform;
+
+    private FirstPersonController playerFPS;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        if (playerCamera != null)
+        {
+            playerFPS = playerCamera.GetComponentInParent<FirstPersonController>();
+        }
         BuildDialog();
+    }
+
+    public void StartBakeryDialog()
+    {
+        if (dialogSystem != null && bakeryStartNode != null)
+        {
+            if (playerFPS != null) playerFPS.enabled = false;
+
+            if (playerCamera != null && amcaTransform != null)
+            {
+                Camera cam = playerCamera.GetComponent<Camera>();
+                if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+                if (cam == null) cam = Camera.main; // Fallback
+
+                Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+                camTransform.DOKill();
+                camTransform.DOLookAt(amcaTransform.position, 1f).SetEase(Ease.InOutSine); // Kamerayı Amca'ya çevir
+            }
+
+            StartCoroutine(DialogSequence());
+        }
+    }
+
+    private IEnumerator DialogSequence()
+    {
+        dialogSystem.StartDialog(bakeryStartNode);
+
+        yield return null;
+        yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
+        yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+
+        // Diyalog tamamen bittiğinde oyuncu kontrollerini olduğu açıda geri ver
+        if (playerFPS != null)
+        {
+            playerFPS.SyncCameraRotation(); // Eski açıya dönmesini engelle
+            playerFPS.enabled = true; 
+        }
+
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted();
+        }
     }
 
     void BuildDialog()

@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class TalkAboutAsuman : MonoBehaviour
 {
@@ -6,10 +7,20 @@ public class TalkAboutAsuman : MonoBehaviour
     [SerializeField] private DialogNode oldManDidYouSee;
     [SerializeField] private MissionObjective missionObj;
 
+    [Header("Kamera ve Bakış Referansları")]
+    [SerializeField] private GameObject playerCamera;
+    [SerializeField] private Transform amcaTransform;
+    [SerializeField] private Transform kamilEfendiTransform;
+
     private DialogNode oldManAfraid;
+    private FirstPersonController playerFPS;
 
     void Start()
     {
+        if (playerCamera != null)
+        {
+            playerFPS = playerCamera.GetComponentInParent<FirstPersonController>();
+        }
         BuildDialog();
     }
 
@@ -17,6 +28,19 @@ public class TalkAboutAsuman : MonoBehaviour
     {
         if (dialogSystem != null && oldManDidYouSee != null)
         {
+            if (playerFPS != null) playerFPS.enabled = false; // Diyalog esnasında oyuncu kontrolünü kapat
+
+            if (playerCamera != null && amcaTransform != null)
+            {
+                Camera cam = playerCamera.GetComponent<Camera>();
+                if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+                if (cam == null) cam = Camera.main; // Fallback
+
+                Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+                camTransform.DOKill();
+                camTransform.DOLookAt(amcaTransform.position, 1f).SetEase(Ease.InOutSine); // Kamerayı Amca'ya çevir
+            }
+
             StartCoroutine(DialogSequence());
         }
     }
@@ -37,6 +61,45 @@ public class TalkAboutAsuman : MonoBehaviour
         if (oldManAfraid != null)
         {
             dialogSystem.StartDialog(oldManAfraid);
+            
+            yield return null;
+            yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
+            yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+        }
+
+        // Diyalog tamamen bittiğinde oyuncu kontrollerini geri ver
+        if (playerFPS != null)
+        {
+            playerFPS.SyncCameraRotation(); // Açıyı eşitle, anlık sıçrama olmasın
+            playerFPS.enabled = true; 
+        }
+
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted();
+        }
+    }
+
+    private System.Collections.IEnumerator LookAtKamilSequence()
+    {
+        if (playerCamera != null && kamilEfendiTransform != null && amcaTransform != null)
+        {
+            Camera cam = playerCamera.GetComponent<Camera>();
+            if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+            if (cam == null) cam = Camera.main;
+
+            Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+
+            // 1. Kâmil Efendi'ye dön
+            camTransform.DOKill();
+            camTransform.DOLookAt(kamilEfendiTransform.position, 0.7f).SetEase(Ease.InOutSine);
+            
+            // Mırıldanma süresi boyunca bekle
+            yield return new WaitForSeconds(2.5f);
+            
+            // 2. Tekrar Amca'ya dön
+            camTransform.DOKill();
+            camTransform.DOLookAt(amcaTransform.position, 0.7f).SetEase(Ease.InOutSine);
         }
     }
 
@@ -210,7 +273,8 @@ public class TalkAboutAsuman : MonoBehaviour
         // Düğümleri birbirine bağlama
         DialogBuilder.AddOption(enginConvince, DialogBuilder.CreateOption("...", "...", oldManWhyHelp, true));
         DialogBuilder.AddOption(oldManWhyHelp, DialogBuilder.CreateOption("...", "...", enginTakeMe, true));
-        DialogBuilder.AddOption(enginTakeMe, DialogBuilder.CreateOption("...", "...", kamilGrunt2, true));
+        DialogOption enginToKamilOpt = DialogBuilder.CreateOptionWithEvent("...", "...", kamilGrunt2, () => { StartCoroutine(LookAtKamilSequence()); }, true);
+        DialogBuilder.AddOption(enginTakeMe, enginToKamilOpt);
         DialogBuilder.AddOption(kamilGrunt2, DialogBuilder.CreateOption("...", "...", oldManRightKamil, true));
         DialogBuilder.AddOption(oldManRightKamil, DialogBuilder.CreateOption("...", "...", enginAlrightGo, true));
         DialogBuilder.AddOption(enginAlrightGo, DialogBuilder.CreateOption("...", "...", oldManTeaFirst, true));
