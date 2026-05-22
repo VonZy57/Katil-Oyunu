@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: M2_04_HangUpThePhone
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
   missionID: WakeUpAndHangUpThePhone
-  description: 'Telefona cevap ver '
+  description: Hang up the phone
   nextMission: {fileID: 11400000, guid: c8df92fd2e48bce49a8d28cfc1820b91, type: 2}
+  loadSceneName: 
   isFinalMission: 0

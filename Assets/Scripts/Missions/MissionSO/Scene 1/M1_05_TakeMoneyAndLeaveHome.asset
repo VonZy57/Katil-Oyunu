@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: M1_05_TakeMoneyAndLeaveHome
   m_EditorClassIdentifier: 
   missionID: TakeMoneyAndLeave
-  description: Take Money And Leave
+  description: Take the money and leave the house
   nextMission: {fileID: 0}
   loadSceneName: Scene2
   isFinalMission: 1

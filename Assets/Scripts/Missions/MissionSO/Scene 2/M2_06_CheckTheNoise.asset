@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: M2_06_CheckTheNoise
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
   missionID: CheckTheNoises
-  description: "D\u0131\u015Far\u0131dan gelen g\xFCr\xFClt\xFCy\xFC kontrol et"
+  description: Check the noise coming from outside
   nextMission: {fileID: 0}
+  loadSceneName: 
   isFinalMission: 1

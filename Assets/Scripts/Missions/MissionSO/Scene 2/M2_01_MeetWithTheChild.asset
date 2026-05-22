@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: M2_01_MeetWithTheChild
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
   missionID: CheckThePhone
-  description: Telefonu kontrol et
+  description: Check phone
   nextMission: {fileID: 11400000, guid: f475935b580a5be4193439dcef2799fd, type: 2}
+  loadSceneName: 
   isFinalMission: 0

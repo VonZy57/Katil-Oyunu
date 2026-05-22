@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: M2_00_GettingToMotel
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
   missionID: GettingToMotel
-  description: Otele git ve bir oda kirala
+  description: Go to the hotel and rent a room
   nextMission: {fileID: 11400000, guid: 4fd02f660e3f8d14f98a7f5b12377151, type: 2}
+  loadSceneName: 
   isFinalMission: 0

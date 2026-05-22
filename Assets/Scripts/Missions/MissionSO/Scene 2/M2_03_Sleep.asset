@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: M2_03_Sleep
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
   missionID: Sleep
-  description: "I\u015F\u0131klar\u0131 kapat ve uyu"
+  description: Turn off the lights and go to sleep
   nextMission: {fileID: 11400000, guid: ba0d10af208ac4f4a8d4a0252c30e0a5, type: 2}
+  loadSceneName: 
   isFinalMission: 0

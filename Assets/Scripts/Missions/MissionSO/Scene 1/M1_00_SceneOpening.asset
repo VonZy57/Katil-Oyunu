@@ -13,9 +13,7 @@ MonoBehaviour:
   m_Name: M1_00_SceneOpening
   m_EditorClassIdentifier: 
   missionID: SceneOpening
-  description: 'Wait for the song end
-
-'
+  description: Wait for the song to finish
   nextMission: {fileID: 11400000, guid: 5a98c78259854e94395aea683ebee8da, type: 2}
   loadSceneName: 
   isFinalMission: 0

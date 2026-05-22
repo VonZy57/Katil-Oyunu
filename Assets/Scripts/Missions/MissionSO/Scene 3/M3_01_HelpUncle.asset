@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d7f7082a0980e498bd54f334487eb1, type: 3}
-  m_Name: M1_03_GoToDinner
+  m_Name: M3_01_HelpUncle
   m_EditorClassIdentifier: 
-  missionID: GoToDinningTable
-  description: Have dinner
-  nextMission: {fileID: 11400000, guid: 0301992e9e07c104994a1bf4ace69592, type: 2}
+  missionID: HelpUncle
+  description: Help uncle to get up
+  nextMission: {fileID: 11400000, guid: 95bd484e2b4b620429918a375d06960b, type: 2}
   loadSceneName: 
   isFinalMission: 0

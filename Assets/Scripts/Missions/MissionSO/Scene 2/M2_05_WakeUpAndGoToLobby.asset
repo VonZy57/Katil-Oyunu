@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: M2_05_WakeUpAndGoToLobby
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
   missionID: GoToLobby
-  description: "K\xFC\xE7\xFCk k\u0131zla konu\u015F"
+  description: Talk to little girl
   nextMission: {fileID: 11400000, guid: 189959fb0683eb34692564378aebe95f, type: 2}
+  loadSceneName: 
   isFinalMission: 0

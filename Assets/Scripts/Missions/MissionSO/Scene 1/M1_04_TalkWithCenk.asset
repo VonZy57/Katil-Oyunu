@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: M1_04_TalkWithCenk
   m_EditorClassIdentifier: 
   missionID: TalkWithCenk
-  description: Talk with cenk
+  description: Talk to Cenk
   nextMission: {fileID: 11400000, guid: 7a07e3bbc4363d34c8ce52321b37d59b, type: 2}
   loadSceneName: 
   isFinalMission: 0
