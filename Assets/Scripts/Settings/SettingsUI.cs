@@ -19,6 +19,7 @@ public class SettingsUI : MonoBehaviour
     [Header("Monitör")]
     public TMP_Dropdown displayDropdown;
     public GameObject displaySection;
+    public float displayItemHeight = 50f;
 
     [Header("Altyazı Dili")]
     public TMP_Dropdown languageDropdown;
@@ -104,21 +105,27 @@ public class SettingsUI : MonoBehaviour
         }
 
         // Display
-        int displayCount = sm.GetDisplayCount();
         if (displaySection != null) displaySection.SetActive(true);
 
         if (displayDropdown != null)
         {
+            var displays = sm.GetDisplayLayout();
             displayDropdown.ClearOptions();
             var options = new List<string>();
-            for (int i = 0; i < displayCount; i++)
+            for (int i = 0; i < displays.Count; i++)
             {
-                var d = Display.displays[i];
-                options.Add($"Monitör {i + 1}  ({d.systemWidth}x{d.systemHeight})");
+                var d = displays[i];
+                string monitorName = string.IsNullOrEmpty(d.name) ? $"Monitör {i + 1}" : d.name;
+                options.Add($"{monitorName}  ({d.width}x{d.height})");
             }
             displayDropdown.AddOptions(options);
             displayDropdown.SetValueWithoutNotify(sm.DisplayIndex);
             displayDropdown.RefreshShownValue();
+
+            // Item yüksekliğini ayarla
+            var itemTemplate = displayDropdown.itemText?.transform.parent?.GetComponent<RectTransform>();
+            if (itemTemplate != null)
+                itemTemplate.sizeDelta = new Vector2(itemTemplate.sizeDelta.x, displayItemHeight);
         }
 
         // Language
@@ -153,6 +160,22 @@ public class SettingsUI : MonoBehaviour
     void OnDisplayChanged(int index)
     {
         SettingsManager.Instance?.SetDisplay(index);
+        RefreshResolutionDropdown();
+    }
+
+    void RefreshResolutionDropdown()
+    {
+        var sm = SettingsManager.Instance;
+        if (sm == null || resolutionDropdown == null) return;
+
+        var resolutions = sm.GetAvailableResolutions();
+        resolutionDropdown.ClearOptions();
+        var options = new List<string>();
+        foreach (var r in resolutions)
+            options.Add($"{r.width}x{r.height}  {r.refreshRateRatio.value:F0}Hz");
+        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.SetValueWithoutNotify(sm.ResolutionIndex);
+        resolutionDropdown.RefreshShownValue();
     }
 
     void OnLanguageChanged(int index)
