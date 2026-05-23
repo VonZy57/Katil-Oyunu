@@ -86,18 +86,7 @@ public class DialogSystem : MonoBehaviour
 
     private void Update()
     {
-        // 1. DİL DEĞİŞTİRME KONTROLÜ (Input System: ChangeLanguage)
-        if (controls.Player.ChangeLanguage.triggered)
-        {
-            isTurkish = !isTurkish;
-
-            if (dialogPanel.activeSelf && currentNode != null)
-            {
-                ShowDialog();
-            }
-        }
-
-        // 2. YAZIYI HIZLICA GEÇME KONTROLÜ (Input System: Confirm - Space)
+        // 1. YAZIYI HIZLICA GEÇME KONTROLÜ (Input System: Confirm - Space)
         if (isTyping && controls.Player.SpaceButton.triggered)
         {
             StopAllCoroutines();
