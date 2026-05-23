@@ -8,6 +8,7 @@ public class LavukBeatingAmca : MonoBehaviour
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private TextMeshProUGUI subtitleText;
     [SerializeField] private MissionObjective missionObj;
+    [SerializeField] private EnginTalksWithCrowded enginTalksWithCrowded;
 
     [System.Serializable]
     public struct SubtitleLine
@@ -62,11 +63,6 @@ public class LavukBeatingAmca : MonoBehaviour
         
         subtitleText.text = "";
         isFinished = true;
-
-        if (missionObj != null)
-        {
-            missionObj.OnInteracted();
-        }
     }
 
     private IEnumerator InitialAnimationsPlaceholder()
@@ -89,7 +85,20 @@ public class LavukBeatingAmca : MonoBehaviour
         yield return new WaitForSeconds(2f);
         
         Debug.Log("Lavuk sahneden uzaklaşır...");
-        yield return null;
+        
+        // Altyazıların tamamen bitmesini bekliyoruz ki diyalog paneliyle üst üste binmesin
+        yield return new WaitUntil(() => isFinished);
+
+        // 1. Diyalog: Görev son animasyon bitince değişsin
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted();
+        }
+
+        if (enginTalksWithCrowded != null)
+        {
+            enginTalksWithCrowded.StartCrowdDialog();
+        }
     }
 
     void BuildDialog()

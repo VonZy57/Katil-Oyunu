@@ -13,7 +13,6 @@ public class EnginTalksWithCrowded : MonoBehaviour
     [SerializeField] private Transform crowd1Transform; // Someone from the Crowd
     [SerializeField] private Transform crowd2Transform; // Another from the Crowd
     [SerializeField] private Transform crowd3Transform; // A Completely Different Person (Kadın)
-    [SerializeField] private Transform amcaTransform;   // Amca
 
     private FirstPersonController playerFPS;
 
@@ -41,6 +40,10 @@ public class EnginTalksWithCrowded : MonoBehaviour
                 Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
                 camTransform.DOKill();
                 camTransform.DOLookAt(crowd1Transform.position, 1f).SetEase(Ease.InOutSine); // İlk konuşana çevir
+
+                Debug.Log($"Placeholder Animasyon: {crowd1Transform.name} (Konuşan kişi) Engin'e dönüyor.");
+                crowd1Transform.DOKill();
+                crowd1Transform.DOLookAt(camTransform.position, 1f, AxisConstraint.Y).SetEase(Ease.InOutSine);
             }
 
             StartCoroutine(DialogSequence());
@@ -78,6 +81,10 @@ public class EnginTalksWithCrowded : MonoBehaviour
             Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
             camTransform.DOKill();
             camTransform.DOLookAt(targetTransform.position, duration).SetEase(Ease.InOutSine);
+
+            Debug.Log($"Placeholder Animasyon: {targetTransform.name} (Konuşan kişi) Engin'e dönüyor.");
+            targetTransform.DOKill();
+            targetTransform.DOLookAt(camTransform.position, duration, AxisConstraint.Y).SetEase(Ease.InOutSine);
         }
         yield return null;
     }
@@ -141,7 +148,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Tabii ki. Yaşlıları kaldırmak boynumuzun borcu.",
         "Engin");
 
-        DialogNode sureCrowdNode = DialogBuilder.CreateNode
+        DialogNode sureCrowdNode = DialogBuilder.CreateEndNode
         ("Good for you. They don't make young men like you anymore.",
         "Helal olsun sana. Kalmadı senin gibi delikanlılar.",
         "Someone from the Crowd");
@@ -157,7 +164,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Neden ben yapıyorum abi. Amcayı tanımam etmem.",
         "Engin");
 
-        DialogNode whyMeCrowdNode = DialogBuilder.CreateNode
+        DialogNode whyMeCrowdNode = DialogBuilder.CreateEndNode
         ("Oh, sure, we all know and love him so much. Look, don't piss me off. I don't want to carry another old man this week.",
         "He biz tanırız bayılırız zaten. Bak benim tepemin tasını attırma. Ben bu hafta bir tane daha yaşlı taşımak istemiyorum.",
         "Someone from the Crowd");
@@ -171,60 +178,5 @@ public class EnginTalksWithCrowded : MonoBehaviour
 
         DialogBuilder.AddOption(crowd5Node, sureOption);
         DialogBuilder.AddOption(crowd5Node, whyMeOption);
-
-        // ==============================
-        // ORTAK DEVAM: Amca İle Konuşma
-        // ==============================
-        DialogNode amcaStartNode = DialogBuilder.CreateNode
-        ("Thank you, young man. People like you are rare these days. If it weren't for you, I would've been left on the ground. Let me treat you to a pastry and some ayran. And I won't take no for an answer.",
-        "Sağ olasın delikanlı. Senin gibi insanlar az bulunur oldu. Sen de olmasan yerde kalacaktım. İzin ver sana bir poğaça ayran ısmarlayayım. Ve hayırı cevap olarak kabul etmiyorum.",
-        "Amca");
-
-        // İki dalı da Amca düğümüne bağlıyoruz.
-        // Not: Burada 'Engin Amcayı kaldırır ve kalabalık dağılır' olayı için ileride DialogBuilder.CreateOptionWithEvent kullanılabilir.
-        DialogOption sureToAmcaOpt = DialogBuilder.CreateOptionWithEvent("...", "...", amcaStartNode, () => { StartCoroutine(LookAtTargetSequence(amcaTransform)); }, true);
-        DialogBuilder.AddOption(sureCrowdNode, sureToAmcaOpt);
-
-        DialogOption whyMeToAmcaOpt = DialogBuilder.CreateOptionWithEvent("...", "...", amcaStartNode, () => { StartCoroutine(LookAtTargetSequence(amcaTransform)); }, true);
-        DialogBuilder.AddOption(whyMeCrowdNode, whyMeToAmcaOpt);
-
-        // ==============================
-        // AMCA SEÇENEK 1: "Yes." / "Evet"
-        // ==============================
-        DialogNode amcaYesEnginNode = DialogBuilder.CreateNode
-        ("That sounds good, I'll get to have some breakfast too.",
-        "Güzel olur, ben de kahvaltı yapmış olurum.",
-        "Engin");
-
-        DialogNode amcaYesResponseNode = DialogBuilder.CreateEndNode
-        ("That's my boy.",
-        "He yaşa oğlum benim.",
-        "Amca");
-
-        DialogOption amcaYesEnginToResponseOpt = DialogBuilder.CreateOption("...", "...", amcaYesResponseNode, true);
-        DialogBuilder.AddOption(amcaYesEnginNode, amcaYesEnginToResponseOpt);
-
-        // ==============================
-        // AMCA SEÇENEK 2: "No." / "Hayır"
-        // ==============================
-        DialogNode amcaNoEnginNode = DialogBuilder.CreateNode
-        ("No, I'm busy, I don't have time for a pastry right now.",
-        "Hayır benim işim gücüm var poğaçaya zaman ayıramam.",
-        "Engin");
-
-        DialogNode amcaNoResponseNode = DialogBuilder.CreateEndNode
-        ("I won't accept that. There's always time for a pastry.",
-        "Kabul etmiyorum. Her zaman poğaçaya ayrılacak zaman vardır.",
-        "Amca");
-
-        DialogOption amcaNoEnginToResponseOpt = DialogBuilder.CreateOption("...", "...", amcaNoResponseNode, true);
-        DialogBuilder.AddOption(amcaNoEnginNode, amcaNoEnginToResponseOpt);
-
-        // Amca Düğümünden Oyuncu Seçenekleri
-        DialogOption yesOption = DialogBuilder.CreateOption("Yes.", "Evet", amcaYesEnginNode);
-        DialogOption noOption = DialogBuilder.CreateOption("No.", "Hayır", amcaNoEnginNode);
-
-        DialogBuilder.AddOption(amcaStartNode, yesOption);
-        DialogBuilder.AddOption(amcaStartNode, noOption);
     }
 }

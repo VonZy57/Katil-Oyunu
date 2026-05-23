@@ -2,26 +2,90 @@ using UnityEngine;
 using DG.Tweening;
 using System.Collections;
 
-public class BakeryDialog : MonoBehaviour
+public class BakeryDialog : SittingInteraction
 {
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private DialogNode bakeryStartNode;
     [SerializeField] private MissionObjective missionObj;
+    [SerializeField] private OrderSubtitle orderSubtitle; // Sipariş altyazısının bitip bitmediğini kontrol etmek için
 
     [Header("Kamera ve Bakış Referansları")]
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform amcaTransform;
 
-    private FirstPersonController playerFPS;
+    public bool IsUncleAnimationFinished { get; private set; } = false;
+    private bool canStandUp = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    protected override void Start()
     {
-        if (playerCamera != null)
-        {
-            playerFPS = playerCamera.GetComponentInParent<FirstPersonController>();
-        }
+        base.Start(); // Player, playerFPS ve playerController atamalarını yapar
         BuildDialog();
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+        if (MissionManager.Instance != null && missionObj != null)
+        {
+            // Yalnızca görev "GoToBakery (3)" iken sandalyeye oturma eylemi çıksın
+            // Ve OrderSubtitle atandıysa altyazıların bitmesini beklesin
+            if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting && !isMoving && (orderSubtitle == null || orderSubtitle.isFinished))
+                promptMessage = "E - Otur";
+            else if (isSitting && canStandUp)
+                promptMessage = "E - Kalk";
+            else
+                promptMessage = "";
+        }
+    }
+
+    protected override void Interact()
+    {
+        if (!isSitting && !isMoving && MissionManager.Instance.CurrentMission == missionObj.requiredMission && (orderSubtitle == null || orderSubtitle.isFinished))
+        {
+            SitDown();
+        }
+    }
+
+    protected override void InteractInputForStandUp()
+    {
+        if (canStandUp)
+        {
+            base.InteractInputForStandUp();
+        }
+    }
+
+    protected override void SitDown()
+    {
+        isMoving = true;
+        isSitting = true;
+        promptMessage = ""; // Kalkma yazısı çıkmasın
+
+        if (playerController)
+            playerController.enabled = false;
+
+        if (playerFPS)
+            playerFPS.enabled = false;
+
+        player.transform.DOMove(sitReference.position, transitionDuration).SetEase(Ease.InOutSine);
+        player.transform.DORotateQuaternion(sitReference.rotation, transitionDuration).SetEase(Ease.InOutSine)
+            .OnComplete(() => 
+            {
+                isMoving = false; 
+                if (playerFPS)
+                {
+                    playerFPS.SetSittingState(true);
+                    // Diyalog başlayacağı için hareket kontrollerini açmıyoruz!
+                }
+
+                // 3. Görev (GoToBakery) sandalyeye oturunca tamamlanır ve 4. göreve (TalkToUncle) geçilir
+                if (missionObj != null)
+                {
+                    missionObj.OnInteracted();
+                }
+
+                // Sonrasında otomatik olarak amca animasyonu ve diyalog başlar
+                StartBakeryDialog();
+            });
     }
 
     public void StartBakeryDialog()
@@ -29,20 +93,28 @@ public class BakeryDialog : MonoBehaviour
         if (dialogSystem != null && bakeryStartNode != null)
         {
             if (playerFPS != null) playerFPS.enabled = false;
-
-            if (playerCamera != null && amcaTransform != null)
-            {
-                Camera cam = playerCamera.GetComponent<Camera>();
-                if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
-                if (cam == null) cam = Camera.main; // Fallback
-
-                Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
-                camTransform.DOKill();
-                camTransform.DOLookAt(amcaTransform.position, 1f).SetEase(Ease.InOutSine); // Kamerayı Amca'ya çevir
-            }
-
-            StartCoroutine(DialogSequence());
+            StartCoroutine(PreDialogAnimationSequence());
         }
+    }
+
+    private IEnumerator PreDialogAnimationSequence()
+    {
+        Debug.Log("Placeholder Animasyon: Engin sandalyeye oturduktan sonra Amca'nın yapacağı hareket (Örn: Çayından yudum alma, nefes verme vs.)");
+        yield return new WaitForSeconds(2f);
+        Debug.Log("Amca'nın diyalog öncesi animasyonu bitti.");
+
+        if (playerCamera != null && amcaTransform != null)
+        {
+            Camera cam = playerCamera.GetComponent<Camera>();
+            if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+            if (cam == null) cam = Camera.main; // Fallback
+
+            Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+            camTransform.DOKill();
+            camTransform.DOLookAt(amcaTransform.position, 1f).SetEase(Ease.InOutSine); // Kamerayı Amca'ya çevir
+        }
+
+        StartCoroutine(DialogSequence());
     }
 
     private IEnumerator DialogSequence()
@@ -53,17 +125,22 @@ public class BakeryDialog : MonoBehaviour
         yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
 
-        // Diyalog tamamen bittiğinde oyuncu kontrollerini olduğu açıda geri ver
+        // Diyalog bittiğinde hemen oyuncuya kontrolü veriyoruz ki tabakla etkileşime geçebilsin.
         if (playerFPS != null)
         {
-            playerFPS.SyncCameraRotation(); // Eski açıya dönmesini engelle
+            playerFPS.SyncCameraRotation();
             playerFPS.enabled = true; 
         }
 
-        if (missionObj != null)
-        {
-            missionObj.OnInteracted();
-        }
+        Debug.Log("Placeholder Animasyon: BakeryDialog bittikten sonra çalışacak animasyon (Örn: Amca poğaçadan bir ısırık alır)");
+        yield return new WaitForSeconds(2f);
+        Debug.Log("BakeryDialog sonrası animasyon bitti.");
+        IsUncleAnimationFinished = true; // Amcanın animasyonu bitti, diğer script artık diyaloğu başlatabilir.
+    }
+
+    public void EnableStandUp()
+    {
+        canStandUp = true;
     }
 
     void BuildDialog()

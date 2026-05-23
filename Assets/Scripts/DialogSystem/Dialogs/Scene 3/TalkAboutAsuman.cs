@@ -1,11 +1,13 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections;
 
-public class TalkAboutAsuman : MonoBehaviour
+public class TalkAboutAsuman : FoodInteractable
 {
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private DialogNode oldManDidYouSee;
     [SerializeField] private MissionObjective missionObj;
+    [SerializeField] private BakeryDialog bakeryDialog;
 
     [Header("Kamera ve Bakış Referansları")]
     [SerializeField] private GameObject playerCamera;
@@ -15,13 +17,52 @@ public class TalkAboutAsuman : MonoBehaviour
     private DialogNode oldManAfraid;
     private FirstPersonController playerFPS;
 
-    void Start()
+    protected override void Start()
     {
+        base.Start();
         if (playerCamera != null)
         {
             playerFPS = playerCamera.GetComponentInParent<FirstPersonController>();
         }
         BuildDialog();
+    }
+
+    protected override void DoEventsWhileEating()
+    {
+        Debug.Log("Placeholder Animasyon: Engin tabaktan yemeğini yiyor...");
+        if (playerCamera != null && playerFPS != null)
+        {
+            playerFPS.enabled = false; // Etkileşim süresince oyuncu hareketini kısıtla
+            
+            // Yeme animasyonu placeholder (PlateInteraction scriptine benzer DOTween sekansı)
+            Sequence eatSequence = DOTween.Sequence();
+            eatSequence.Append(playerCamera.transform.DORotate(new Vector3(15f, 0f, 0f), 1f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
+            eatSequence.Append(playerCamera.transform.DOShakeRotation(1f, new Vector3(1.5f, 0f, 0f), 3, 20f).SetLoops(2));
+            eatSequence.OnComplete(() => 
+            {
+                // playerFPS.AddXRotation(15f); alttaki iki satırın eskisi (diğer sahnelerde bir buga sebep olursa eski haline getirilecek)
+                playerFPS.SyncCameraRotation(); // Yeni kamera açısını (15 dereceyi) sisteme kaydet
+                playerFPS.enabled = true; // Bekleme esnasında oyuncuya etrafına bakması için kontrolü geri ver
+            });
+        }
+    }
+
+    protected override void OnFinishedEating()
+    {
+        StartCoroutine(WaitAndStartDialog());
+    }
+
+    private IEnumerator WaitAndStartDialog()
+    {
+        Debug.Log("Engin'in yeme animasyonu bitti. Amca'nın animasyonunu bekliyor...");
+        
+        if (bakeryDialog != null)
+        {
+            yield return new WaitUntil(() => bakeryDialog.IsUncleAnimationFinished);
+        }
+
+        Debug.Log("Şartlar sağlandı (Her iki animasyon da bitti). TalkAboutAsuman diyaloğu başlıyor.");
+        StartTalkAboutAsumanDialog();
     }
 
     public void StartTalkAboutAsumanDialog()
@@ -45,7 +86,7 @@ public class TalkAboutAsuman : MonoBehaviour
         }
     }
 
-    private System.Collections.IEnumerator DialogSequence()
+    private IEnumerator DialogSequence()
     {
         dialogSystem.StartDialog(oldManDidYouSee);
 
@@ -67,6 +108,16 @@ public class TalkAboutAsuman : MonoBehaviour
             yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
         }
 
+        // 6. Diyalog: Görev diyalog bitince değişsin. Son animasyon da görev değiştikten sonra başlasın.
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted();
+        }
+
+        Debug.Log("Placeholder Animasyon: TalkAboutAsuman diyalogu bittikten sonra çalışacak animasyon (Örn: Birlikte masadan kalkarlar)");
+        yield return new WaitForSeconds(2f);
+        Debug.Log("TalkAboutAsuman sonu animasyonu bitti.");
+
         // Diyalog tamamen bittiğinde oyuncu kontrollerini geri ver
         if (playerFPS != null)
         {
@@ -74,13 +125,14 @@ public class TalkAboutAsuman : MonoBehaviour
             playerFPS.enabled = true; 
         }
 
-        if (missionObj != null)
+        // Asuman diyaloğu bitti, artık oyuncu sandalyeden kalkabilir
+        if (bakeryDialog != null)
         {
-            missionObj.OnInteracted();
+            bakeryDialog.EnableStandUp();
         }
     }
 
-    private System.Collections.IEnumerator LookAtKamilSequence()
+    private IEnumerator LookAtKamilSequence()
     {
         if (playerCamera != null && kamilEfendiTransform != null && amcaTransform != null)
         {

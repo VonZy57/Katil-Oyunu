@@ -7,7 +7,6 @@ public class OrderSubtitle : MonoBehaviour
 {
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private TextMeshProUGUI subtitleText;
-    [SerializeField] private BakeryDialog bakeryDialog;
     [SerializeField] private MissionObjective missionObj;
 
     [System.Serializable]
@@ -22,6 +21,7 @@ public class OrderSubtitle : MonoBehaviour
     [SerializeField] private List<SubtitleLine> dialogLines;
 
     public bool isFinished { get; private set; } = false;
+    private bool hasTriggered = false;
 
     void Start()
     {
@@ -49,8 +49,9 @@ public class OrderSubtitle : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
+        if (other.CompareTag("Player") && MissionManager.Instance.CurrentMission == missionObj.requiredMission && !hasTriggered)
         {
+            hasTriggered = true;
             StartCoroutine(PlaySubtitleDialog());
         }
     }
@@ -70,6 +71,5 @@ public class OrderSubtitle : MonoBehaviour
         
         subtitleText.text = "";
         isFinished = true;
-
     }
 }

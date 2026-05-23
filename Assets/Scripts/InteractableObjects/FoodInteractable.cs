@@ -25,7 +25,7 @@ public class FoodInteractable : Interactable
     private int currentBiteIndex = 0; // Kaçıncı ısırıkta olduğumuzu tutar
     [SerializeField] private bool canEat = true;    // Oyuncunun yeme izni var mı (Cooldown kontrolü)
 
-    private void Start()
+    protected virtual void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();

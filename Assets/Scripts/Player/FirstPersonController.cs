@@ -288,7 +288,14 @@ public class FirstPersonController : MonoBehaviour
         else
         {
             xRotation = Mathf.Clamp(newX, -90f, 90f);
-            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt);
+            
+
+            // cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt); alttaki iki satırın eskisi (diğer sahnelerde bir buga sebep olursa eski haline getirilecek)
+
+            // Kamera lokal olarak Y ekseninde (sağa/sola) döndüyse, bu dönüşü ana gövdeye aktar
+            transform.Rotate(Vector3.up * newY);
+
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt); // Kameranın lokal Y dönüşünü sıfırla
         }
     }
 }

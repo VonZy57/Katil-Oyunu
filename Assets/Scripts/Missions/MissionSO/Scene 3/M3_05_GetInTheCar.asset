@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35d7f7082a0980e498bd54f334487eb1, type: 3}
-  m_Name: M3_03_TalkToUncle
+  m_Name: M3_05_GetInTheCar
   m_EditorClassIdentifier: 
-  missionID: TalkToUncle
-  description: Talk to Uncle
-  nextMission: {fileID: 11400000, guid: f1916c410421d1e49833c67813863d77, type: 2}
+  missionID: GetInTheCar
+  description: Get in Uncle's car
+  nextMission: {fileID: 0}
   loadSceneName: 
   isFinalMission: 0
