@@ -56,6 +56,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
 
         yield return null;
         yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
+        Debug.Log("Diyalog başladı.");
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
 
         if (playerFPS != null)
@@ -67,6 +68,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         if (missionObj != null)
         {
             missionObj.OnInteracted();
+            Debug.Log("Görev tamamlandı");
         }
     }
 
