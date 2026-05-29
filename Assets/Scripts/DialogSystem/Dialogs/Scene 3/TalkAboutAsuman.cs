@@ -36,7 +36,7 @@ public class TalkAboutAsuman : FoodInteractable
             
             // Yeme animasyonu placeholder (PlateInteraction scriptine benzer DOTween sekansı)
             Sequence eatSequence = DOTween.Sequence();
-            eatSequence.Append(playerCamera.transform.DORotate(new Vector3(15f, 0f, 0f), 1f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
+            eatSequence.Append(playerCamera.transform.DORotate(new Vector3(-15f, 0f, 0f), 1f, RotateMode.LocalAxisAdd).SetEase(Ease.InOutQuad));
             eatSequence.Append(playerCamera.transform.DOShakeRotation(1f, new Vector3(1.5f, 0f, 0f), 3, 20f).SetLoops(2));
             eatSequence.OnComplete(() => 
             {

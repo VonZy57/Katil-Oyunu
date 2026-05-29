@@ -13,6 +13,10 @@ public class BakeryDialog : SittingInteraction
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform amcaTransform;
 
+    [Header("Yiyecek Referansları")]
+    [SerializeField] private GameObject plateAmca;
+    [SerializeField] private GameObject plateEngin;
+
     public bool IsUncleAnimationFinished { get; private set; } = false;
     private bool canStandUp = false;
 
