@@ -1,6 +1,8 @@
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
+using UnityEngine.UI;
+using TMPro;
 
 public class BakeryDialog : SittingInteraction
 {
@@ -8,10 +10,18 @@ public class BakeryDialog : SittingInteraction
     [SerializeField] private DialogNode bakeryStartNode;
     [SerializeField] private MissionObjective missionObj;
     [SerializeField] private OrderSubtitle orderSubtitle; // Sipariş altyazısının bitip bitmediğini kontrol etmek için
+    [SerializeField] private GameObject notificationTextObject; // Altyazı metni referansı
+    [SerializeField] private TextMeshProUGUI notificationText; // Altyazı metni referansı
 
     [Header("Kamera ve Bakış Referansları")]
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform amcaTransform;
+
+    [Header("Kamil Efendi Animasyon Referansları")]
+    [SerializeField] private Transform kamilEfendiTransform;
+    [SerializeField] private Transform kamilTablePosition;
+    private Vector3 kamilOriginalPosition;
+    private Quaternion kamilOriginalRotation;
 
     [Header("Yiyecek Referansları")]
     [SerializeField] private GameObject plateAmca;
@@ -36,9 +46,14 @@ public class BakeryDialog : SittingInteraction
             if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting && !isMoving && (orderSubtitle == null || orderSubtitle.isFinished))
                 promptMessage = "E - Otur";
             else if (isSitting && canStandUp)
+            {
                 promptMessage = "E - Kalk";
+                notificationTextObject.SetActive(true);
+                notificationText.text = "E - Kalk";
+            }       
             else
                 promptMessage = "";
+                notificationText.text = "";
         }
     }
 
@@ -103,10 +118,7 @@ public class BakeryDialog : SittingInteraction
 
     private IEnumerator PreDialogAnimationSequence()
     {
-        Debug.Log("Placeholder Animasyon: Engin sandalyeye oturduktan sonra Amca'nın yapacağı hareket (Örn: Çayından yudum alma, nefes verme vs.)");
-        yield return new WaitForSeconds(2f);
-        Debug.Log("Amca'nın diyalog öncesi animasyonu bitti.");
-
+        // Oyuncu oturur oturmaz kamerayı Amca'ya çevir
         if (playerCamera != null && amcaTransform != null)
         {
             Camera cam = playerCamera.GetComponent<Camera>();
@@ -118,7 +130,49 @@ public class BakeryDialog : SittingInteraction
             camTransform.DOLookAt(amcaTransform.position, 1f).SetEase(Ease.InOutSine); // Kamerayı Amca'ya çevir
         }
 
+        Debug.Log("Placeholder Animasyon: Engin sandalyeye oturduktan sonra Amca'nın yapacağı hareket (Örn: Çayından yudum alma, nefes verme vs.)");
+        yield return new WaitForSeconds(2f);
+        Debug.Log("Amca'nın diyalog öncesi animasyonu bitti.");
+
         StartCoroutine(DialogSequence());
+        StartCoroutine(KamilBringsAnimations()); // Diyalogla aynı anda Kamil Efendi'nin poğaçaları getirip masaya koyma animasyonunu başlat
+    }
+
+    private IEnumerator KamilBringsAnimations()
+    {
+        Debug.Log("Animasyon: Kamil Efendi tepsideki poğaçaları getirip masaya koyuyor...");
+        
+        if (kamilEfendiTransform != null && kamilTablePosition != null)
+        {
+            kamilOriginalPosition = kamilEfendiTransform.position;
+            kamilOriginalRotation = kamilEfendiTransform.rotation;
+
+            // Kâmil Efendi masaya doğru baksın ve yürüsün
+            kamilEfendiTransform.DOKill();
+            kamilEfendiTransform.DOLookAt(kamilTablePosition.position, 0.5f, AxisConstraint.Y);
+            Vector3 targetPosition = new Vector3(kamilTablePosition.position.x, kamilOriginalPosition.y, kamilTablePosition.position.z);
+            yield return kamilEfendiTransform.DOMove(targetPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
+            
+            // Tabakları bırakma bekleme süresi
+            yield return new WaitForSeconds(0.5f);
+            plateAmca.SetActive(true); // Amca'nın poğaçalarının olduğu tabak aktif olsun
+            plateEngin.SetActive(true); // Engin'in poğaçalarının olduğu tabak aktif olsun
+            Debug.Log("Kamil Efendi poğaçaları masaya bıraktı.");
+            yield return new WaitForSeconds(0.5f);
+
+            // Geri dönüş
+            kamilEfendiTransform.DOLookAt(kamilOriginalPosition, 0.5f, AxisConstraint.Y);
+            yield return kamilEfendiTransform.DOMove(kamilOriginalPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
+            
+            // Orijinal rotasyona dön
+            kamilEfendiTransform.DORotateQuaternion(kamilOriginalRotation, 0.5f);
+        }
+        else
+        {
+            plateAmca.SetActive(true);
+            plateEngin.SetActive(true);
+            Debug.LogWarning("Kamil Efendi referansları eksik, poğaçalar direkt masada belirdi.");
+        }
     }
 
     private IEnumerator DialogSequence()

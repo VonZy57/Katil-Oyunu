@@ -32,13 +32,19 @@ public class CarInteractable : Interactable
 
     protected override void Interact()
     {
-        Debug.Log("Car interacted with!");
-        GetInTheCar();
+        if(missionObj != null && missionManager.CurrentMission == missionObj.requiredMission && !isTransitioning)
+        {
+            Debug.Log("Car interacted with!");
+            GetInTheCar();
+        }
+
     }
 
     void GetInTheCar()
     {
         isTransitioning = true; // Geçiş başladı olarak işaretle
+        FirstPersonController playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<FirstPersonController>();
+        playerController.enabled = false; // Oyuncu kontrolünü devre dışı bırak
 
             if (fadeImage != null)
             {

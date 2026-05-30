@@ -86,7 +86,7 @@ public class MeetAndHelpUncle : Interactable
             missionObj.OnInteracted();
         }
 
-        Debug.Log("Placeholder Animasyon: Diyalog bittikten sonra çalışacak animasyon (Örn: Üstünü başını silkeler, fırına yönelir)");
+        Debug.Log("Placeholder Animasyon: Diyalog bittikten sonra çalışacak animasyon (Amca fırına gider ve masaya oturur.)");
         yield return new WaitForSeconds(2f);
         Debug.Log("Amca diyalog sonrası animasyonu bitti.");
 

@@ -366,13 +366,18 @@ MonoBehaviour:
   fadeDuration: 2
   fadeDelay: 1
   walkSpeed: 2.2
-  starisSpeed: 1.5
+  stairsSpeed: 1.5
   gravity: -9.81
   mouseSensitivity: 10
   cameraTransform: {fileID: 9169657910967153612}
   sittingLookLimit: 45
-  stepInterval: 0.5
-  defaultStepSounds: []
+  stepInterval: 0.6
+  defaultStepSounds:
+  - {fileID: 8300000, guid: d95b6c6d5a0e3f248a06ed54fa38dd5d, type: 3}
+  - {fileID: 8300000, guid: cdd2119e266e8674fa0308cef68d5b50, type: 3}
+  - {fileID: 8300000, guid: fd6935f62e2a8544f881e486fdb59f88, type: 3}
+  - {fileID: 8300000, guid: fddf3dad9ba0c7a4992306fa18ab992d, type: 3}
+  - {fileID: 8300000, guid: 370934acccc6f864fa2889d0a5016e81, type: 3}
   surfaceFootsteps: []
   headBobFrequency: 2.5
   headBobVerticalAmp: 0.05
