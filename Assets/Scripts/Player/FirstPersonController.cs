@@ -21,7 +21,7 @@ public class FirstPersonController : MonoBehaviour
 
     [Header("Hareket Ayarları")]
     public float walkSpeed = 3f;
-    public float starisSpeed = 1.5f;
+    public float stairsSpeed = 1.5f;
     public float gravity = -9.81f;
 
     [Header("Kamera Ayarları")]
@@ -51,6 +51,9 @@ public class FirstPersonController : MonoBehaviour
     public List<SurfaceFootstep> surfaceFootsteps; // Zemin tiplerine göre ses listesi
     
     private AudioSource footstepAudioSource;
+    private float footstepTimer = 0f;
+    private string currentSurfaceTag = "Untagged";
+    private AudioClip lastFootstepClip;
 
     [Header("Head Bob Ayarları")]
     public float headBobFrequency = 1.5f;
@@ -123,6 +126,7 @@ public class FirstPersonController : MonoBehaviour
         if (!IsSitting)
         {
             HandleMovement();
+            HandleFootsteps();
             HandleCameraMotions();
         }
     }
@@ -171,17 +175,17 @@ public class FirstPersonController : MonoBehaviour
         float speed;
 
         RaycastHit hit;
-        string currentSurfaceTag = "Untagged";
 
         if (Physics.Raycast(transform.position, Vector3.down, out hit, 3f))
         {
             currentSurfaceTag = hit.collider.tag; // Bastığımız zeminin tag'ini al
             isOnStairs = hit.collider.CompareTag("Stairs");
-            speed = isOnStairs ? starisSpeed : walkSpeed;
+            speed = isOnStairs ? stairsSpeed : walkSpeed;
         }
         else
         {
             isOnStairs = false;
+            currentSurfaceTag = "Untagged";
             speed = walkSpeed;
         }
 
@@ -203,6 +207,64 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
+    private void HandleFootsteps()
+    {
+        if (!controller.isGrounded) return;
+
+        float currentRealSpeed = new Vector3(controller.velocity.x, 0f, controller.velocity.z).magnitude;
+
+        // Sadece hareket halindeyken adım atma işlemini başlat (0.1 tolerans)
+        if (currentRealSpeed > 0.1f)
+        {
+            footstepTimer -= Time.deltaTime;
+
+            if (footstepTimer <= 0f)
+            {
+                PlayFootstepSound();
+                
+                // Hız azaldıkça (örn: merdivende) adımların ritmi de doğal olarak yavaşlasın diye oran kuruyoruz.
+                footstepTimer = stepInterval * (walkSpeed / currentRealSpeed);
+            }
+        }
+        else
+        {
+            // Dururken bir sonraki hareketin başlangıcında ilk adımın hemen atılması için zamanı sıfırla
+            footstepTimer = 0f; 
+        }
+    }
+
+    private void PlayFootstepSound()
+    {
+        AudioClip[] clipsToPlay = defaultStepSounds;
+
+        // Bastığımız yüzeyin etiketine göre (Tahta, Beton vb.) çalınacak ses dizisini bul
+        foreach (var surface in surfaceFootsteps)
+        {
+            if (surface.surfaceTag == currentSurfaceTag && surface.stepSounds != null && surface.stepSounds.Length > 0)
+            {
+                clipsToPlay = surface.stepSounds;
+                break;
+            }
+        }
+
+        // Belirlenen ses dizisi içerisinden rastgele (Random) bir ses seç ve çal
+        if (clipsToPlay != null && clipsToPlay.Length > 0)
+        {
+            int randomIndex = Random.Range(0, clipsToPlay.Length);
+            
+            // Eğer listede 1'den fazla ses varsa, son çalınan sesle aynı olmamasını sağla
+            if (clipsToPlay.Length > 1)
+            {
+                while (clipsToPlay[randomIndex] == lastFootstepClip)
+                {
+                    randomIndex = Random.Range(0, clipsToPlay.Length);
+                }
+            }
+
+            lastFootstepClip = clipsToPlay[randomIndex];
+            footstepAudioSource.PlayOneShot(lastFootstepClip);
+        }
+    }
 
     private void HandleCameraMotions() //BREATHING VE HEADBOB HAREKETLERİ
     {
