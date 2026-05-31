@@ -4,6 +4,7 @@ public class SettingsMenuController : MonoBehaviour
 {
     public GameObject settingsPanel;
     public FirstPersonController firstPersonController;
+    public EndlessRunner endlessRunner;
 
     private bool isOpen = false;
     private bool fpcWasEnabled = true;
@@ -33,6 +34,8 @@ public class SettingsMenuController : MonoBehaviour
                 fpcWasEnabled = firstPersonController.enabled;
                 firstPersonController.enabled = false;
             }
+            endlessRunner?.musicAudioSource?.Pause();
+            endlessRunner?.audioSource?.Pause();
         }
         else
         {
@@ -41,6 +44,8 @@ public class SettingsMenuController : MonoBehaviour
             Cursor.visible = false;
             if (firstPersonController != null)
                 firstPersonController.enabled = fpcWasEnabled;
+            endlessRunner?.musicAudioSource?.UnPause();
+            endlessRunner?.audioSource?.UnPause();
         }
     }
 

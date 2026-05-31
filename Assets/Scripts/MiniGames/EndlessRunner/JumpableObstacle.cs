@@ -82,6 +82,7 @@ public class JumpableObstacle : MonoBehaviour
             {
                 isJumping = false;
                 jumpVelocity = Vector3.zero;
+                endlessRunner?.PlayLandSound();
             }
         }
 
@@ -104,6 +105,7 @@ public class JumpableObstacle : MonoBehaviour
     {
         if (hasJumped) return;
         if (!isInPromptZone && !isInFailZone) return;
+        if (endlessRunner != null && !endlessRunner.IsActivelyRunning) return;
 
         hasJumped = true;
         isInFailZone = false;
@@ -126,6 +128,7 @@ public class JumpableObstacle : MonoBehaviour
         if (characterController == null) return;
 
         isJumping = true;
+        endlessRunner?.PlayJumpSound();
         Vector3 forward = endlessRunner != null ? endlessRunner.playerBody.forward : Vector3.forward;
         jumpVelocity = forward * jumpForwardForce + Vector3.up * jumpForce;
     }

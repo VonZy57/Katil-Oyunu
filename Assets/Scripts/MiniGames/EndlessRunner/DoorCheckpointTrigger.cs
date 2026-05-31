@@ -33,6 +33,8 @@ public class DoorCheckpointTrigger : MonoBehaviour
     {
         if (door == null) return;
 
+        endlessRunner?.PlayDoorOpenSound();
+
         Vector3 target = door.transform.localEulerAngles + new Vector3(0f, doorOpenAngle, 0f);
         door.transform.DOLocalRotate(target, doorOpenDuration).SetEase(Ease.OutQuad)
             .OnComplete(() => SetDoorColliders(false));

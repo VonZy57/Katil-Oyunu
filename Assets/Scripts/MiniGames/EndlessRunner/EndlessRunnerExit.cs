@@ -72,6 +72,9 @@ public class EndlessRunnerExit : MonoBehaviour
         if (isActive) return;
         isActive = true;
 
+        if (endlessRunner?.musicAudioSource != null)
+            endlessRunner.musicAudioSource.Stop();
+
         endlessRunner?.SlowDownForExit(slowWalkSpeed);
 
         if (playerCam != null)
@@ -106,9 +109,12 @@ public class EndlessRunnerExit : MonoBehaviour
     private void OpenDoor()
     {
         if (door == null) return;
+        endlessRunner?.PlayExitDoorOpenSound();
+        Vector3 doorPos = door.transform.position;
         Vector3 targetEuler = door.transform.eulerAngles;
         targetEuler.y = doorOpenAngle;
-        door.transform.DORotate(targetEuler, doorOpenDuration).SetEase(Ease.OutQuad);
+        door.transform.DORotate(targetEuler, doorOpenDuration).SetEase(Ease.OutQuad)
+            .OnComplete(() => endlessRunner?.PlayWindSound(doorPos));
     }
 
     public void OnExitTriggerEnter()

@@ -93,6 +93,7 @@ public class SlidableObstacle : MonoBehaviour
     {
         if (hasSlid) return;
         if (!isInPromptZone && !isInFailZone) return;
+        if (endlessRunner != null && !endlessRunner.IsActivelyRunning) return;
 
         hasSlid = true;
         isInFailZone = false;
@@ -114,6 +115,7 @@ public class SlidableObstacle : MonoBehaviour
     {
         if (endlessRunner == null) return;
 
+        endlessRunner.PlaySlideSound();
         slideTween?.Kill();
         slideTween = DOTween.To(
             () => endlessRunner.cameraSlideOffsetY,

@@ -33,7 +33,17 @@ public class EndlessRunner : MonoBehaviour
     [Header("Ses Ayarları")]
     public AudioClip turnBackSound;
     public AudioClip obstacleHitSound;
+    public AudioClip jumpSound;
+    public AudioClip landSound;
+    public AudioClip slideSound;
+    public AudioClip doorOpenSound;
+    public AudioClip exitDoorOpenSound;
+    public AudioClip windSound;
+    public AudioClip runMusic;
     public AudioSource audioSource;
+    [Tooltip("3D konumsal ses için ayrı AudioSource (Spatial Blend = 1 yapın)")]
+    public AudioSource windAudioSource;
+    public AudioSource musicAudioSource;
 
     [Header("Altyazı Ayarları")]
     public TextMeshProUGUI subtitleText;
@@ -232,6 +242,8 @@ public class EndlessRunner : MonoBehaviour
         }
     }
 
+    public bool IsActivelyRunning => isControllingPlayer && _canUseInputAndHeadBob;
+
     public void OnFirstTriggerEnter()
     {
         if (isControllingPlayer) return;
@@ -272,6 +284,7 @@ public class EndlessRunner : MonoBehaviour
         if (obstacleHitSound != null && audioSource != null)
             audioSource.PlayOneShot(obstacleHitSound);
 
+        StopWindSound();
         blackScreenObject?.SetActive(true);
         TeleportToSecondTrigger();
 
@@ -437,6 +450,12 @@ public class EndlessRunner : MonoBehaviour
                 ReturnToOriginal();
                 if (turnBackSound != null && audioSource != null)
                     audioSource.PlayOneShot(turnBackSound);
+                if (runMusic != null && musicAudioSource != null)
+                {
+                    musicAudioSource.clip = runMusic;
+                    musicAudioSource.loop = true;
+                    musicAudioSource.Play();
+                }
             })
             .AppendInterval(returnRotationDuration)
             .AppendCallback(() =>
@@ -492,6 +511,50 @@ public class EndlessRunner : MonoBehaviour
         }
     }
 
+    public void PlayJumpSound()
+    {
+        if (jumpSound != null && audioSource != null)
+            audioSource.PlayOneShot(jumpSound);
+    }
+
+    public void PlayLandSound()
+    {
+        if (landSound != null && audioSource != null)
+            audioSource.PlayOneShot(landSound);
+    }
+
+    public void PlaySlideSound()
+    {
+        if (slideSound != null && audioSource != null)
+            audioSource.PlayOneShot(slideSound);
+    }
+
+    public void PlayDoorOpenSound()
+    {
+        if (doorOpenSound != null && audioSource != null)
+            audioSource.PlayOneShot(doorOpenSound);
+    }
+
+    public void PlayExitDoorOpenSound()
+    {
+        if (exitDoorOpenSound != null && audioSource != null)
+            audioSource.PlayOneShot(exitDoorOpenSound);
+    }
+
+    public void PlayWindSound(Vector3 position)
+    {
+        if (windAudioSource == null || windSound == null) return;
+        windAudioSource.transform.position = position;
+        windAudioSource.clip = windSound;
+        windAudioSource.Play();
+    }
+
+    public void StopWindSound()
+    {
+        if (windAudioSource != null && windAudioSource.isPlaying)
+            windAudioSource.Stop();
+    }
+
     public void SlowDownForExit(float speed)
     {
         walkSpeed = speed;
@@ -506,6 +569,9 @@ public class EndlessRunner : MonoBehaviour
 
     public void StopEndlessRunner()
     {
+        StopWindSound();
+        if (musicAudioSource != null && musicAudioSource.isPlaying)
+            musicAudioSource.Stop();
         DisableFog();
         ReleaseControlOfPlayer();
         hasReachedSecondTrigger = false;
@@ -606,6 +672,7 @@ public class EndlessRunner : MonoBehaviour
         currentDoorCheckpoint?.TurnOffLights();
         currentDoorCheckpoint = null;
 
+        StopWindSound();
         blackScreenObject?.SetActive(true);
         ResetAllDoorCheckpoints();
         TeleportToSecondTrigger();
