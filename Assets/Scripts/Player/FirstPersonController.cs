@@ -207,9 +207,18 @@ public class FirstPersonController : MonoBehaviour
         }
     }
 
-    private void HandleFootsteps()
+    public void HandleFootsteps()
     {
         if (!controller.isGrounded) return;
+
+        // Script kapalıyken (örneğin EndlessRunner tarafından kontrol ediliyorken) zemin tipini güncel tutmak için
+        if (!this.enabled)
+        {
+            if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 3f))
+                currentSurfaceTag = hit.collider.tag;
+            else
+                currentSurfaceTag = "Untagged";
+        }
 
         float currentRealSpeed = new Vector3(controller.velocity.x, 0f, controller.velocity.z).magnitude;
 
@@ -223,7 +232,9 @@ public class FirstPersonController : MonoBehaviour
                 PlayFootstepSound();
                 
                 // Hız azaldıkça (örn: merdivende) adımların ritmi de doğal olarak yavaşlasın diye oran kuruyoruz.
-                footstepTimer = stepInterval * (walkSpeed / currentRealSpeed);
+                // Zemin geçişlerindeki veya ufak çarpmalardaki anlık hız düşüşlerinin süreyi çok uzatmasını (sesin kesilmesini) engellemek için sınır koyuyoruz.
+                float speedMultiplier = Mathf.Clamp(walkSpeed / currentRealSpeed, 0.5f, 2f);
+                footstepTimer = stepInterval * speedMultiplier;
             }
         }
         else

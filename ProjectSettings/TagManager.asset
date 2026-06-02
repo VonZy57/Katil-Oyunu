@@ -13,6 +13,7 @@ TagManager:
   - Idiotsafe
   - InsideFloor
   - WoodenFloor
+  - StreetFloor
   layers:
   - Default
   - TransparentFX

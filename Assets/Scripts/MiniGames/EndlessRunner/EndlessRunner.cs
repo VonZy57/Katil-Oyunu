@@ -44,6 +44,10 @@ public class EndlessRunner : MonoBehaviour
     [Tooltip("3D konumsal ses için ayrı AudioSource (Spatial Blend = 1 yapın)")]
     public AudioSource windAudioSource;
     public AudioSource musicAudioSource;
+    
+    [Tooltip("Karakter koşarken çalacak nefes nefese kalma (panting) sesi")]
+    public AudioClip pantingSound;
+    public AudioSource pantingAudioSource;
 
     [Header("Altyazı Ayarları")]
     public TextMeshProUGUI subtitleText;
@@ -231,6 +235,10 @@ public class EndlessRunner : MonoBehaviour
         {
             MovePlayerForward();
             HandleHeadBob();
+
+            // FirstPersonController kapalı olduğu için adım seslerini hesaplaması adına fonksiyonu manuel çağırıyoruz
+            if (firstPersonController != null)
+                firstPersonController.HandleFootsteps();
         }
 
         if (isWaitingForDoorInput)
@@ -240,9 +248,33 @@ public class EndlessRunner : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.E))
                 OnDoorInput(false);
         }
+
+        HandlePantingSound();
     }
 
     public bool IsActivelyRunning => isControllingPlayer && _canUseInputAndHeadBob;
+
+    private void HandlePantingSound()
+    {
+        if (pantingAudioSource == null || pantingSound == null) return;
+
+        if (IsActivelyRunning)
+        {
+            if (!pantingAudioSource.isPlaying)
+            {
+                if (pantingAudioSource.clip != pantingSound)
+                {
+                    pantingAudioSource.clip = pantingSound;
+                    pantingAudioSource.loop = true;
+                }
+                pantingAudioSource.Play(); // Karakter koşmaya başladığında nefesi başlat veya kaldığı yerden devam ettir
+            }
+        }
+        else if (pantingAudioSource.isPlaying)
+        {
+            pantingAudioSource.Pause(); // Karakter yavaşladığında veya engele takıldığında nefes sesini duraklat
+        }
+    }
 
     public void OnFirstTriggerEnter()
     {
@@ -570,6 +602,8 @@ public class EndlessRunner : MonoBehaviour
     public void StopEndlessRunner()
     {
         StopWindSound();
+        if (pantingAudioSource != null && pantingAudioSource.isPlaying)
+            pantingAudioSource.Stop();
         if (musicAudioSource != null && musicAudioSource.isPlaying)
             musicAudioSource.Stop();
         DisableFog();
