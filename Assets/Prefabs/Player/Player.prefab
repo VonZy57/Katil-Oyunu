@@ -378,7 +378,18 @@ MonoBehaviour:
   - {fileID: 8300000, guid: fd6935f62e2a8544f881e486fdb59f88, type: 3}
   - {fileID: 8300000, guid: fddf3dad9ba0c7a4992306fa18ab992d, type: 3}
   - {fileID: 8300000, guid: 370934acccc6f864fa2889d0a5016e81, type: 3}
-  surfaceFootsteps: []
+  surfaceFootsteps:
+  - surfaceTag: InsideFloor
+    stepSounds:
+    - {fileID: 8300000, guid: 9044d0dca7e6afe4895be2b944ab9942, type: 3}
+    - {fileID: 8300000, guid: 0b4aad94500d589498b5575033f90bf0, type: 3}
+    - {fileID: 8300000, guid: 107104c1022c9c14bbc2e5ca2bf0b04c, type: 3}
+    - {fileID: 8300000, guid: 9b436e327431a574c948347e25a96848, type: 3}
+  - surfaceTag: WoodenFloor
+    stepSounds:
+    - {fileID: 8300000, guid: 47538670aadc6db42a4ef455690243f3, type: 3}
+    - {fileID: 8300000, guid: d03f21b1338d379439dbab48ad7d137f, type: 3}
+    - {fileID: 8300000, guid: c4c389f123edc0c43acf7e8c3ebbcb8d, type: 3}
   headBobFrequency: 2.5
   headBobVerticalAmp: 0.05
   headBobHorizontalAmp: 0.07

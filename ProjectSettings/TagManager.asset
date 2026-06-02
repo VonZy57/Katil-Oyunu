@@ -11,6 +11,8 @@ TagManager:
   - Obstacle
   - DropZone
   - Idiotsafe
+  - InsideFloor
+  - WoodenFloor
   layers:
   - Default
   - TransparentFX
