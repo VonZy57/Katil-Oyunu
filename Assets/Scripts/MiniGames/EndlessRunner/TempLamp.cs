@@ -5,6 +5,7 @@ public class TempLamp : MonoBehaviour
     public Material matOn;
     public Material matOff;
     public float interval = 0.5f;
+    public GameObject toggleObject;
 
     private Renderer _renderer;
     private float _timer;
@@ -24,6 +25,8 @@ public class TempLamp : MonoBehaviour
             _timer = 0f;
             _isOn = !_isOn;
             _renderer.material = _isOn ? matOn : matOff;
+            if (toggleObject != null)
+                toggleObject.SetActive(!_isOn);
         }
     }
 }
