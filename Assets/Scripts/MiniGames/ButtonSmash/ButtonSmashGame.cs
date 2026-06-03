@@ -42,9 +42,8 @@ public class ButtonSmashGame : MonoBehaviour
     public float vignetteSpeed = 5f; // Kararma/Açılma yumuşaklığı
 
     [Header("Ses Ayarları")]
-    public AudioClip loopSound;        // Minigame sırasında çalacak ses
+    public AudioSource phoneLoopAudioSource; // Minigame sırasında çalacak hazır AudioSource (Telefon üzerindeki)
     public AudioClip phonePickupSound; // Minigame bitince çalacak telefon açma sesi
-    private AudioSource audioSource;
     private AudioSource oneShotAudioSource; // Tek seferlik sesler için
 
     [Header("Işık Ayarları")]
@@ -87,15 +86,6 @@ public class ButtonSmashGame : MonoBehaviour
         // Mesajı gizle
         if (messageText != null)
             messageText.gameObject.SetActive(false);
-
-        // AudioSource componentini ekle (loop için)
-        audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.loop = true;
-        audioSource.playOnAwake = false;
-        if (loopSound != null)
-        {
-            audioSource.clip = loopSound;
-        }
 
         // Tek seferlik sesler için ikinci AudioSource
         oneShotAudioSource = gameObject.AddComponent<AudioSource>();
@@ -203,9 +193,9 @@ public class ButtonSmashGame : MonoBehaviour
             vignette.intensity.value = maxIntensity; // Karanlık başla
 
         // Ses çalmaya başla
-        if (audioSource != null && loopSound != null)
+        if (phoneLoopAudioSource != null)
         {
-            audioSource.Play();
+            phoneLoopAudioSource.Play();
         }
 
         Debug.Log("Oyun Başladı!");
@@ -248,9 +238,9 @@ public class ButtonSmashGame : MonoBehaviour
         }
 
         // Loop sesi durdur
-        if (audioSource != null && audioSource.isPlaying)
+        if (phoneLoopAudioSource != null && phoneLoopAudioSource.isPlaying)
         {
-            audioSource.Stop();
+            phoneLoopAudioSource.Stop();
         }
 
         // Telefon açma sesi çal

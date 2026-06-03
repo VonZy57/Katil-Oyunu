@@ -59,8 +59,11 @@ MonoBehaviour:
   decayRate: 50
   transparencyLevel: 0
   globalVolume: {fileID: 0}
-  minIntensity: 0
+  minIntensity: 0.195
   maxIntensity: 1
   vignetteSpeed: 10
-  loopSound: {fileID: 8300000, guid: 4aad882a9574e0448bce653f724d14d0, type: 3}
+  phoneLoopAudioSource: {fileID: 0}
   phonePickupSound: {fileID: 8300000, guid: a1e753003661deb4eba067097c3820b6, type: 3}
+  lightSwitch: {fileID: 0}
+  roomDoor: {fileID: 0}
+  motelRoomDoor: {fileID: 0}
