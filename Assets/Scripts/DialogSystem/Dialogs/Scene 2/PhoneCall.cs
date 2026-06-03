@@ -124,7 +124,7 @@ public class PhoneCall : Interactable
         // Hedef pozisyon + Offset (Yukarı)
         if (playerCamera != null)
         {
-            Vector3 targetPositionWithOffset = phoneLookAtTarget.position + (Vector3.up * lookOffset);
+            Vector3 targetPositionWithOffset = phoneLookAtTarget.position; //+ (Vector3.up * lookOffset);
             playerCamera.DOLookAt(targetPositionWithOffset, rotateDuration);
         }
 
@@ -420,6 +420,7 @@ public class PhoneCall : Interactable
 
             playerObjectToTeleport.transform.position = wakePosition.position;
             Destroy(motherLookAtTarget);
+            Destroy(girlObj_to_beMother);
             littleGirlToTalk.SetActive(true);
             // kuruObject.SetActive(true); // gerekirse kuru burada geri açılacak. sabah olduğunda. dışarıda spawnlanabilir.
             
