@@ -58,10 +58,14 @@ public class CarInteractable : Interactable
                 color.a = 0f;
                 fadeImage.color = color;
 
-                fadeImage.DOFade(13f, fadeDuration).OnComplete(() =>
+                fadeImage.DOFade(1f, fadeDuration).OnComplete(() =>
                 {
-                    carAudioSource.Play(); // Araba motor sesini çal
-                    SceneManager.LoadScene("DemoEndScene");
+                    carAudioSource.Play();
+                    float audioLength = carAudioSource.clip != null ? carAudioSource.clip.length : 2f; // Ses yoksa varsayılan 2 saniye bekle
+                    DOVirtual.DelayedCall(audioLength, () =>
+                    {
+                        SceneManager.LoadScene("DemoEndScene");
+                    });
                 });
             }
             else
