@@ -382,9 +382,14 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 9b436e327431a574c948347e25a96848, type: 3}
   - surfaceTag: WoodenFloor
     stepSounds:
-    - {fileID: 8300000, guid: 47538670aadc6db42a4ef455690243f3, type: 3}
-    - {fileID: 8300000, guid: d03f21b1338d379439dbab48ad7d137f, type: 3}
-    - {fileID: 8300000, guid: c4c389f123edc0c43acf7e8c3ebbcb8d, type: 3}
+    - {fileID: 8300000, guid: 14f34b6839d1be34b80267e7134ab9c6, type: 3}
+    - {fileID: 8300000, guid: f76065e708e619b44963ddb12193326b, type: 3}
+    - {fileID: 8300000, guid: 841014fed32d09b409ecc1bd0dfb4ff5, type: 3}
+    - {fileID: 8300000, guid: d07574d9af4d0154faedfd9f370e1b2c, type: 3}
+    - {fileID: 8300000, guid: 69508497b097a434ab72aee626a6426c, type: 3}
+    - {fileID: 8300000, guid: a5afa29f80efff34bb781da0179d5686, type: 3}
+    - {fileID: 8300000, guid: d889c88bbf415db4ab30c91ff31b0498, type: 3}
+    - {fileID: 8300000, guid: d8833d616a3b06e4497bdba2623eebce, type: 3}
   - surfaceTag: StreetFloor
     stepSounds:
     - {fileID: 8300000, guid: d95b6c6d5a0e3f248a06ed54fa38dd5d, type: 3}

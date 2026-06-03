@@ -13,9 +13,13 @@ public class CarInteractable : Interactable
     public float fadeDuration = 2f; // Kararma süresi
     private bool isTransitioning = false; // Geçişin birden fazla kez tetiklenmesini engellemek için
 
+    [Header("Ses Referansları")]
+    public AudioSource carAudioSource; // Araba motor sesi için AudioSource
+
     void Start()
     {
         missionObj = GetComponent<MissionObjective>();
+        carAudioSource = GetComponent<AudioSource>();
     }
 
     protected override void Update()
@@ -54,8 +58,9 @@ public class CarInteractable : Interactable
                 color.a = 0f;
                 fadeImage.color = color;
 
-                fadeImage.DOFade(1f, fadeDuration).OnComplete(() =>
+                fadeImage.DOFade(13f, fadeDuration).OnComplete(() =>
                 {
+                    carAudioSource.Play(); // Araba motor sesini çal
                     SceneManager.LoadScene("DemoEndScene");
                 });
             }
