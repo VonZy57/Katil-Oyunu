@@ -239,8 +239,12 @@ public class FirstPersonController : MonoBehaviour
         }
         else
         {
-            // Dururken bir sonraki hareketin başlangıcında ilk adımın hemen atılması için zamanı sıfırla
-            footstepTimer = 0f; 
+                // Zamanı anında sıfırlamak (0f yapmak), yavaş yürümelerde veya ufak takılmalarda
+                // hızın anlık olarak 0.1f'in altına düşüp çıkması durumunda bekleme süresini sildiği için spam'e (makineli tüfek sesi) yol açar.
+                // Çözüm olarak timer'ı anında değil, yavaşça azaltarak spam'i imkansız hale getiriyoruz. 
+                // 0.1f değeri, durduktan sonra tekrar hareket edilince ilk adımın yeterince hızlı gelmesini sağlar.
+                if (footstepTimer > 0.1f)
+                    footstepTimer -= Time.deltaTime;
         }
     }
 
