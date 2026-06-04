@@ -31,6 +31,7 @@ public class KeyDialog : MonoBehaviour
     // Başlangıç rotasyonlarını saklamak için değişkenler
     private Quaternion startBodyRotation;
     private Quaternion startCamRotation;
+    private Quaternion startKuruRotation;
 
     [System.NonSerialized] private DialogNode introNode;
     //[System.NonSerialized] private DialogNode afterDialogNode;
@@ -44,7 +45,12 @@ public class KeyDialog : MonoBehaviour
         // Kuru'nun LookAtController'ını referans alıyoruz
         if (lookAtTarget != null)
         {
-            kuruLookController = lookAtTarget.GetComponent<LookAtController>();
+            // lookAtTarget genellikle kafa kemiği olduğu için scripti Ana Gövdede (Parent) arıyoruz
+            kuruLookController = lookAtTarget.GetComponentInParent<LookAtController>();
+            if (kuruLookController == null)
+            {
+                kuruLookController = lookAtTarget.GetComponentInChildren<LookAtController>();
+            }
         }
         BuildDialogTree();
     }
@@ -87,21 +93,27 @@ public class KeyDialog : MonoBehaviour
         {
             dialogCompleted = true;
 
-            // Obje aktif edilme süreci (Anahtar ortaya çıkıyor vs.)
-            if (objectToActivate != null)
-            {
-                // Delay varsa bekle, yoksa hemen aç
-                if (activationDelay > 0) yield return new WaitForSeconds(activationDelay);
-                objectToActivate.SetActive(true);
-            }
+            // Delay varsa bekle
+            if (activationDelay > 0) yield return new WaitForSeconds(activationDelay);
 
-            // Dönüşün tamamlanması için süre tanı (rotationDuration kadar bekle)
-            yield return new WaitForSeconds(rotationDuration);
-            
-            // Dialog bitince Kuru'nun kafasını tekrar oyuncuya çevirmesi için override'ı kaldır
+            // 1. Anahtar ortaya çıkmadan hemen önce Kuru'yu ve Kamerayı başlangıç haline döndür
             if (kuruLookController != null)
             {
                 kuruLookController.ClearOverrideLookTarget();
+                Transform kuruRoot = kuruLookController.transform;
+                kuruRoot.DOKill();
+                kuruRoot.DORotateQuaternion(startKuruRotation, rotationDuration).SetEase(Ease.OutQuad);
+            }
+            
+            ReturnCameraToOriginal(); // Oyuncunun kamerasını da eski yerine çevir
+
+            // 2. Dönüşlerin tamamlanması için süre tanı
+            yield return new WaitForSeconds(rotationDuration);
+
+            // 3. Obje aktif edilme süreci (Anahtar ortaya çıkıyor)
+            if (objectToActivate != null)
+            {
+                objectToActivate.SetActive(true);
             }
 
             // Trigger box işlevini tamamladı, artık silinebilir.
@@ -128,15 +140,17 @@ public class KeyDialog : MonoBehaviour
         }
         
         // C. Kuru'nun (NPC) Atanan Hedefe Dönmesi
-        if (lookAtTarget != null && kuruLookTarget != null)
+        if (kuruLookTarget != null && kuruLookController != null)
         {
-            lookAtTarget.DOLookAt(kuruLookTarget.position, rotationDuration, AxisConstraint.Y).SetEase(Ease.OutQuad);
+            // 1. Önce LookAtController scriptimizi kullanarak kafanın yumuşakça hedefe kilitlenmesini zorluyoruz (Override)
+            kuruLookController.SetOverrideLookTarget(kuruLookTarget);
+
+            // 2. Anahtar Kuru'nun tam arkasında olduğu için SADECE kafa/omurga dönüşü (IK) ile arkaya bakmaya çalışmak iskeleti bozar.
+            // Bu yüzden karakterin ana gövdesini (Root objesini) de DOTween ile o yöne dönmeye zorluyoruz.
+            Transform kuruRoot = kuruLookController.transform;
             
-            // Eğer LookAtController varsa kafasını da oraya çevirsin
-            if (kuruLookController != null)
-            {
-                kuruLookController.SetOverrideLookTarget(kuruLookTarget);
-            }
+            kuruRoot.DOKill();
+            kuruRoot.DOLookAt(kuruLookTarget.position, rotationDuration, AxisConstraint.Y).SetEase(Ease.OutQuad);
         }
     }
 
@@ -196,6 +210,7 @@ public class KeyDialog : MonoBehaviour
                 // Oyuncunun o anki rotasyonunu kaydet
                 if (playerBody != null) startBodyRotation = playerBody.rotation;
                 if (playerCamera != null) startCamRotation = playerCamera.rotation;
+            if (kuruLookController != null) startKuruRotation = kuruLookController.transform.rotation;
 
                 // Oyuncuyu Kuru'ya döndür
                 RotateCameraToTarget();
