@@ -18,7 +18,6 @@ public class PhoneCall : Interactable
 
     [Header("Jumpscare & Wake Up References")]
     public GameObject girlObj_to_beMother; // Küçük kız GameObject'i (başlangıçta deaktif)
-    public GameObject motherLookAtTarget; // "UYAN!" sonrası bakılacak obje
     public GameObject littleGirlToTalk;
     public Transform wakePosition; // Uyanılacak pozisyon
 
@@ -26,7 +25,6 @@ public class PhoneCall : Interactable
     public GameObject playerObjectToTeleport; // Işınlanma için
     public Image clockImage;
     public TextMeshProUGUI clockText;
-    public GameObject girlObject;
     public GameObject objectToActivateOnBlackscreen; // ClockImage açılınca aktif edilecek obje
     public Material skyboxMaterial; // ClockImage açılınca geçilecek skybox materyali
     
@@ -373,9 +371,9 @@ public class PhoneCall : Interactable
             motherWakeUp,
             () => {
                 // Mother objesine bak
-                if (motherLookAtTarget != null)
+                if (girlObj_to_beMother != null)
                 {
-                    phoneLookAtTarget = motherLookAtTarget.transform;
+                    phoneLookAtTarget = girlObj_to_beMother.transform;
                     RotateCameraToTarget(0.25f);
                 }
 
@@ -397,7 +395,6 @@ public class PhoneCall : Interactable
         if (objectToActivateOnBlackscreen != null) objectToActivateOnBlackscreen.SetActive(true);
         if (skyboxMaterial != null) RenderSettings.skybox = skyboxMaterial;
         clockText.gameObject.SetActive(false);
-        if (girlObject != null) girlObject.SetActive(false); // Girl object'i kaldır
         // 5 saniye karanlıkta bekle
         yield return new WaitForSeconds(2f);
 
@@ -419,7 +416,6 @@ public class PhoneCall : Interactable
             if (controller != null) controller.enabled = false;
 
             playerObjectToTeleport.transform.position = wakePosition.position;
-            Destroy(motherLookAtTarget);
             Destroy(girlObj_to_beMother);
             littleGirlToTalk.SetActive(true);
             // kuruObject.SetActive(true); // gerekirse kuru burada geri açılacak. sabah olduğunda. dışarıda spawnlanabilir.

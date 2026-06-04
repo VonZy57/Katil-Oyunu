@@ -27,6 +27,19 @@ public class TalkAboutAsuman : FoodInteractable
         BuildDialog();
     }
 
+    protected override void Update()
+    {
+        base.Update();
+        
+        if (MissionManager.Instance != null && missionObj != null)
+        {
+            if (MissionManager.Instance.CurrentMission == missionObj.requiredMission)
+                promptMessage = "E - Eat";
+            else
+                promptMessage = "";
+        }
+    }
+
     protected override void DoEventsWhileEating()
     {
         Debug.Log("Placeholder Animasyon: Engin tabaktan yemeğini yiyor...");
