@@ -44,12 +44,12 @@ public class BakeryDialog : SittingInteraction
             // Yalnızca görev "GoToBakery (3)" iken sandalyeye oturma eylemi çıksın
             // Ve OrderSubtitle atandıysa altyazıların bitmesini beklesin
             if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting && !isMoving && (orderSubtitle == null || orderSubtitle.isFinished))
-                promptMessage = "E - Otur";
+                promptMessage = "E - Sit Down";
             else if (isSitting && canStandUp)
             {
-                promptMessage = "E - Kalk";
+                promptMessage = "E - Stand Up";
                 notificationTextObject.SetActive(true);
-                notificationText.text = "E - Kalk";
+                notificationText.text = "E - Stand Up";
             }       
             else
                 promptMessage = "";

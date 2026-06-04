@@ -27,7 +27,7 @@ public class DoorInteraction : Interactable
         openRotation = closedRotation * Quaternion.Euler(0, openAngle, 0);
 
         // Prompt mesajını ayarla
-        promptMessage = "E - Kapıyı Aç";
+        promptMessage = "E - Open Door";
 
         // AudioSource ekle
         audioSource = gameObject.AddComponent<AudioSource>();
@@ -42,9 +42,9 @@ public class DoorInteraction : Interactable
         isOpen = !isOpen; // Durumu değiştir
 
         // Prompt mesajını güncelle
-        promptMessage = isOpen ? "E - Kapıyı Kapat" : "E - Kapıyı Aç";
+        promptMessage = isOpen ? "E - Close Door" : "E - Open Door";
 
-        Debug.Log(isOpen ? "Kapı Açılıyor" : "Kapı Kapanıyor");
+        Debug.Log(isOpen ? "Door is opening" : "Door is closing");
 
         AudioClip clipToPlay = isOpen ? doorOpenSound : doorCloseSound;
         // Kapı sesi çal (açma ve kapama için aynı ses)

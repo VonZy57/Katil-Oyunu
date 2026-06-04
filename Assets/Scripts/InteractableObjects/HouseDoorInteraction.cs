@@ -29,8 +29,7 @@ public class HouseDoorInteraction : Interactable
         closedRotation = transform.rotation;
         openRotation = closedRotation * Quaternion.Euler(0, 0, openAngle);
 
-        promptMessage = "E - Evden Çık";
-
+        promptMessage = "E - Leave House"; 
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
         {
