@@ -5,6 +5,7 @@ public class SettingsMenuController : MonoBehaviour
     public GameObject settingsPanel;
     public FirstPersonController firstPersonController;
     public EndlessRunner endlessRunner;
+    public DialogSystem dialogSystem;
 
     private bool isOpen = false;
     private bool fpcWasEnabled = true;
@@ -21,6 +22,8 @@ public class SettingsMenuController : MonoBehaviour
 
     void Toggle()
     {
+        if (!isOpen && dialogSystem != null && dialogSystem.dialogPanel.activeSelf) return;
+
         isOpen = !isOpen;
         settingsPanel.SetActive(isOpen);
 
@@ -34,8 +37,7 @@ public class SettingsMenuController : MonoBehaviour
                 fpcWasEnabled = firstPersonController.enabled;
                 firstPersonController.enabled = false;
             }
-            endlessRunner?.musicAudioSource?.Pause();
-            endlessRunner?.audioSource?.Pause();
+            AudioListener.pause = true;
         }
         else
         {
@@ -44,8 +46,7 @@ public class SettingsMenuController : MonoBehaviour
             Cursor.visible = false;
             if (firstPersonController != null)
                 firstPersonController.enabled = fpcWasEnabled;
-            endlessRunner?.musicAudioSource?.UnPause();
-            endlessRunner?.audioSource?.UnPause();
+            AudioListener.pause = false;
         }
     }
 
