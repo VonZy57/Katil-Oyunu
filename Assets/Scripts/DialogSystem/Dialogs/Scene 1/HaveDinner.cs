@@ -2,8 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.ProBuilder.Shapes;
-using TMPro;
+using UnityEngine.Splines;
 
 
 public class HaveDinner : Interactable
@@ -38,6 +37,10 @@ public class HaveDinner : Interactable
     public TalkWithNeighbor talkWithNeighbor;
 
     [Header("Anne ve Kapı Animasyonu (Komşu Diyaloğu Öncesi)")]
+    public SplineContainer motherSplineRoute;  // Annenin takip edeceği Spline rotası
+    public Animator motherAnimator;            // Annenin animatörü
+    public string walkAnimParam = "isWalking"; // Yürüme animasyonunu tetikleyen Animator parametresi (Bool)
+    public float motherWalkSpeed = 2f;         // Annenin yürüme sürati (Hızı)
     public Transform motherDoorPosition; // Annenin kapıda duracağı yer
     public Transform doorTransform;      // Açılacak kapı
     private float doorOpenZAngle = 95f;  // Kapının açılma Z açısı (Local)
@@ -188,12 +191,49 @@ public class HaveDinner : Interactable
         // Önce anne kapıya yürüsün, sonra kapı açılsın, ardından komşu diyaloğu başlasın
         if (talkWithNeighbor != null)
         {
-            if (motherTransform != null && motherDoorPosition != null)
+            if (motherTransform != null)
             {
-                yield return motherTransform.DORotateQuaternion(motherDoorPosition.rotation, 0.5f).WaitForCompletion();
-                // Annenin yüksekliğini korumak için sadece X ve Z ekseninde hedef pozisyon oluştur
-                Vector3 targetPosition = new Vector3(motherDoorPosition.position.x, motherTransform.position.y, motherDoorPosition.position.z);
-                yield return motherTransform.DOMove(targetPosition, 2f).SetEase(Ease.InOutSine).WaitForCompletion();
+                // 1. YÜRÜMEYE BAŞLAMA: Animasyonu yürüme moduna geçir
+                if (motherAnimator != null)
+                {
+                    motherAnimator.SetBool(walkAnimParam, true);
+                }
+
+                if (motherSplineRoute != null)
+                {
+                    // Anne üzerinde SplineAnimate bileşenini bul veya yoksa oluştur
+                    SplineAnimate splineAnimate = motherTransform.GetComponent<SplineAnimate>();
+                    if (splineAnimate == null)
+                    {
+                        splineAnimate = motherTransform.gameObject.AddComponent<SplineAnimate>();
+                    }
+
+                    // SplineAnimate ayarlarını kod üzerinden tanımla
+                    splineAnimate.Container = motherSplineRoute;
+                    splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
+                    splineAnimate.MaxSpeed = motherWalkSpeed;
+                    splineAnimate.Loop = SplineAnimate.LoopMode.Once;
+                    splineAnimate.Alignment = SplineAnimate.AlignmentMode.SplineElement; // Yüzünü gittiği yöne dön
+
+                    // Hareketi baştan başlat ve bitene kadar bekle
+                    splineAnimate.Restart(true);
+                    yield return new WaitUntil(() => !splineAnimate.IsPlaying);
+                    
+                    // Spline hizalamasının (rotasyon) DOTween ile çakışmaması için bileşeni kapat
+                    splineAnimate.enabled = false;
+
+                    // Yol bitince kapıya doğru dön
+                    if (motherDoorPosition != null)
+                    {
+                        yield return motherTransform.DORotateQuaternion(motherDoorPosition.rotation, 0.5f).SetEase(Ease.InOutSine).WaitForCompletion();
+                    }
+                }
+
+                // 2. YÜRÜME BİTTİ: Animasyonu tekrar Idle (Bekleme) moduna al
+                if (motherAnimator != null)
+                {
+                    motherAnimator.SetBool(walkAnimParam, false);
+                }
             }
             
             if (doorTransform != null)

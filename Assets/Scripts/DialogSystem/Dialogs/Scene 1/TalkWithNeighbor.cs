@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.Splines;
 
 public class TalkWithNeighbor : MonoBehaviour
 {
@@ -25,10 +26,14 @@ public class TalkWithNeighbor : MonoBehaviour
     public Transform motherTransform;   // Anne objesi
     public Transform doorTransform;     // Kapı objesi
 
-    public Transform[] neighborPath;    // Komşunun gideceği noktalar
-    public Transform[] motherPath;      // Annenin gideceği noktalar
+    public SplineContainer neighborSplineRoute; // Komşunun gideceği Spline rotası
+    public SplineContainer motherSplineRoute;   // Annenin gideceği Spline rotası
 
-    public float moveDurationPerNode = 1.5f; // Noktalar arası hareket süresi
+    public Animator neighborAnimator;           // Komşunun animatörü (Opsiyonel)
+    public Animator motherAnimator;             // Annenin animatörü (Opsiyonel)
+    public string walkAnimParam = "isWalking";  // Yürüme animasyon parametresi
+
+    public float walkSpeed = 2f;             // Karakterlerin yürüme hızı
     public float doorCloseZAngle = 0f;       // Kapının kapanacağı Z açısı (Örn: 0)
     public float doorCloseDuration = 1f;     // Kapının kapanma süresi
 
@@ -99,27 +104,15 @@ public class TalkWithNeighbor : MonoBehaviour
     private IEnumerator MoveAndCloseDoorSequence()
     {
         // 1. Önce komşu hareket eder
-        if (neighborTransform != null && neighborPath != null)
+        if (neighborTransform != null && neighborSplineRoute != null)
         {
-            foreach (Transform t in neighborPath)
-            {
-                if (t == null) continue;
-                Vector3 targetPos = new Vector3(t.position.x, neighborTransform.position.y, t.position.z);
-                neighborTransform.DOLookAt(targetPos, 0.2f);
-                yield return neighborTransform.DOMove(targetPos, moveDurationPerNode).SetEase(Ease.Linear).WaitForCompletion();
-            }
+            yield return StartCoroutine(MoveAlongSpline(neighborTransform, neighborSplineRoute, neighborAnimator));
         }
 
         // 2. Sonra anne hareket eder
-        if (motherTransform != null && motherPath != null)
+        if (motherTransform != null && motherSplineRoute != null)
         {
-            foreach (Transform t in motherPath)
-            {
-                if (t == null) continue;
-                Vector3 targetPos = new Vector3(t.position.x, motherTransform.position.y, t.position.z);
-                motherTransform.DOLookAt(targetPos, 0.2f);
-                yield return motherTransform.DOMove(targetPos, moveDurationPerNode).SetEase(Ease.Linear).WaitForCompletion();
-            }
+            yield return StartCoroutine(MoveAlongSpline(motherTransform, motherSplineRoute, motherAnimator));
         }
 
         // 3. Kapı kapanır
@@ -134,5 +127,37 @@ public class TalkWithNeighbor : MonoBehaviour
         if (motherTransform != null) motherTransform.gameObject.SetActive(false);
 
         isFinished = true;
+    }
+
+    private IEnumerator MoveAlongSpline(Transform actorTransform, SplineContainer splineRoute, Animator animator = null)
+    {
+        if (animator != null)
+        {
+            animator.SetBool(walkAnimParam, true);
+        }
+
+        SplineAnimate splineAnimate = actorTransform.GetComponent<SplineAnimate>();
+        if (splineAnimate == null)
+        {
+            splineAnimate = actorTransform.gameObject.AddComponent<SplineAnimate>();
+        }
+        
+        splineAnimate.enabled = true; // Bileşen daha önce kapatılmış olabileceği için aktif hale getir
+
+        splineAnimate.Container = splineRoute;
+        splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
+        splineAnimate.MaxSpeed = walkSpeed;
+        splineAnimate.Loop = SplineAnimate.LoopMode.Once;
+        splineAnimate.Alignment = SplineAnimate.AlignmentMode.SplineElement; // Yüzünü gittiği yöne dön
+
+        splineAnimate.Restart(true);
+        yield return new WaitUntil(() => !splineAnimate.IsPlaying);
+        
+        splineAnimate.enabled = false;
+
+        if (animator != null)
+        {
+            animator.SetBool(walkAnimParam, false);
+        }
     }
 }
