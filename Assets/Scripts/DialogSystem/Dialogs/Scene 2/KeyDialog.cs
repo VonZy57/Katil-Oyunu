@@ -18,7 +18,11 @@ public class KeyDialog : MonoBehaviour
     [Header("Activation Settings")]
     public float activationDelay = 2f; // Dialog bittikten kaç saniye sonra obje aktif olacak
 
-    private DialogSystem dialogSystem;
+    [Header("Mission Settings")]
+    [SerializeField] private DialogSystem dialogSystem;
+    [SerializeField] private MissionObjective missionObj;
+    [SerializeField] private MissionManager missionManager;
+    
     private LookAtController kuruLookController;
 
     private bool hasTriggered = false;
@@ -35,7 +39,8 @@ public class KeyDialog : MonoBehaviour
     {
         // DialogSystem'i otomatik bul
         dialogSystem = FindFirstObjectByType<DialogSystem>();
-        
+        missionObj = GetComponent<MissionObjective>();
+
         // Kuru'nun LookAtController'ını referans alıyoruz
         if (lookAtTarget != null)
         {
@@ -51,7 +56,7 @@ public class KeyDialog : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             // Sadece ilk kez trigger'a girildiğinde intro dialog başlat
-            if (!hasTriggered)
+            if (missionObj.requiredMission == missionManager.CurrentMission && !hasTriggered)
             {
                 hasTriggered = true;
                 StartIntroDialog();

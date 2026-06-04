@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 242113567533796387}
   - component: {fileID: 5293983467774502057}
   - component: {fileID: 2993584123546017632}
+  - component: {fileID: 3363708853978649063}
   m_Layer: 0
   m_Name: KeyDialogeTrigger
   m_TagString: Untagged
@@ -67,9 +68,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Key
   lookAtTarget: {fileID: 0}
+  kuruLookTarget: {fileID: 0}
   objectToActivate: {fileID: 0}
   playerBody: {fileID: 0}
   playerCamera: {fileID: 0}
   rotationDuration: 0.5
   lookOffset: 0.5
   activationDelay: 2
+  dialogSystem: {fileID: 0}
+  missionObj: {fileID: 3363708853978649063}
+  missionManager: {fileID: 0}
+--- !u!114 &3363708853978649063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8786126543494267799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc22a1ad9ad4da547a790ffdc681e332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredMission: {fileID: 11400000, guid: 4fd02f660e3f8d14f98a7f5b12377151, type: 2}
+  destroyAfterInteract: 0
