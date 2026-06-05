@@ -103,7 +103,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         DialogNode crowd2Node = DialogBuilder.CreateNode
         ("It's your turn, you're picking up the old guy this time.",
         "Sıra sende bu sefer sen yaşlı kaldırıyorsun.",
-        "Another from the Crowd");
+        "Someone from the Crowd but Woman ");
 
         // Silent Opt - 1
         DialogOption crowd2Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd2Node, () => { StartCoroutine(LookAtTargetSequence(crowd2Transform)); }, true);
