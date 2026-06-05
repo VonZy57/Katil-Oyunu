@@ -7,6 +7,10 @@ public class KuruGreetingTriggerBox : MonoBehaviour
     [SerializeField] DoorInteraction motelDoor;
     bool hasInteracted = false;
 
+    [Header("Girişte Kapatılacaklar")]
+    [SerializeField] AudioSource audioToDisable;
+    [SerializeField] MonoBehaviour[] scriptsToDisable;
+
     private void Start()
     {
         kuruGreeting = FindFirstObjectByType<KuruGreeting>();
@@ -21,6 +25,17 @@ public class KuruGreetingTriggerBox : MonoBehaviour
             hasInteracted = true;
             kuruGreeting.StartIntroDialog();
             motelDoor.CloseDoor();
+
+            if (audioToDisable != null) audioToDisable.enabled = false;
+            foreach (var script in scriptsToDisable)
+                if (script != null)
+                {
+                    script.enabled = false;
+                    Debug.Log($"{script.GetType().Name} devre dışı bırakıldı.");
+                }
         }
+
+
+        
     }
 }

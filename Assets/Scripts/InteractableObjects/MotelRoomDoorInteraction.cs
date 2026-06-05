@@ -44,7 +44,7 @@ public class MotelRoomDoorInteraction : Interactable
         {
             if (haveKey.isKeyCollected)
             {
-                promptMessage = "E - Kapıyı Aç";
+                promptMessage = "E - Open Door";
             }
             else
             {
@@ -54,7 +54,7 @@ public class MotelRoomDoorInteraction : Interactable
         }
         else
         {
-            promptMessage = "E - Kapıyı Aç"; // Eğer kapıya bir anahtar bağlanmamışsa normal çalışsın
+            promptMessage = "E - Open Door"; // Eğer kapıya bir anahtar bağlanmamışsa normal çalışsın
         }
     }
 
@@ -70,7 +70,7 @@ public class MotelRoomDoorInteraction : Interactable
     private void OnKeyCollectedHandler()
     {
         // Anahtar alındığı haberi geldiğinde etkileşim yazısını göster!
-        promptMessage = "E - Kapıyı Aç";
+        promptMessage = "E - Open Door";
         
         // Artık dinlemeye gerek kalmadı, listeden çık
         if (haveKey != null)
@@ -97,9 +97,9 @@ public class MotelRoomDoorInteraction : Interactable
         isOpen = !isOpen; // Durumu değiştir
 
         // Prompt mesajını güncelle
-        promptMessage = isOpen ? "E - Kapıyı Kapat" : "E - Kapıyı Aç";
+        promptMessage = isOpen ? "E - Close Door" : "E - Open Door";
 
-        Debug.Log(isOpen ? "Kapı Açılıyor" : "Kapı Kapanıyor");
+        Debug.Log(isOpen ? "Door is opening" : "Door is closing");
 
         // Ses efektini çal
         PlayDoorSound();

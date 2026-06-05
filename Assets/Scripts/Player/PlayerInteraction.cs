@@ -104,7 +104,7 @@ public class PlayerInteraction : MonoBehaviour
             if (((1 << hit.collider.gameObject.layer) & interactLayer) != 0)
             {
                 Interactable interactable = hit.collider.GetComponent<Interactable>();
-                if (interactable != null)
+                if (interactable != null && interactable.enabled)
                 {
                     if (currentInteractable != interactable)
                     {
