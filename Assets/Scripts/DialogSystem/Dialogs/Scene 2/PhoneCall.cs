@@ -17,7 +17,8 @@ public class PhoneCall : Interactable
     [SerializeField] private Quaternion initialHandSetRot;
 
     [Header("Jumpscare & Wake Up References")]
-    public GameObject girlObj_to_beMother; // Küçük kız GameObject'i (başlangıçta deaktif)
+    public GameObject MotherFacedGirl; // Küçük kız GameObject'i (başlangıçta deaktif)
+    public Transform jumpscareLookTarget; // Jumpscare esnasında kameranın bakacağı nokta
     public GameObject littleGirlToTalk;
     public Transform wakePosition; // Uyanılacak pozisyon
     public GameObject[] objectsToDisableOnWakeUp; // Işınlandıktan sonra kapatılacak objeler
@@ -63,7 +64,7 @@ public class PhoneCall : Interactable
         clockText.text = "";
 
         // 2. Başlangıç Ayarları
-        if (girlObj_to_beMother != null) girlObj_to_beMother.SetActive(false); // Kızı kaldır
+        if (MotherFacedGirl != null) MotherFacedGirl.SetActive(false); // Kızı kaldır
         if (clockImage != null) clockImage.gameObject.SetActive(false); // Siyah ekranı kaldır
         if (littleGirlToTalk != null) littleGirlToTalk.SetActive(false); // Konuşulacak kız kapalı
 
@@ -356,9 +357,9 @@ public class PhoneCall : Interactable
                 }
 
                 // Küçük kızı aktif et (kamera dönmez)
-                if (girlObj_to_beMother != null)
+                if (MotherFacedGirl != null)
                 {
-                    girlObj_to_beMother.SetActive(true);
+                    MotherFacedGirl.SetActive(true);
                 }
             },
             true
@@ -371,10 +372,10 @@ public class PhoneCall : Interactable
             "...",
             motherWakeUp,
             () => {
-                // Mother objesine bak
-                if (girlObj_to_beMother != null)
+                // Jumpscare anında belirlenen noktaya bak
+                if (jumpscareLookTarget != null)
                 {
-                    phoneLookAtTarget = girlObj_to_beMother.transform;
+                    phoneLookAtTarget = jumpscareLookTarget;
                     RotateCameraToTarget(0.25f);
                 }
 
@@ -417,7 +418,7 @@ public class PhoneCall : Interactable
             if (controller != null) controller.enabled = false;
 
             playerObjectToTeleport.transform.position = wakePosition.position;
-            Destroy(girlObj_to_beMother);
+            Destroy(MotherFacedGirl);
             littleGirlToTalk.SetActive(true);
 
             foreach (var obj in objectsToDisableOnWakeUp)

@@ -17,7 +17,7 @@ public class BathtubDropInteractable : Interactable
     public static event Action OnLastBodyDropped; // Son ceset bırakıldığında tetiklenecek event
     void Start()
     {
-        promptMessage = "E - Cesedi Bırak";
+        promptMessage = "E - Drop the Body";
     }
 
     protected override void Interact()

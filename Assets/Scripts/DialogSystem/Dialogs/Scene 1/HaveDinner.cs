@@ -27,6 +27,7 @@ public class HaveDinner : Interactable
 
     [Header("NPC Referansları")]
     public Transform motherTransform;
+    public Transform motherLookAtPoint; 
     public Transform cenkTransform;
 
     [Header("Tabak Referansları")]
@@ -83,10 +84,10 @@ public class HaveDinner : Interactable
         if (MissionManager.Instance == null) return;
 
         if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting)
-            promptMessage = "E - Otur";
+            promptMessage = "E - Sit and Eat";
         else if (isSitting && MissionManager.Instance.CurrentMission == leaveHomeMission)
         {
-            promptMessage = "E - Kalk";
+            promptMessage = "E - Stand Up";
         }
         else
         {
@@ -154,7 +155,7 @@ public class HaveDinner : Interactable
 
         yield return new WaitForSeconds(2f);
         dialogSystem.StartDialog(putTheGamePadNode);
-        RotateCameraToSpeaker(motherTransform);
+        RotateCameraToSpeaker(motherLookAtPoint); 
 
         // Diyalog panelinin aktif olmasını (açılmasını) bekle
         yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
@@ -308,7 +309,7 @@ public class HaveDinner : Interactable
         DialogOption silentOption2 = DialogBuilder.CreateOptionWithEvent("...", "...", motherSaysLiarsNode,
         () =>
             {
-                RotateCameraToSpeaker(motherTransform);
+                RotateCameraToSpeaker(motherLookAtPoint);
             }, true);
         DialogOption silentOption3 = DialogBuilder.CreateOptionWithEvent("...", "...", cenkSaysEnginStrong,
         () =>
@@ -318,7 +319,7 @@ public class HaveDinner : Interactable
         DialogOption silentOption4 = DialogBuilder.CreateOptionWithEvent("...", "...", motherSaysShutNode,
         () =>
             {
-                RotateCameraToSpeaker(motherTransform);
+                RotateCameraToSpeaker(motherLookAtPoint);
             }, true);
 
         DialogBuilder.AddOption(putTheGamePadNode, silentOption);
