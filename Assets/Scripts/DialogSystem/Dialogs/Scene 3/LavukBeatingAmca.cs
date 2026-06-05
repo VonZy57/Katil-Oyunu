@@ -10,6 +10,9 @@ public class LavukBeatingAmca : MonoBehaviour
     [SerializeField] private MissionObjective missionObj;
     [SerializeField] private EnginTalksWithCrowded enginTalksWithCrowded;
 
+    [Header("Animasyon Referansları")]
+    [SerializeField] private Animator lavukAnimator;
+
     [System.Serializable]
     public struct SubtitleLine
     {
@@ -69,8 +72,12 @@ public class LavukBeatingAmca : MonoBehaviour
     {
         // Peş peşe gelecek animasyonlar için placeholder
         Debug.Log("Diyalog başladı! Animasyon 1 (örn: Lavuk vurur)");
-        yield return new WaitForSeconds(1.5f); // 1. Animasyon süresi
+        yield return new WaitForSeconds(3f); // 1. Animasyon süresi
         
+        if (lavukAnimator != null)
+        {
+            lavukAnimator.SetTrigger("PunchTrigger");
+        }
         Debug.Log("Animasyon 2 (örn: Amca yere düşer)");
         yield return new WaitForSeconds(1.5f); // 2. Animasyon süresi
 

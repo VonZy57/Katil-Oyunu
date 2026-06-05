@@ -11,6 +11,7 @@ public class MeetAndHelpUncle : Interactable
     [Header("Kamera ve Bakış Referansları")]
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform amcaTransform;
+    [SerializeField] private Animator amcaAnimator;
 
     private FirstPersonController playerFPS;
     private bool isInteracting = false;
@@ -51,8 +52,13 @@ public class MeetAndHelpUncle : Interactable
     {
         if (playerFPS != null) playerFPS.enabled = false;
 
-        Debug.Log("Placeholder Animasyon: Engin amcayı yerden kaldırır...");
-        yield return new WaitForSeconds(2f); // Kaldırma animasyonu süresi
+        if (amcaAnimator != null)
+        {
+            amcaAnimator.SetTrigger("HelpUpTrigger");
+        }
+
+        Debug.Log("Animasyon: Engin amcayı yerden kaldırır...");
+        yield return new WaitForSeconds(6f); // Kaldırma animasyonu süresi
         Debug.Log("Animasyon bitti: Engin amcayı kaldırdı.");
 
         if (dialogSystem != null && amcaStartNode != null)
