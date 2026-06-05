@@ -17,6 +17,10 @@ public class BakeryDialog : SittingInteraction
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform amcaTransform;
 
+    [Header("Look At Referansları")]
+    [SerializeField] private Transform amcaLookAt;         // Amca'ya kamera bakış hedefi
+    [SerializeField] private Transform kamilEfendiLookAt;  // Kamil Efendi'ye kamera bakış hedefi
+
     [Header("Kamil Efendi Animasyon Referansları")]
     [SerializeField] private Transform kamilEfendiTransform;
     [SerializeField] private Transform kamilTablePosition;
@@ -116,19 +120,21 @@ public class BakeryDialog : SittingInteraction
         }
     }
 
+    void RotateCameraToSpeaker(Transform speakerTransform)
+    {
+        if (playerCamera == null || speakerTransform == null) return;
+        Camera cam = playerCamera.GetComponent<Camera>()
+            ?? playerCamera.GetComponentInChildren<Camera>()
+            ?? Camera.main;
+        Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+        camTransform.DOKill();
+        camTransform.DOLookAt(speakerTransform.position, 1f);
+    }
+
     private IEnumerator PreDialogAnimationSequence()
     {
         // Oyuncu oturur oturmaz kamerayı Amca'ya çevir
-        if (playerCamera != null && amcaTransform != null)
-        {
-            Camera cam = playerCamera.GetComponent<Camera>();
-            if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
-            if (cam == null) cam = Camera.main; // Fallback
-
-            Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
-            camTransform.DOKill();
-            camTransform.DOLookAt(amcaTransform.position, 1f).SetEase(Ease.InOutSine); // Kamerayı Amca'ya çevir
-        }
+        RotateCameraToSpeaker(amcaLookAt);
 
         Debug.Log("Placeholder Animasyon: Engin sandalyeye oturduktan sonra Amca'nın yapacağı hareket (Örn: Çayından yudum alma, nefes verme vs.)");
         yield return new WaitForSeconds(2f);
@@ -147,23 +153,25 @@ public class BakeryDialog : SittingInteraction
             kamilOriginalPosition = kamilEfendiTransform.position;
             kamilOriginalRotation = kamilEfendiTransform.rotation;
 
-            // Kâmil Efendi masaya doğru baksın ve yürüsün
+            // Kâmil Efendi masaya doğru baksın ve yürüsün; kamera da Kamil'e dönsün
             kamilEfendiTransform.DOKill();
             kamilEfendiTransform.DOLookAt(kamilTablePosition.position, 0.5f, AxisConstraint.Y);
+            RotateCameraToSpeaker(kamilEfendiLookAt);
             Vector3 targetPosition = new Vector3(kamilTablePosition.position.x, kamilOriginalPosition.y, kamilTablePosition.position.z);
             yield return kamilEfendiTransform.DOMove(targetPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
-            
+
             // Tabakları bırakma bekleme süresi
             yield return new WaitForSeconds(0.5f);
-            plateAmca.SetActive(true); // Amca'nın poğaçalarının olduğu tabak aktif olsun
-            plateEngin.SetActive(true); // Engin'in poğaçalarının olduğu tabak aktif olsun
+            plateAmca.SetActive(true);
+            plateEngin.SetActive(true);
             Debug.Log("Kamil Efendi poğaçaları masaya bıraktı.");
             yield return new WaitForSeconds(0.5f);
 
-            // Geri dönüş
+            // Geri dönüş; kamera Amca'ya dönsün
             kamilEfendiTransform.DOLookAt(kamilOriginalPosition, 0.5f, AxisConstraint.Y);
+            RotateCameraToSpeaker(amcaLookAt);
             yield return kamilEfendiTransform.DOMove(kamilOriginalPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
-            
+
             // Orijinal rotasyona dön
             kamilEfendiTransform.DORotateQuaternion(kamilOriginalRotation, 0.5f);
         }
