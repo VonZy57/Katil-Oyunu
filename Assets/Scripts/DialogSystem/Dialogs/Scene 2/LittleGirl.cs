@@ -11,6 +11,7 @@ public class LittleGirl : Interactable
 
     [System.NonSerialized] private DialogNode mainDialogNode;
     [System.NonSerialized] private DialogNode afterDialogNode;
+    public GameObject objectToActivate;
 
     void Start()
     {
@@ -348,5 +349,11 @@ public class LittleGirl : Interactable
 
         DialogOption commonToEnd = DialogBuilder.CreateOption("...", "...", commonGirlEnd, true);
         DialogBuilder.AddOption(commonKuru, commonToEnd);
+
+        if (objectToActivate != null)
+        {
+            DialogOption endToActivate = DialogBuilder.CreateOption("...", "...", afterDialogNode, true);
+            DialogBuilder.AddOption(commonGirlEnd, endToActivate);
+        }
     }
 }
