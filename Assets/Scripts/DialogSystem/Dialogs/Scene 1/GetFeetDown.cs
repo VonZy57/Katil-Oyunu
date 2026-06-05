@@ -14,6 +14,8 @@ public class GetFeetDown : Interactable
     public Transform cenksChairTransform; // Cenk'in sandalyeye oturacağı pozisyon
     public GameObject chairForCenk; // Cenk'in oturacağı sandalyenin modeli
 
+    private Animator cenkAnimator;
+
     void OnEnable()
     {
         BathtubDropInteractable.OnLastBodyDropped += TeleportCenkToTable;
@@ -29,6 +31,11 @@ public class GetFeetDown : Interactable
         // Cenk'i sandalyeye oturtmak için sandalyenin pozisyonuna da
         chairForCenk.transform.position = cenksChairTransform.position;
         chairForCenk.transform.rotation = cenksChairTransform.rotation;
+        if (cenkAnimator != null)
+        {
+            cenkAnimator.SetBool("isTable", true);
+        }
+
         promptMessage = ""; // Etkileşim mesajını temizle
         this.gameObject.layer = LayerMask.NameToLayer("Default"); // Cenk'in layer'ını değiştirme (örneğin "Default" yapabilirsiniz)
         this.enabled = false;
@@ -41,6 +48,7 @@ public class GetFeetDown : Interactable
     void Start()
     {
         BuildDialogTree();
+        cenkAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
