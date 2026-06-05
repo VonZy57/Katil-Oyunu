@@ -19,7 +19,7 @@ public class MoneyInteraction : Interactable
         // İlgili görev aktifse ve para henüz alınmadıysa yazıyı göster
         if (!isMoneyCollected && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
         {
-            promptMessage = "E - Parayı Al";
+            promptMessage = "E - Take the Money"; 
         }
         else
         {

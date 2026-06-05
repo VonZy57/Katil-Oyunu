@@ -14,12 +14,12 @@ public class BodyPickupInteractable : Interactable
     [Tooltip("Eğer bu cesedi almak için önce bir diyalogun bitmesi gerekiyorsa buraya atayın (Örn: Cenk GetFeetDown)")]
     public GetFeetDown requiredDialog;
     [Tooltip("Ön koşul sağlanmadığında ekranda çıkacak bildirim metni")]
-    public string requiredMessage = "Cenk'in ayaklarını indirmesi gerekiyor!";
+    public string requiredMessage = "Cenk needs to put his feet down!";
     public TextMeshProUGUI notificationText;
 
     void Start()
     {
-        promptMessage = "E - Cesedi Al";   
+        promptMessage = "E - Pick Up the Body";   
 
         missionObj = GetComponent<MissionObjective>();
     }
