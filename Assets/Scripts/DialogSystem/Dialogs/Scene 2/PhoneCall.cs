@@ -20,6 +20,7 @@ public class PhoneCall : Interactable
     public GameObject girlObj_to_beMother; // Küçük kız GameObject'i (başlangıçta deaktif)
     public GameObject littleGirlToTalk;
     public Transform wakePosition; // Uyanılacak pozisyon
+    public GameObject[] objectsToDisableOnWakeUp; // Işınlandıktan sonra kapatılacak objeler
 
     [Header("UI References")]
     public GameObject playerObjectToTeleport; // Işınlanma için
@@ -418,6 +419,9 @@ public class PhoneCall : Interactable
             playerObjectToTeleport.transform.position = wakePosition.position;
             Destroy(girlObj_to_beMother);
             littleGirlToTalk.SetActive(true);
+
+            foreach (var obj in objectsToDisableOnWakeUp)
+                obj?.SetActive(false);
             // kuruObject.SetActive(true); // gerekirse kuru burada geri açılacak. sabah olduğunda. dışarıda spawnlanabilir.
             
 
