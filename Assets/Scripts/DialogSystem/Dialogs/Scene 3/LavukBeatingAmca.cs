@@ -72,28 +72,21 @@ public class LavukBeatingAmca : MonoBehaviour
     private IEnumerator InitialAnimationsPlaceholder()
     {
         // Peş peşe gelecek animasyonlar için placeholder
+        yield return new WaitForSeconds(31f); // Lavuğun vurcağı cümlenin gelmesini bekleme süresi
         Debug.Log("Diyalog başladı! Animasyon 1 (örn: Lavuk vurur)");
-        yield return new WaitForSeconds(31f); // 1. Animasyon süresi
         
         if (lavukAnimator != null)
         {
             lavukAnimator.SetTrigger("PunchTrigger");
         }
-        Debug.Log("Animasyon 2 (örn: Amca yere düşer)");
-        yield return new WaitForSeconds(1.5f); // 2. Animasyon süresi
-
-        Debug.Log("Animasyon 3 (örn: Lavuk tepesinde dikilir)");
-        yield return null;
     }
 
     private IEnumerator FinalAnimationSequencePlaceholder()
     {
         // Lavuğun son cümlesinde ayrı oynayacak animasyon sekansı
-        Debug.Log("Lavuğun son cümlesi! Ayrı animasyon sekansı başlıyor (örn: Lavuk son bir tekme atıp arkasını döner)");
+        Debug.Log("Lavuğun son cümlesi! EndFight animasyonu başlıyor.");
         yield return new WaitForSeconds(2f);
-        
-        Debug.Log("Lavuk sahneden uzaklaşır...");
-        
+
         // Altyazıların tamamen bitmesini bekliyoruz ki diyalog paneliyle üst üste binmesin
         yield return new WaitUntil(() => isFinished);
 
@@ -101,6 +94,8 @@ public class LavukBeatingAmca : MonoBehaviour
         {
             lavukMovement.StartWalkingToCar();
         }
+        
+        yield return new WaitForSeconds(10f); // Lavuk sahneden uzaklaştıktan sonra biraz bekleyelim
 
         // 1. Diyalog: Görev son animasyon bitince değişsin
         if (missionObj != null)

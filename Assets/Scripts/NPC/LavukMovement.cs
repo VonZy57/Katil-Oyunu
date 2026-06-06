@@ -8,6 +8,7 @@ public class LavukMovement : MonoBehaviour
     [Header("Referanslar")]
     public Animator lavukAnimator;
     public SplineContainer lavukPathSpline;
+    public Transform splineStartReference;
     
     [Header("Ayarlar")]
     public float walkSpeed = 2f;
@@ -34,9 +35,8 @@ public class LavukMovement : MonoBehaviour
         // Yürüme animasyonunu başlat
         lavukAnimator.SetTrigger(walkTriggerParam);
 
-        // Spline başlangıç noktasını (Knot 0) dünya koordinatında bul
-        Vector3 localStartPos = lavukPathSpline.EvaluatePosition(0f);
-        Vector3 worldStartPos = lavukPathSpline.transform.TransformPoint(localStartPos);
+        // Hedef olarak atadığınız referans objesinin lokasyonunu al
+        Vector3 worldStartPos = splineStartReference.position;
 
         // Yürüme süresini mesafe ve hıza göre hesapla
         float distance = Vector3.Distance(transform.position, worldStartPos);
