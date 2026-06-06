@@ -12,6 +12,7 @@ public class MeetAndHelpUncle : Interactable
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform amcaTransform;
     [SerializeField] private Animator amcaAnimator;
+    [SerializeField] private AmcaMovement amcaMovement;
 
     private FirstPersonController playerFPS;
     private bool isInteracting = false;
@@ -58,22 +59,45 @@ public class MeetAndHelpUncle : Interactable
         }
 
         Debug.Log("Animasyon: Engin amcayı yerden kaldırır...");
-        yield return new WaitForSeconds(6f); // Kaldırma animasyonu süresi
+        
+        Camera cam = playerCamera != null ? playerCamera.GetComponent<Camera>() : null;
+        if (cam == null && playerCamera != null) cam = playerCamera.GetComponentInChildren<Camera>();
+        if (cam == null) cam = Camera.main; // Fallback
+
+        Transform camTransform = cam != null ? cam.transform : (playerCamera != null ? playerCamera.transform : transform);
+
+        float waitTime = 6f; // Kaldırma animasyonu süresi
+        float timer = 0f;
+
+        // Amca ayağa kalkarken oyuncunun kamerası amcayı yumuşakça takip etsin
+        while (timer < waitTime)
+        {
+            if (camTransform != null && amcaTransform != null)
+            {
+                Vector3 direction = (amcaTransform.position - camTransform.position).normalized;
+                if (direction != Vector3.zero)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(direction);
+                    camTransform.rotation = Quaternion.Slerp(camTransform.rotation, targetRot, Time.deltaTime * 5f);
+                }
+            }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        
         Debug.Log("Animasyon bitti: Engin amcayı kaldırdı.");
 
+        // Animasyon bitince Amca yüzünü oyuncuya (kameraya) dönsün
+        if (amcaTransform != null && camTransform != null)
+        {
+            amcaTransform.DOKill();
+            yield return gameObject.transform.DOLookAt(camTransform.position, 1f, AxisConstraint.Y).SetEase(Ease.InOutSine).WaitForCompletion();
+            Debug.Log("Amca kameraya döndü.");
+        }
+
+        // Amca döndükten sonra diyalog başlasın
         if (dialogSystem != null && amcaStartNode != null)
         {
-            if (playerCamera != null && amcaTransform != null)
-            {
-                Camera cam = playerCamera.GetComponent<Camera>();
-                if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
-                if (cam == null) cam = Camera.main; // Fallback
-
-                Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
-                camTransform.DOKill();
-                camTransform.DOLookAt(amcaTransform.position, 1f).SetEase(Ease.InOutSine); // Kamerayı Amca'ya çevir
-            }
-
             StartCoroutine(DialogSequence());
         }
     }
@@ -92,9 +116,10 @@ public class MeetAndHelpUncle : Interactable
             missionObj.OnInteracted();
         }
 
-        Debug.Log("Placeholder Animasyon: Diyalog bittikten sonra çalışacak animasyon (Amca fırına gider ve masaya oturur.)");
-        yield return new WaitForSeconds(2f);
-        Debug.Log("Amca diyalog sonrası animasyonu bitti.");
+        yield return new WaitForSeconds(1f); // Diyalog kapanma animasyonu için küçük bir bekleme
+        
+        Debug.Log("Amca fırına gider ve masaya oturur...");
+        amcaMovement.StartWalkingToSeat();
 
         // Diyalog tamamen bittiğinde oyuncu kontrollerini geri ver
         if (playerFPS != null)

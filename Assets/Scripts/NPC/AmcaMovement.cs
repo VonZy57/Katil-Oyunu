@@ -3,17 +3,18 @@ using UnityEngine.Splines;
 using DG.Tweening;
 using System.Collections;
 
-public class LavukMovement : MonoBehaviour
+public class AmcaMovement : MonoBehaviour
 {
     [Header("Referanslar")]
-    public Animator lavukAnimator;
-    public SplineContainer lavukPathSpline;
+    public Animator amcaAnimator;
+    public SplineContainer amcaPathSpline;
     public Transform splineStartReference;
+    public Transform chairTransform;
     
     [Header("Ayarlar")]
-    public float walkSpeed = 2f;
-    public string walkTriggerParam = "EndFightTrigger";
-    public string enterCarTriggerParam = "EnterCarTrigger";
+    public float walkSpeed = 1.5f; // Yaralı yürüdüğü için varsayılanı biraz düşürdüm, editörden ayarlayabilirsiniz
+    public string walkTriggerParam = "WalkInjuredTrigger";
+    public string sitTriggerParam = "SitDownTrigger";
 
     private SplineAnimate splineAnimate;
 
@@ -31,21 +32,20 @@ public class LavukMovement : MonoBehaviour
         {
             Vector3 currentEuler = transform.eulerAngles;
             currentEuler.x = 0f;
-            currentEuler.z = 0f;
+            //currentEuler.z = 0f;
             transform.eulerAngles = currentEuler;
         }
     }
 
-    public void StartWalkingToCar()
+    public void StartWalkingToSeat()
     {
-        StartCoroutine(WalkToCarRoutine());
+        StartCoroutine(WalkToSeatRoutine());
     }
 
-    private IEnumerator WalkToCarRoutine()
+    private IEnumerator WalkToSeatRoutine()
     {
-        Debug.Log("Lavuk yürüme rutinine başladı.");
-        // Yürüme animasyonunu başlat
-        lavukAnimator.SetTrigger(walkTriggerParam);
+        // Yaralı yürüme animasyonunu başlat
+        amcaAnimator.SetTrigger(walkTriggerParam);
 
         // Hedef olarak atadığınız referans objesinin lokasyonunu al
         Vector3 worldStartPos = splineStartReference.position;
@@ -62,7 +62,7 @@ public class LavukMovement : MonoBehaviour
         }
 
         // SplineAnimate ile asıl yolculuğu devral
-        splineAnimate.Container = lavukPathSpline;
+        splineAnimate.Container = amcaPathSpline;
         splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
         splineAnimate.MaxSpeed = walkSpeed;
         splineAnimate.Loop = SplineAnimate.LoopMode.Once;
@@ -76,7 +76,13 @@ public class LavukMovement : MonoBehaviour
         
         splineAnimate.enabled = false;
 
-        // Arabaya binme animasyonunu tetikle
-        lavukAnimator.SetTrigger(enterCarTriggerParam);
+        // Sandalyeye varınca oturma animasyonunu tetikle
+        amcaAnimator.SetTrigger(sitTriggerParam);
+
+        // Sandalye oturma animasyonu sırasında hareket etsin
+        if (chairTransform != null)
+        {
+            chairTransform.DOMoveZ(chairTransform.position.z -0.035f, 2f).SetEase(Ease.OutSine);
+        }
     }
 }
