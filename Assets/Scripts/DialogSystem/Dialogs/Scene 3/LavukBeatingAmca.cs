@@ -9,6 +9,7 @@ public class LavukBeatingAmca : MonoBehaviour
     [SerializeField] private TextMeshProUGUI subtitleText;
     [SerializeField] private MissionObjective missionObj;
     [SerializeField] private EnginTalksWithCrowded enginTalksWithCrowded;
+    [SerializeField] private LavukMovement lavukMovement;
 
     [Header("Animasyon Referansları")]
     [SerializeField] private Animator lavukAnimator;
@@ -72,7 +73,7 @@ public class LavukBeatingAmca : MonoBehaviour
     {
         // Peş peşe gelecek animasyonlar için placeholder
         Debug.Log("Diyalog başladı! Animasyon 1 (örn: Lavuk vurur)");
-        yield return new WaitForSeconds(3f); // 1. Animasyon süresi
+        yield return new WaitForSeconds(31f); // 1. Animasyon süresi
         
         if (lavukAnimator != null)
         {
@@ -95,6 +96,11 @@ public class LavukBeatingAmca : MonoBehaviour
         
         // Altyazıların tamamen bitmesini bekliyoruz ki diyalog paneliyle üst üste binmesin
         yield return new WaitUntil(() => isFinished);
+
+        if (lavukMovement != null)
+        {
+            lavukMovement.StartWalkingToCar();
+        }
 
         // 1. Diyalog: Görev son animasyon bitince değişsin
         if (missionObj != null)
