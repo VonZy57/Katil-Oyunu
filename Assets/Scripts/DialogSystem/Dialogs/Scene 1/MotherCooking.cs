@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using DG.Tweening;
 
@@ -8,24 +6,17 @@ public class MotherCooking : MonoBehaviour
 {
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private DialogNode carryTheBodies;
-    [SerializeField] private TextMeshProUGUI subtitleText;
     [SerializeField] private MissionObjective missionObj;
     public Transform motherTableTransform; // Anne'nin yemek masasında duracağı pozisyon
     public GameObject cookingPot; // Masadaki tencere modeli
 
-    [System.Serializable]
-    public struct SongLine
-    {
-        public LocalizedText lineText;
-        public float displayDuration;
-    }
-
-    [Header("Şarkı Sözleri")]
-    [SerializeField] private List<SongLine> songLines;
-
+    [Header("Şarkı")]
+    public AudioClip songClip;
+    private AudioSource audioSource;
 
     [Header("Animasyon Ayarları")]
     [SerializeField] private Transform motherTransform;
+    [SerializeField] private Transform motherLookTarget; // Kameranın bakacağı nokta (kafa vb.)
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private GameObject playerBody;
 
@@ -48,29 +39,31 @@ public class MotherCooking : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        BuildDialogTree();   
-        StartCoroutine(PlaySongAfterStartDialog()); // Şuanlık 5 saniye sonra diyalog başlıyor. Şarkı bitince başlayacak. Şarkı altyazı şeklinde olacak.
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        BuildDialogTree();
+        StartCoroutine(PlaySongAfterStartDialog());
     }
 
     IEnumerator PlaySongAfterStartDialog()
     {
-        foreach (SongLine line in songLines)
+        if (songClip != null)
         {
-            bool isTurkish = dialogSystem.GetCurrentLanguage();
-            subtitleText.text = line.lineText.GetText(isTurkish);
-            yield return new WaitForSeconds(line.displayDuration);
+            audioSource.PlayOneShot(songClip);
+            yield return new WaitForSeconds(songClip.length);
         }
-        subtitleText.text = "";
 
-        yield return new WaitForSeconds(2f); // Şarkı bittiğinde kısa bir bekleme süresi.
-        
+        yield return new WaitForSeconds(2f);
+
+
         // Karakter kontrollerini geçici kapat ki DOTween ile çakışmasın
         FirstPersonController fps = playerBody.GetComponent<FirstPersonController>();
         if (fps != null) fps.enabled = false;
 
         // GÖVDEYİ (playerBody) DÖNDÜRMÜYORUZ! (Gövde dönerse koltuğun yönü/0 noktası bozulur).
         // Sadece kamerayı anneye çeviriyoruz.
-        playerCamera.transform.DOLookAt(motherTransform.position, 1f).OnComplete(() =>
+        Transform lookTarget = motherLookTarget != null ? motherLookTarget : motherTransform;
+        playerCamera.transform.DOLookAt(lookTarget.position, 1f).OnComplete(() =>
         {
             if (fps != null) { fps.SyncCameraRotation(); fps.enabled = true; } // Yeni açıyı sisteme kaydet ve kontrolleri geri ver
             dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
