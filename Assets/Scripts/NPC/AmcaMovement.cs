@@ -11,10 +11,16 @@ public class AmcaMovement : MonoBehaviour
     public Transform splineStartReference;
     public Transform chairTransform;
     
+    [Header("Arabaya Yürüme Referansları")]
+    public SplineContainer carPathSpline;
+    public Transform carSplineStartReference;
+    public Transform standLookReference;
+
     [Header("Ayarlar")]
     public float walkSpeed = 1.5f; // Yaralı yürüdüğü için varsayılanı biraz düşürdüm, editörden ayarlayabilirsiniz
-    public string walkTriggerParam = "WalkInjuredTrigger";
+    public string walkInjuredTriggerParam = "WalkInjuredTrigger";
     public string sitTriggerParam = "SitDownTrigger";
+    public string walkTriggerParam = "WalkTrigger";
 
     private SplineAnimate splineAnimate;
 
@@ -45,7 +51,7 @@ public class AmcaMovement : MonoBehaviour
     private IEnumerator WalkToSeatRoutine()
     {
         // Yaralı yürüme animasyonunu başlat
-        amcaAnimator.SetTrigger(walkTriggerParam);
+        amcaAnimator.SetTrigger(walkInjuredTriggerParam);
 
         // Hedef olarak atadığınız referans objesinin lokasyonunu al
         Vector3 worldStartPos = splineStartReference.position;
@@ -84,5 +90,54 @@ public class AmcaMovement : MonoBehaviour
         {
             chairTransform.DOMoveZ(chairTransform.position.z -0.035f, 2f).SetEase(Ease.OutSine);
         }
+    }
+
+    public void StartStandAndWalkToCar()
+    {
+        StartCoroutine(StandToWalkToCarRoutine());
+    }
+
+    private IEnumerator StandToWalkToCarRoutine()
+    {
+        amcaAnimator.SetTrigger("StandUpTrigger");
+
+        // DoTween ile ayağa kalkarken amcanın yüzünü kalkma referansına dönsün.
+        if (standLookReference != null)
+        {
+            transform.DOLookAt(standLookReference.position, 2f, AxisConstraint.Y);
+        }
+
+        yield return new WaitForSeconds(2f); // Ayağa kalkma animasyonunun bitmesi için bekleme (animasyon süresine göre ayarla)
+
+        yield return new WaitForSeconds(1f); // Ayağa kalkma animasyonunun bitiminde küçük bir bekleme
+        
+        // Yürüme animasyonunu tekrar başlat
+        amcaAnimator.SetTrigger(walkInjuredTriggerParam);
+
+        // Yeni hedefin lokasyonunu al
+        Vector3 worldStartPos = carSplineStartReference.position;
+        float distance = Vector3.Distance(transform.position, worldStartPos);
+        float duration = distance / walkSpeed;
+
+        // Bulunduğu yerden Spline'ın başlangıcına dön ve yürü
+        if (distance > 0.05f) 
+        {
+            transform.DOLookAt(worldStartPos, 0.3f, AxisConstraint.Y);
+            yield return transform.DOMove(worldStartPos, duration).SetEase(Ease.Linear).WaitForCompletion();
+        }
+
+        // PathToCar spline'ını takibe başlasın
+        splineAnimate.Container = carPathSpline;
+        splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
+        splineAnimate.MaxSpeed = walkSpeed;
+        splineAnimate.Loop = SplineAnimate.LoopMode.Once;
+        splineAnimate.Alignment = SplineAnimate.AlignmentMode.SplineElement;
+
+        splineAnimate.enabled = true;
+        splineAnimate.Restart(true);
+
+        yield return new WaitUntil(() => !splineAnimate.IsPlaying);
+        
+        splineAnimate.enabled = false;
     }
 }

@@ -13,6 +13,7 @@ public class TalkAboutAsuman : FoodInteractable
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private Transform amcaTransform;
     [SerializeField] private Transform kamilEfendiTransform;
+    [SerializeField] private AmcaMovement amcaMovement;
 
     private DialogNode oldManAfraid;
     private FirstPersonController playerFPS;
@@ -127,9 +128,14 @@ public class TalkAboutAsuman : FoodInteractable
             missionObj.OnInteracted();
         }
 
-        Debug.Log("Placeholder Animasyon: TalkAboutAsuman diyalogu bittikten sonra çalışacak animasyon (Örn: Birlikte masadan kalkarlar)");
-        yield return new WaitForSeconds(2f);
-        Debug.Log("TalkAboutAsuman sonu animasyonu bitti.");
+        // Diyalog bittikten sonra 1 saniye bekle
+        yield return new WaitForSeconds(1f);
+
+        // Amca'nın ayağa kalkıp arabaya yürüme metodunu çağır
+        if (amcaMovement != null)
+        {
+            amcaMovement.StartStandAndWalkToCar();
+        }
 
         // Diyalog tamamen bittiğinde oyuncu kontrollerini geri ver
         if (playerFPS != null)
