@@ -35,7 +35,7 @@ public class OrderSubtitle : MonoBehaviour
             new SubtitleLine
             {
                 speakerName = "Amca",
-                lineText = new LocalizedText { english = "Kamil Efendi, get us two pastries each and some ayran. Make it bottled ayran.", turkish = "Kamil Efendi, bize ikişer poğaça ve ayran. Ayran şişe olsun." },
+                lineText = new LocalizedText { english = "Kamil Efendi, get us two pastries each and some ayran. Make it bottled.", turkish = "Kamil Efendi, bize ikişer poğaça ve ayran. Ayran şişe olsun." },
                 displayDuration = 4f
             },
             new SubtitleLine

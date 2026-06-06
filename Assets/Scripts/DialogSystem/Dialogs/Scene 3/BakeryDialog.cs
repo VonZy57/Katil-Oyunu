@@ -254,7 +254,7 @@ public class BakeryDialog : SittingInteraction
 
         // Branch 1 - 2. Seçenek
         DialogNode enginWhoPunk = DialogBuilder.CreateNode(
-            "Amca, pardon my asking, but who was that 'Lavuk'?",
+            "Amca, sorry for asking, but who was that 'Lavuk'?",
             "Amca ayıptır sorması kimdi o Lavuk?",
             "Engin"
         );
@@ -269,7 +269,7 @@ public class BakeryDialog : SittingInteraction
             "Engin"
         );
         DialogNode oldManSoap = DialogBuilder.CreateEndNode(
-            "If you gathered all the soap in the Eminönü, you couldn't wash that mouth clean. Let's eat something, I'll tell you what happened, don't worry.",
+            "If you gathered all the soap in the Eminönü, you couldn't wash that mouth clean. Let's eat something, I'll tell you all thats happened, don't worry.",
             "Eminönü’ndeki tüm sabunları toplasan onun ağzını temizleyemezsin. Bir şeyler yiyelim anlatacağım sana olanı biteni merak etme.",
             "Amca"
         );

@@ -144,7 +144,7 @@ public class MeetAndHelpUncle : Interactable
         "Güzel olur, ben de kahvaltı yapmış olurum.",
         "Engin");
         DialogNode amcaYesResponseNode = DialogBuilder.CreateEndNode
-        ("That's my boy.",
+        ("Atta boy.",
         "He yaşa oğlum benim.",
         "Amca");
         DialogBuilder.AddOption(amcaYesEnginNode, DialogBuilder.CreateOption("...", "...", amcaYesResponseNode, true));

@@ -115,7 +115,7 @@ public class LavukBeatingAmca : MonoBehaviour
         {
             new SubtitleLine {
                 speakerName = "Lavuk",
-                lineText = new LocalizedText { english = "Didn't I tell you I never want to see you around here again, you **** *****! Huh, if I **** your liver right now, would it be enough, huh!", turkish = "Sana bir daha seni burada görmeyeceğim demedim mi **** *****. He şimdi senin ciğerini ****** az mı yapmış olurum l*n. *******." },
+                lineText = new LocalizedText { english = "Didn't I tell you I never want to see you around here again, you **** *****! Huh, if I **** your liver right now, wouldn't it be enough, wouuld it huh!", turkish = "Sana bir daha seni burada görmeyeceğim demedim mi **** *****. He şimdi senin ciğerini ****** az mı yapmış olurum l*n. *******." },
                 displayDuration = 5f
             },
             new SubtitleLine {
@@ -125,7 +125,7 @@ public class LavukBeatingAmca : MonoBehaviour
             },
             new SubtitleLine {
                 speakerName = "Kuru",
-                lineText = new LocalizedText { english = "Just walk away, man, he's gonna die in your hands. Alright, you're the toughest around, now just hit the road.", turkish = "Çek git oğlum, elinde kalacak adam. Tamam en kral sensin bak yoluna." },
+                lineText = new LocalizedText { english = "Just walk away, man, he's gonna die by your hands. Alright we get it, you're the toughest around, now just hit the road.", turkish = "Çek git oğlum, elinde kalacak adam. Tamam en kral sensin bak yoluna." },
                 displayDuration = 4f
             },
             new SubtitleLine {

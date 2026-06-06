@@ -192,7 +192,7 @@ public class TalkAboutAsuman : FoodInteractable
         // ORTAK DEVAM: Talk About Asuman
         // ==========================================
         oldManDidYouSee = DialogBuilder.CreateNode(
-            "Did you see the one sitting in the car?",
+            "There was someone sitting in the car. Did you see them?",
             "Arabada oturan biri vardı. Onu gördün mü?",
             "Amca"
         );
@@ -239,7 +239,7 @@ public class TalkAboutAsuman : FoodInteractable
         DialogBuilder.AddOption(oldManMakeThingsUp, DialogBuilder.CreateOption("...", "...", enginWhoIsShe, true));
 
         DialogNode oldManMyDaughter = DialogBuilder.CreateEndNode(
-            "She is my daughter. Asuman. One day she called me 'Dad' and said, 'I'm going to Istanbul to study.' With some punk on her arm. That Lavuk from this morning. I didn't like the guy the second I saw him anyway. It had only been about two months since she lost her mother. I loved my wife very much.",
+            "She is my daughter. Asuman. One day she called me and said, 'Dad, I'm going to Istanbul to study.' With some punk on her arm. That Lavuk from this morning. I didn't like the guy the second I laid my eyes on him anyway. It had only been about two months since she lost her mother. I loved my wife very much.",
             "O benim kızım. Asuman. Zamanında baba dedi, ben İstanbul’a gidiyorum okumaya. Kolunda da bir lavuk. İşte sabahki Lavuk. Herifi gördüğüm gibi gözüm tutmadıydı zaten. Annesini kaybedeli 2 ay mı ne olmuştu. Eşimi çok severdim.",
             "Amca"
         );
@@ -333,17 +333,17 @@ public class TalkAboutAsuman : FoodInteractable
             "Kamil Efendi"
         );
         DialogNode oldManRightKamil = DialogBuilder.CreateNode(
-            "You're right, Kamil Efendi. What do I have to lose? Alright young man, let's go see the punk together. But he shouldn't see me. Find a way to meet Asuman and get him to agree. Then you can talk to Asuman and try to persuade her.",
+            "You're right, Kamil Efendi. What do I have to lose? Alright young man, let's go see the 'Lavuk' together. But he shouldn't see me. Find a way to meet Asuman and get him to agree. Then you can talk to Asuman and try to persuade her.",
             "Haklısın Kâmil Efendi. Ne kaybedebilirim ki? Genç adam o zaman seninle Lavuk’un yanına gidelim. Ama beni görmesin. Asuman’la görüşmek için bir yol bul onu ikna et. Ardından Asuman’la konuşup onu ikna etmeye çalışırsın.",
             "Amca"
         );
         DialogNode enginAlrightGo = DialogBuilder.CreateNode(
-            "Alright then, let's go see the Punk.",
+            "Alright then, let's go see that 'Lavuk'.",
             "Tamam o zaman, hadi gidelim şu Lavuk’un yanına.",
             "Engin"
         );
         DialogNode oldManTeaFirst = DialogBuilder.CreateNode(
-            "We should have had a tea first.",
+            "We should have had tea first.",
             "Önce bir çay içseydik.",
             "Amca"
         );

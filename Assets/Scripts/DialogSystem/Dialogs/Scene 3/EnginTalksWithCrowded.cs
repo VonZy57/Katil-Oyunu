@@ -134,7 +134,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         // Silent Opt - 4 Place
         
         DialogNode crowd5Node = DialogBuilder.CreateNode
-        ("Young man, you're new here, you help him up. Join our neighborhood's tradition.",
+        ("Young man, you're new here, you help him up. Be a part of our neighborhood's tradition.",
         "Delikanlı, sen yenisin sen kaldır. Mahallemizin bu adetine dahil ol.",
         "Someone from the Crowd");
 
@@ -167,7 +167,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Engin");
 
         DialogNode whyMeCrowdNode = DialogBuilder.CreateEndNode
-        ("Oh, sure, we all know and love him so much. Look, don't piss me off. I don't want to carry another old man this week.",
+        ("Oh, suuure, because we all know and love him soooo much. Look, don't piss me off. I don't want to carry another old man this week.",
         "He biz tanırız bayılırız zaten. Bak benim tepemin tasını attırma. Ben bu hafta bir tane daha yaşlı taşımak istemiyorum.",
         "Someone from the Crowd");
         
