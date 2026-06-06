@@ -18,6 +18,10 @@ public class BedInteraction : Interactable
     public bool isLightsOff = false;
     public bool isDoorClosed = false;
 
+    [Header("Ses")]
+    public AudioClip bedEnterSound;
+    private AudioSource audioSource;
+
     [Header("Kapı Kontrolü")]
     public Transform doorTransform;
     public float doorClosedThreshold = 5f;
@@ -35,6 +39,8 @@ public class BedInteraction : Interactable
     {
         promptMessage = "E - Sleep";
         missionObj = GetComponent<MissionObjective>();
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
     }
 
     protected override void Update()
@@ -68,6 +74,9 @@ public class BedInteraction : Interactable
                 StartCoroutine(ShowBlockMessage(lightOnMessage));
             return;
         }
+
+        if (bedEnterSound != null)
+            audioSource.PlayOneShot(bedEnterSound);
 
         //Uyuyup uyanma cutscene'i başlar
         StartCoroutine(PlayClockFade());
