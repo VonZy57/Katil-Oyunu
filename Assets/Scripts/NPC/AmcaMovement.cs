@@ -99,21 +99,21 @@ public class AmcaMovement : MonoBehaviour
 
     private IEnumerator StandToWalkToCarRoutine()
     {
-        amcaAnimator.SetTrigger("StandUpTrigger");
-
         // DoTween ile ayağa kalkarken amcanın yüzünü kalkma referansına dönsün.
         if (amcaStandReference != null)
         {
-            transform.DOLookAt(amcaStandReference.position, 2f, AxisConstraint.Y);
-            transform.DOMove(amcaStandReference.position, 2f).SetEase(Ease.OutSine);
+            yield return transform.DOLookAt(amcaStandReference.position, 0.5f, AxisConstraint.Y).WaitForCompletion();
         }
+
+        amcaAnimator.SetTrigger("StandUpTrigger");
 
         yield return new WaitForSeconds(2f); // Ayağa kalkma animasyonunun bitmesi için bekleme (animasyon süresine göre ayarla)
 
+        //Burada otomatik breathing idle'a geçiş yapıyoruz.
         yield return new WaitForSeconds(1f); // Ayağa kalkma animasyonunun bitiminde küçük bir bekleme
         
-        // Yürüme animasyonunu tekrar başlat
-        amcaAnimator.SetTrigger(walkInjuredTriggerParam);
+        // İyileşmiş yürüme animasyonunu başlat
+        amcaAnimator.SetTrigger(walkTriggerParam);
 
         // Yeni hedefin lokasyonunu al
         Vector3 worldStartPos = carSplineStartReference.position;

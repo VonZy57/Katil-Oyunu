@@ -115,6 +115,18 @@ public class TalkAboutAsuman : FoodInteractable
 
         if (oldManAfraid != null)
         {
+            // Kamerayı garanti olması adına tekrar Amca'ya çevir
+            if (playerCamera != null && amcaTransform != null)
+            {
+                Camera cam = playerCamera.GetComponent<Camera>();
+                if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+                if (cam == null) cam = Camera.main; // Fallback
+
+                Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+                camTransform.DOKill();
+                camTransform.DOLookAt(amcaTransform.position, 0.5f).SetEase(Ease.InOutSine);
+            }
+
             dialogSystem.StartDialog(oldManAfraid);
             
             yield return null;

@@ -156,12 +156,14 @@ public class BakeryDialog : SittingInteraction
             // Kâmil Efendi masaya doğru baksın ve yürüsün; kamera da Kamil'e dönsün
             kamilEfendiTransform.DOKill();
             kamilEfendiTransform.DOLookAt(kamilTablePosition.position, 0.5f, AxisConstraint.Y);
+            kamilEfendiLookAt.gameObject.GetComponentInParent<Animator>().SetTrigger("CarryTrigger"); // Kamil Efendi'nin yürüyüş animasyonunu tetikle
             RotateCameraToSpeaker(kamilEfendiLookAt);
             Vector3 targetPosition = new Vector3(kamilTablePosition.position.x, kamilOriginalPosition.y, kamilTablePosition.position.z);
             yield return kamilEfendiTransform.DOMove(targetPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
 
             // Tabakları bırakma bekleme süresi
             yield return new WaitForSeconds(0.5f);
+            kamilEfendiLookAt.gameObject.GetComponentInParent<Animator>().SetTrigger("IdleTrigger"); // Kamil Efendi'nin poğaçaları bırakma animasyonunu tetikle
             plateAmca.SetActive(true);
             plateEngin.SetActive(true);
             Debug.Log("Kamil Efendi poğaçaları masaya bıraktı.");
@@ -170,10 +172,12 @@ public class BakeryDialog : SittingInteraction
             // Geri dönüş; kamera Amca'ya dönsün
             kamilEfendiTransform.DOLookAt(kamilOriginalPosition, 0.5f, AxisConstraint.Y);
             RotateCameraToSpeaker(amcaLookAt);
+            kamilEfendiLookAt.gameObject.GetComponentInParent<Animator>().SetTrigger("WalkingTrigger"); // Kamil Efendi'nin geri yürüyüş animasyonunu tetikle
             yield return kamilEfendiTransform.DOMove(kamilOriginalPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
 
             // Orijinal rotasyona dön
             kamilEfendiTransform.DORotateQuaternion(kamilOriginalRotation, 0.5f);
+            kamilEfendiLookAt.gameObject.GetComponentInParent<Animator>().SetTrigger("IdleTrigger"); // Kamil Efendi'nin normal idle animasyonuna dönmesini tetikle
         }
         else
         {
