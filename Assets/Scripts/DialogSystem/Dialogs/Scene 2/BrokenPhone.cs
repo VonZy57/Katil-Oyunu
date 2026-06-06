@@ -1,61 +1,80 @@
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
 public class BrokenPhone : Interactable
 {
     [Header("References")]
-    public Transform lookAtTarget;    // Bakılacak hedef (Kız)
-    public Transform playerBody;      // Karakterin ana gövdesi (Sağa/Sola dönüş için)
-    public Transform playerCamera;    // Karakterin kamerası (Yukarı/Aşağı bakış için)
+    public Transform phoneLookAtTarget; // Telefona bakış hedefi
+    public Transform lookAtTarget;      // Küçük kıza bakış hedefi
+    public Transform playerBody;
+    public Transform playerCamera;
+    public GameObject phoneHandSet;
+    public Transform playerHandSetRef;
+    [SerializeField] private Vector3 initialHandSetPos;
+    [SerializeField] private Quaternion initialHandSetRot;
 
     [Header("Rotation Settings")]
-    public float rotationDuration = 2f;  // Dönüş hızı
+    public float rotationDuration = 2f;
     [Tooltip("Target'ın ne kadar üstüne bakılsın?")]
-    public float lookOffset = 0.5f;   // Hedefin ne kadar üstüne bakılacağı
+    public float lookOffset = 0.5f;
+
+    [Header("Audio Settings")]
+    public AudioClip phoneOpenSound;
+    public AudioClip phoneCloseSound;
+    public AudioClip lowSignalSound;
+    private AudioSource audioSource;
 
     private DialogSystem dialogSystem;
     private MissionObjective missionObj;
     private DialogNode phoneDialogNode;
-    private bool hasInteracted = false; // Tek seferlik kontrol için
-
+    private bool hasInteracted = false;
 
     void Start()
     {
-        BuildDialogTree();
         dialogSystem = FindFirstObjectByType<DialogSystem>();
         missionObj = GetComponent<MissionObjective>();
+
+        if (phoneHandSet != null)
+        {
+            initialHandSetPos = phoneHandSet.transform.position;
+            initialHandSetRot = phoneHandSet.transform.rotation;
+        }
+
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+
+        BuildDialogTree();
     }
 
     protected override void Update()
     {
-        base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
+        base.Update();
 
         if (!hasInteracted && missionObj != null && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
-        {
             promptMessage = "E - Telephone";
-        }
         else
-        {
-            promptMessage = ""; // Görev aktif değilse veya etkileşime girildiyse yazı çıkmasın
-        }
-
-        
+            promptMessage = "";
     }
 
     protected override void Interact()
     {
-        // Eğer daha önce etkileşime girildiyse veya görev sırası değilse işlem yapma
         if (hasInteracted || (missionObj != null && MissionManager.Instance.CurrentMission != missionObj.requiredMission))
             return;
 
-        // 1. Etkileşimi kilitle ve mesajı sil
         hasInteracted = true;
         promptMessage = "";
 
-        // 2. Bakış işlemini başlat (DOTween)
-        RotateCameraToTarget();
+        RotateCameraToTarget(phoneLookAtTarget, rotationDuration);
 
-        // 3. Diyalog sistemini başlat
+        if (phoneHandSet != null && playerHandSetRef != null)
+        {
+            phoneHandSet.transform.DOMove(playerHandSetRef.position, 1f);
+            phoneHandSet.transform.DORotateQuaternion(playerHandSetRef.rotation, 1f);
+        }
+
+        StartCoroutine(PlayPhoneOpenSequence());
+
         if (dialogSystem != null)
         {
             dialogSystem.StartDialog(phoneDialogNode);
@@ -63,49 +82,76 @@ public class BrokenPhone : Interactable
         }
     }
 
-    void RotateCameraToTarget()
+    private IEnumerator PlayPhoneOpenSequence()
     {
-        if (lookAtTarget == null) return;
-
-        // A. Karakterin Gövdesini (Body) hedefe döndür (Sadece Y ekseninde)
-        // Böylece karakterin vücudu hedefe döner ama havaya bakmaz.
-        if (playerBody != null)
+        if (phoneOpenSound != null)
         {
-            playerBody.DOLookAt(lookAtTarget.position, rotationDuration, AxisConstraint.Y);
+            audioSource.PlayOneShot(phoneOpenSound);
+            yield return new WaitForSeconds(phoneOpenSound.length);
         }
 
-        // B. Kamerayı (Camera) hedefin biraz üstüne döndür
-        // Hedef pozisyon + Offset (Yukarı)
-        if (playerCamera != null)
+        if (lowSignalSound != null)
         {
-            Vector3 targetPositionWithOffset = lookAtTarget.position + (Vector3.up * lookOffset);
-            playerCamera.DOLookAt(targetPositionWithOffset, rotationDuration);
+            audioSource.clip = lowSignalSound;
+            audioSource.loop = true;
+            audioSource.Play();
         }
-        
     }
 
-    private System.Collections.IEnumerator CheckDialogEnd()
+    void RotateCameraToTarget(Transform target, float duration)
     {
-        // Dialog paneli kapanana kadar bekle
+        if (target == null) return;
+
+        playerBody?.DOLookAt(target.position, duration, AxisConstraint.Y);
+        playerCamera?.DOLookAt(target.position + (Vector3.up * lookOffset), duration);
+    }
+
+    private IEnumerator CheckDialogEnd()
+    {
         while (dialogSystem != null && dialogSystem.dialogPanel.activeSelf)
-        {
             yield return null;
+
+        // Telefona geri dön, sonra kapat
+        RotateCameraToTarget(phoneLookAtTarget, rotationDuration);
+        yield return new WaitForSeconds(rotationDuration);
+
+        // Düşük hat sesini durdur
+        audioSource.loop = false;
+        audioSource.Stop();
+
+        if (phoneHandSet != null)
+        {
+            phoneHandSet.transform.DOMove(initialHandSetPos, 0.2f);
+            phoneHandSet.transform.DORotateQuaternion(initialHandSetRot, 0.2f);
         }
 
+        if (phoneCloseSound != null)
+            audioSource.PlayOneShot(phoneCloseSound);
 
-
-        // Sonraki görevi tetikler
         if (missionObj != null)
             missionObj.OnInteracted();
     }
 
     void BuildDialogTree()
     {
-        // Kız'ın telefon hakkındaki diyaloğu (tek seferlik)
-        phoneDialogNode = DialogBuilder.CreateEndNode(
+        // TODO: Buradaki metni daha sonra belirle
+        DialogNode phoneBusyNode = DialogBuilder.CreateNode("...", "...", "Engin");
+
+        DialogNode girlNode = DialogBuilder.CreateEndNode(
             "Sir, that phone is broken.",
             "Abi o telefon bozuk.",
             "Little Girl"
         );
+
+        // Kıza dön (ses telefon kapanana kadar devam eder)
+        DialogOption phoneToGirl = DialogBuilder.CreateOptionWithEvent(
+            "...", "...",
+            girlNode,
+            () => RotateCameraToTarget(lookAtTarget, rotationDuration),
+            true
+        );
+        DialogBuilder.AddOption(phoneBusyNode, phoneToGirl);
+
+        phoneDialogNode = phoneBusyNode;
     }
 }

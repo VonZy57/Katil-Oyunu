@@ -96,7 +96,7 @@ public class KeyDialog : MonoBehaviour
             // Delay varsa bekle
             if (activationDelay > 0) yield return new WaitForSeconds(activationDelay);
 
-            // 1. Anahtar ortaya çıkmadan hemen önce Kuru'yu ve Kamerayı başlangıç haline döndür
+            // Kuru'nun override look target'ını temizle
             if (kuruLookController != null)
             {
                 kuruLookController.ClearOverrideLookTarget();
@@ -104,13 +104,8 @@ public class KeyDialog : MonoBehaviour
                 kuruRoot.DOKill();
                 kuruRoot.DORotateQuaternion(startKuruRotation, rotationDuration).SetEase(Ease.OutQuad);
             }
-            
-            ReturnCameraToOriginal(); // Oyuncunun kamerasını da eski yerine çevir
 
-            // 2. Dönüşlerin tamamlanması için süre tanı
-            yield return new WaitForSeconds(rotationDuration);
-
-            // 3. Obje aktif edilme süreci (Anahtar ortaya çıkıyor)
+            // Obje aktif edilme süreci (Anahtar ortaya çıkıyor)
             if (objectToActivate != null)
             {
                 objectToActivate.SetActive(true);
