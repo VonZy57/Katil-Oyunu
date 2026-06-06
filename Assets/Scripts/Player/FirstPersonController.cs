@@ -348,31 +348,33 @@ public class FirstPersonController : MonoBehaviour
     {
         if (cameraTransform == null) return;
 
-        Vector3 localAngles = cameraTransform.localEulerAngles;
-        
-        float newX = localAngles.x;
-        if (newX > 180f) newX -= 360f;
-        
-        float newY = localAngles.y;
-        if (newY > 180f) newY -= 360f;
-
         if (IsSitting)
         {
-            xRotation = Mathf.Clamp(newX, -sittingLookLimit, sittingLookLimit);
-            yRotation = Mathf.Clamp(newY, -sittingLookLimit, sittingLookLimit);
+            // Gimbal lock'u önlemek için lokal vektörlerden açıları hesapla
+            Vector3 localForward = transform.InverseTransformDirection(cameraTransform.forward);
+            
+            float pitch = -Mathf.Asin(Mathf.Clamp(localForward.y, -1f, 1f)) * Mathf.Rad2Deg;
+            float yaw = Mathf.Atan2(localForward.x, localForward.z) * Mathf.Rad2Deg;
+
+            xRotation = Mathf.Clamp(pitch, -sittingLookLimit, sittingLookLimit);
+            yRotation = Mathf.Clamp(yaw, -sittingLookLimit, sittingLookLimit);
             cameraTransform.localRotation = Quaternion.Euler(xRotation, yRotation, 0f);
         }
         else
         {
-            xRotation = Mathf.Clamp(newX, -90f, 90f);
+            // Olası gimbal lock problemlerini önlemek için global vektörlerden açıları hesapla
+            Vector3 camForward = cameraTransform.forward;
             
+            // Kameranın dünyaya göre hangi yöne (Yaw) baktığını bul ve gövdeye uygula
+            float globalYaw = cameraTransform.eulerAngles.y;
+            transform.rotation = Quaternion.Euler(0f, globalYaw, 0f);
 
-            // cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt); alttaki iki satırın eskisi (diğer sahnelerde bir buga sebep olursa eski haline getirilecek)
+            // Kameranın yukarı/aşağı (Pitch) açısını hesapla
+            float pitch = -Mathf.Asin(Mathf.Clamp(camForward.y, -1f, 1f)) * Mathf.Rad2Deg;
+            xRotation = Mathf.Clamp(pitch, -90f, 90f);
 
-            // Kamera lokal olarak Y ekseninde (sağa/sola) döndüyse, bu dönüşü ana gövdeye aktar
-            transform.Rotate(Vector3.up * newY);
-
-            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt); // Kameranın lokal Y dönüşünü sıfırla
+            // Kameranın lokal Y dönüşünü sıfırla, sadece X rotasyonunu ata
+            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, currentTilt); 
         }
     }
 }

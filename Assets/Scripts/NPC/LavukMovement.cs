@@ -9,6 +9,8 @@ public class LavukMovement : MonoBehaviour
     public Animator lavukAnimator;
     public SplineContainer lavukPathSpline;
     public Transform splineStartReference;
+    public CarMovement carMovement;
+    public Transform carDoorTransform;
     
     [Header("Ayarlar")]
     public float walkSpeed = 2f;
@@ -78,5 +80,15 @@ public class LavukMovement : MonoBehaviour
 
         // Arabaya binme animasyonunu tetikle
         lavukAnimator.SetTrigger(enterCarTriggerParam);
+
+        yield return carDoorTransform.DORotate(new Vector3(0f, 70f, 0f), 1.5f).WaitForCompletion();
+
+        yield return new WaitForSeconds(1.5f);
+
+        yield return carDoorTransform.DORotate(new Vector3(0f, 0f, 0f), 1.5f).WaitForCompletion();
+
+        yield return new WaitForSeconds(1.5f);
+
+        carMovement.StartCarMovement();
     }
 }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Splines;
+using DG.Tweening;
 
 public class LavukBeatingAmca : MonoBehaviour
 {
@@ -13,6 +15,12 @@ public class LavukBeatingAmca : MonoBehaviour
 
     [Header("Animasyon Referansları")]
     [SerializeField] private Animator lavukAnimator;
+
+    [Header("Oyuncu Spline Hareketi")]
+    [SerializeField] private SplineContainer playerPathSpline;
+    [SerializeField] private Transform playerLookAtTarget;
+    [SerializeField] private Transform amcaLookAtTarget;
+    [SerializeField] private float playerWalkSpeed = 3f;
 
     [System.Serializable]
     public struct SubtitleLine
@@ -27,6 +35,7 @@ public class LavukBeatingAmca : MonoBehaviour
 
     public bool isFinished { get; private set; } = false;
     private bool hasTriggered = false;
+    private GameObject currentPlayer;
 
     void Start()
     {
@@ -38,8 +47,61 @@ public class LavukBeatingAmca : MonoBehaviour
         if (other.CompareTag("Player") && MissionManager.Instance.CurrentMission == missionObj.requiredMission && !hasTriggered)
         {
             hasTriggered = true;
+            currentPlayer = other.gameObject;
+            StartCoroutine(PlayerWalkAndWatchSequence(other.gameObject));
             StartCoroutine(PlaySubtitleSequence());
         }
+    }
+
+    private IEnumerator PlayerWalkAndWatchSequence(GameObject player)
+    {
+        FirstPersonController fps = player.GetComponent<FirstPersonController>();
+        CharacterController cc = player.GetComponent<CharacterController>();
+
+        // Oyuncu kontrollerini ve collider'ı (spline'da takılmaması için) geçici olarak kapat
+        if (fps != null) fps.enabled = false;
+        if (cc != null) cc.enabled = false;
+
+        // Spline takibine başlamadan önce 2 saniye bekle
+        yield return new WaitForSeconds(1f);
+
+        if (playerPathSpline != null)
+        {
+            SplineAnimate splineAnimate = player.GetComponent<SplineAnimate>();
+            if (splineAnimate == null) splineAnimate = player.AddComponent<SplineAnimate>();
+
+            splineAnimate.Container = playerPathSpline;
+            splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
+            splineAnimate.MaxSpeed = playerWalkSpeed;
+            splineAnimate.Loop = SplineAnimate.LoopMode.Once;
+            splineAnimate.Alignment = SplineAnimate.AlignmentMode.SplineElement; // Yüzünü spline yönüne dön
+
+            splineAnimate.enabled = true;
+            splineAnimate.Restart(true);
+
+            // Spline rotası bitene kadar bekle
+            yield return new WaitUntil(() => !splineAnimate.IsPlaying);
+            splineAnimate.enabled = false;
+        }
+
+        // Spline rotası bittiğinde, karakteri ve kamerayı kavganın olduğu yere (hedefe) yumuşakça döndür
+        if (playerLookAtTarget != null)
+        {
+            player.transform.DOKill();
+            player.transform.DOLookAt(playerLookAtTarget.position, 2f, AxisConstraint.Y).SetEase(Ease.InOutSine);
+
+            Camera cam = player.GetComponentInChildren<Camera>();
+            if (cam == null) cam = Camera.main;
+            if (cam != null)
+            {
+                cam.transform.DOKill();
+                cam.transform.DOLookAt(playerLookAtTarget.position, 2f).SetEase(Ease.InOutSine);
+            }
+        }
+
+        // Spline işlemi bitince sadece CC'yi geri açıyoruz. (Yere basması ve diğer scriptlerin çarpışmaları okuyabilmesi için)
+        // FPC (kamera/hareket kilitleri) ise EnginTalksWithCrowded scriptindeki diyalog bittiğinde otomatik açılacak!
+        if (cc != null) cc.enabled = true;
     }
 
     private IEnumerator PlaySubtitleSequence()
@@ -95,7 +157,22 @@ public class LavukBeatingAmca : MonoBehaviour
             lavukMovement.StartWalkingToCar();
         }
         
-        yield return new WaitForSeconds(10f); // Lavuk sahneden uzaklaştıktan sonra biraz bekleyelim
+        // Lavuk sahneden uzaklaşırken boş kalan 10 saniyeyi kamera geçişleriyle değerlendiriyoruz
+        if (currentPlayer != null)
+        {
+            // 3 saniye hareket halindeki Lavuk'u takip et
+            yield return StartCoroutine(TrackTargetForDuration(playerLookAtTarget, 3f));
+            // 2 saniye Amca'ya dön ve bak
+            yield return StartCoroutine(TrackTargetForDuration(amcaLookAtTarget, 2f));
+            // Tekrar 3 saniye Lavuk'u takip et
+            yield return StartCoroutine(TrackTargetForDuration(playerLookAtTarget, 3f));
+            // Tekrar 2 saniye Amca'ya bak
+            yield return StartCoroutine(TrackTargetForDuration(amcaLookAtTarget, 1.5f));
+        }
+        else
+        {
+            yield return new WaitForSeconds(10f); // Her ihtimale karşı fallback
+        }
 
         // 1. Diyalog: Görev son animasyon bitince değişsin
         if (missionObj != null)
@@ -106,6 +183,43 @@ public class LavukBeatingAmca : MonoBehaviour
         if (enginTalksWithCrowded != null)
         {
             enginTalksWithCrowded.StartCrowdDialog();
+        }
+    }
+
+    private IEnumerator TrackTargetForDuration(Transform target, float duration)
+    {
+        if (target == null || currentPlayer == null)
+        {
+            yield return new WaitForSeconds(duration);
+            yield break;
+        }
+
+        Camera cam = currentPlayer.GetComponentInChildren<Camera>();
+        if (cam == null) cam = Camera.main;
+
+        // Daha önceden kalan DOTween animasyonları varsa durdur ki titreme/çakışma yapmasın
+        currentPlayer.transform.DOKill();
+        if (cam != null) cam.transform.DOKill();
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            if (currentPlayer != null && cam != null)
+            {
+                // Hedefe yönelen vektör
+                Vector3 dirToTarget = (target.position - currentPlayer.transform.position).normalized;
+                
+                // Gövdeyi (Player) sadece Y ekseninde (Sağa/Sola) yavaşça çevir
+                Vector3 bodyDir = new Vector3(dirToTarget.x, 0, dirToTarget.z).normalized;
+                if (bodyDir != Vector3.zero)
+                    currentPlayer.transform.rotation = Quaternion.Slerp(currentPlayer.transform.rotation, Quaternion.LookRotation(bodyDir), Time.deltaTime * 3f);
+
+                // Kamerayı hedefe tam yönlendir (Aşağı/Yukarı dâhil)
+                if (dirToTarget != Vector3.zero)
+                    cam.transform.rotation = Quaternion.Slerp(cam.transform.rotation, Quaternion.LookRotation(dirToTarget), Time.deltaTime * 3f);
+            }
+            timer += Time.deltaTime;
+            yield return null;
         }
     }
 
