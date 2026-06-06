@@ -6,12 +6,16 @@ public class RoomKeyInteraction : Interactable
     public bool canInteractable = true;
     public bool isKeyCollected = false;
 
-    public event Action OnKeyCollected; // Anahtar alındığında habercilik yapacak Olay (Event)
+    public AudioClip pickupSound;
+    private AudioSource audioSource;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public event Action OnKeyCollected;
+
     void Start()
     {
         promptMessage = "E - Take";
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
     }
 
     // Update is called once per frame
@@ -28,9 +32,11 @@ public class RoomKeyInteraction : Interactable
             mr.enabled = false;
             canInteractable = false;
             isKeyCollected = true;
-            promptMessage = ""; // null yerine boş string atamak hata riskini azaltır
+            promptMessage = "";
 
-            // Olayı (Event) tetikle ve dinleyenlere haber ver
+            if (pickupSound != null)
+                audioSource.PlayOneShot(pickupSound);
+
             OnKeyCollected?.Invoke();
         }
         
