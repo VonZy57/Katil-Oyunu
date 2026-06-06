@@ -14,7 +14,7 @@ public class AmcaMovement : MonoBehaviour
     [Header("Arabaya Yürüme Referansları")]
     public SplineContainer carPathSpline;
     public Transform carSplineStartReference;
-    public Transform standLookReference;
+    public Transform amcaStandReference;
 
     [Header("Ayarlar")]
     public float walkSpeed = 1.5f; // Yaralı yürüdüğü için varsayılanı biraz düşürdüm, editörden ayarlayabilirsiniz
@@ -102,9 +102,10 @@ public class AmcaMovement : MonoBehaviour
         amcaAnimator.SetTrigger("StandUpTrigger");
 
         // DoTween ile ayağa kalkarken amcanın yüzünü kalkma referansına dönsün.
-        if (standLookReference != null)
+        if (amcaStandReference != null)
         {
-            transform.DOLookAt(standLookReference.position, 2f, AxisConstraint.Y);
+            transform.DOLookAt(amcaStandReference.position, 2f, AxisConstraint.Y);
+            transform.DOMove(amcaStandReference.position, 2f).SetEase(Ease.OutSine);
         }
 
         yield return new WaitForSeconds(2f); // Ayağa kalkma animasyonunun bitmesi için bekleme (animasyon süresine göre ayarla)
