@@ -13,6 +13,14 @@ public class TalkWithNeighbor : MonoBehaviour
     [Header("Ses Referansları")]
     [SerializeField] private List<SpeakerAudio> speakerAudios;
 
+    [Header("Komşu Sesleri")]
+    [SerializeField] private AudioClip clip_neighbor1; // Selamun aleyküm
+    [SerializeField] private AudioClip clip_neighbor2; // Keksizlikten yanıyorum
+
+    [Header("Anne Sesleri")]
+    [SerializeField] private AudioClip clip_mother1; // Gene mi geldin
+    [SerializeField] private AudioClip clip_mother2; // Tamam hadi bir bardak daha
+
     [System.Serializable]
     public struct SubtitleLine
     {
@@ -22,8 +30,7 @@ public class TalkWithNeighbor : MonoBehaviour
         public AudioClip voiceClip; // YENİ — null ise ses çalınmaz
     }
 
-    [Header("Diyalog Satırları")]
-    [SerializeField] private List<SubtitleLine> dialogLines;
+    private List<SubtitleLine> dialogLines;
 
     [Header("Diyalog Sonrası Animasyon Ayarları")]
     public Transform neighborTransform; // Komşu objesi
@@ -56,25 +63,29 @@ public class TalkWithNeighbor : MonoBehaviour
             {
                 speakerName = "Neighbor",
                 lineText = new LocalizedText { english = "Hi, neighbor! Could I ask if you have a cup of sugar?", turkish = "Selamun aleyküm, komşum! Bir fincan şekere ihtiyacım var, verebilir misin?" },
-                displayDuration = 4f
+                displayDuration = clip_neighbor1 != null ? clip_neighbor1.length : 4f,
+                voiceClip = clip_neighbor1
             },
             new SubtitleLine
             {
                 speakerName = "Mother",
                 lineText = new LocalizedText { english = "Why did you come again, infidel? How many times is it this week? Don't you know how bad too much sugar is for you? You idiot!", turkish = "Gene mi geldin imansız. Kaçıncı oldu bu hafta. Fazla şeker ne kadar zararlı biliyor musun? Deyyus!" },
-                displayDuration = 6f
+                displayDuration = clip_mother1 != null ? clip_mother1.length : 6f,
+                voiceClip = clip_mother1
             },
             new SubtitleLine
             {
                 speakerName = "Neighbor",
                 lineText = new LocalizedText { english = "I'm dying of cakelessness, honey. I can't live without cookies or that 'shaky' pudding.", turkish = "Keksizlikten yanıyorum güzelim. Kurabiye olmadan yaşayamam. Ya da o 'titrek' sütlaç." },
-                displayDuration = 5f
+                displayDuration = clip_neighbor2 != null ? clip_neighbor2.length : 5f,
+                voiceClip = clip_neighbor2
             },
             new SubtitleLine
             {
                 speakerName = "Mother",
                 lineText = new LocalizedText { english = "Okay, let's go get it one more time. But if you touch the raw cake, I'll sh*t on your bed again.", turkish = "Tamam hadi bir bardak daha olsun. Ama elin pişmemiş keke giderse gene sıçarım yatağına." },
-                displayDuration = 5f
+                displayDuration = clip_mother2 != null ? clip_mother2.length : 5f,
+                voiceClip = clip_mother2
             }
         };
     }

@@ -164,8 +164,8 @@ public class TalkWithCenkOnTable : MonoBehaviour
         "Cenk");
 
         DialogNode enginSaysNode = DialogBuilder.CreateNode
-        ("Cenk, She is mother.",
-        "O anne Cenk.",
+        ("Cenk, She is my mother.",
+        "O benim annem Cenk.",
         "Engin");
 
         // Ana Düğüm - 1: Cenk'ten Engin'e otomatik geçiş
