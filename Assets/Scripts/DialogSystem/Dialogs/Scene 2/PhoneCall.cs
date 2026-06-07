@@ -37,6 +37,7 @@ public class PhoneCall : Interactable
 
     [Header("Audio Settings")]
     public AudioClip phoneHangupSound; // Telefon kapatma sesi
+    public AudioClip phonePickupSound; // Telefon açma sesi
     private AudioSource audioSource;
 
     [Header("Door References")]
@@ -135,9 +136,9 @@ public class PhoneCall : Interactable
         }
 
         // Telefon açma sesi çal
-        if (oneShotAudioSource != null && phonePickupSound != null)
+        if (audioSource != null && phonePickupSound != null)
         {
-            oneShotAudioSource.PlayOneShot(phonePickupSound);
+            audioSource.PlayOneShot(phonePickupSound);
         }
 
         dialogSystem.StartDialog(phoneCallNode);
