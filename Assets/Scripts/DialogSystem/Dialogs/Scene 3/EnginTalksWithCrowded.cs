@@ -103,7 +103,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         DialogNode crowd2Node = DialogBuilder.CreateNode
         ("It's your turn, you're picking up the old guy this time.",
         "Sıra sende bu sefer sen yaşlı kaldırıyorsun.",
-        "Someone from the Crowd but Woman ");
+        "Another from the Crowd");
 
         // Silent Opt - 1
         DialogOption crowd2Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd2Node, () => { StartCoroutine(LookAtTargetSequence(crowd2Transform)); }, true);
@@ -125,7 +125,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
         DialogNode crowd4Node = DialogBuilder.CreateNode
         ("Do you have any idea how many old people fall down around here in a week?",
         "Bir hafta da kaç yaşlı düşüyor burada haberin var mı?",
-        "A Completely Different Person");
+        "Another from the Crowd but Woman");
 
         // Silent Opt - 3
         DialogOption crowd4Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd4Node, () => { StartCoroutine(LookAtTargetSequence(crowd3Transform)); }, true);
@@ -139,7 +139,15 @@ public class EnginTalksWithCrowded : MonoBehaviour
         "Someone from the Crowd");
 
         // Silent Opt - 4
-        DialogOption crowd5Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd5Node, () => { StartCoroutine(LookAtTargetSequence(crowd1Transform)); }, true);
+        DialogOption crowd5Opt = DialogBuilder.CreateOptionWithEvent("...", "...", crowd5Node, () => 
+        { 
+            StartCoroutine(LookAtTargetSequence(crowd1Transform)); 
+            if (playerCamera != null && crowd1Transform != null)
+            {
+                this.gameObject.transform.DOKill();
+                this.gameObject.transform.DOLookAt(playerCamera.transform.position, 0.7f, AxisConstraint.Y).SetEase(Ease.InOutSine);
+            }
+        }, true);
         DialogBuilder.AddOption(crowd4Node, crowd5Opt);
 
         // ==============================
