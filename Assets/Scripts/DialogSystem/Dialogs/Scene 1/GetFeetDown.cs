@@ -63,6 +63,7 @@ public class GetFeetDown : Interactable
 
 
     public bool isDialogCompleted { get; private set; } = false;
+    private bool hasInteracted = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -75,7 +76,7 @@ public class GetFeetDown : Interactable
     protected override void Update()
     {
         base.Update(); // Üst sınıftaki (Interactable) outline mesafe kontrolünü çalıştır
-        if (missionObj != null && MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isDialogCompleted)
+        if (missionObj != null && MissionManager.Instance != null && MissionManager.Instance.CurrentMission == missionObj.requiredMission && !hasInteracted)
         {
             promptMessage = "E - Talk";
         }
@@ -87,6 +88,15 @@ public class GetFeetDown : Interactable
 
     protected override void Interact()
     {
+        // Eğer görev aktif değilse veya etkileşime zaten girildiyse (hasInteracted) tekrar girmeye izin verme
+        if ((missionObj != null && MissionManager.Instance != null && MissionManager.Instance.CurrentMission != missionObj.requiredMission) || hasInteracted)
+        {
+            return;
+        }
+
+        hasInteracted = true;
+        promptMessage = ""; // Diyalog başlar başlamaz prompt'u temizle
+
         StartCoroutine(DialogRoutine()); 
     }
     
