@@ -92,41 +92,48 @@ public class PhoneCall : Interactable
             hasInteracted = true; // Bir daha telefon kullanılamaz
             promptMessage = ""; // Prompt'u kaldır
 
-            // Kamerayı telefona döndür
-            RotateCameraToTarget(rotationDuration);
-
-            // Oyuncuyu HangUpRef konumuna ve rotasyonuna DOTween ile ilerlet
-            if (playerObjectToTeleport != null && hangUpRef != null)
-            {
-                CharacterController cc = playerObjectToTeleport.GetComponent<CharacterController>();
-                if (cc != null) cc.enabled = false;
-
-                // Hedefin sadece X ve Z koordinatlarını alıp, karakterin kendi Y (yükseklik) değerini koruyoruz
-                Vector3 targetPos = new Vector3(hangUpRef.position.x, playerObjectToTeleport.transform.position.y, hangUpRef.position.z);
-                playerObjectToTeleport.transform.DOMove(targetPos, 1f).SetEase(Ease.InOutSine);
-                playerObjectToTeleport.transform.DORotateQuaternion(hangUpRef.rotation, 1f).SetEase(Ease.InOutSine).OnComplete(() =>
-                {
-                    if (cc != null) cc.enabled = true;
-                });
-
-                // Oyuncu ilerlerken kameraya yürüme (Head Bobbing) hissi vermek için Y ekseninde sarsıntı ekle
-                if (playerCamera != null)
-                {
-                    playerCamera.DOPunchPosition(new Vector3(0f, -0.08f, 0f), 1f, 3, 0.5f);
-                }
-            }
-
-            // Telefon ahizesini kulağa götür.
-            if (phoneHandSet != null)
-            {
-                phoneHandSet.transform.DOMove(playerHandSetRef.transform.position, 1f);
-                phoneHandSet.transform.DORotateQuaternion(playerHandSetRef.transform.rotation, 1f);
-            }
-
-            dialogSystem.StartDialog(phoneCallNode);
-            isDialogActive = true;
-            StartCoroutine(CheckDialogEnd());
+            StartCoroutine(PhoneInteractionSequence());
         }
+    }
+
+    private IEnumerator PhoneInteractionSequence()
+    {
+        // Oyuncuyu HangUpRef konumuna ve rotasyonuna DOTween ile ilerlet
+        if (playerObjectToTeleport != null && hangUpRef != null)
+        {
+            CharacterController cc = playerObjectToTeleport.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+
+            // Hedefin sadece X ve Z koordinatlarını alıp, karakterin kendi Y (yükseklik) değerini koruyoruz
+            Vector3 targetPos = new Vector3(hangUpRef.position.x, playerObjectToTeleport.transform.position.y, hangUpRef.position.z);
+            playerObjectToTeleport.transform.DOMove(targetPos, 1f).SetEase(Ease.InOutSine);
+            playerObjectToTeleport.transform.DORotateQuaternion(hangUpRef.rotation, 1f).SetEase(Ease.InOutSine);
+
+            // Oyuncu ilerlerken kameraya yürüme (Head Bobbing) hissi vermek için Y ekseninde sarsıntı ekle
+            if (playerCamera != null)
+            {
+                playerCamera.DOPunchPosition(new Vector3(0f, -0.08f, 0f), 1f, 3, 0.5f);
+            }
+
+            // Yürüme hareketinin bitmesini (1 saniye) bekle
+            yield return new WaitForSeconds(1f);
+
+            if (cc != null) cc.enabled = true;
+        }
+        
+        // Hareket tamamen bittikten sonra kamerayı telefona döndür
+        RotateCameraToTarget(rotationDuration);
+
+        // Telefon ahizesini kulağa götür.
+        if (phoneHandSet != null)
+        {
+            phoneHandSet.transform.DOMove(playerHandSetRef.transform.position, 1f);
+            phoneHandSet.transform.DORotateQuaternion(playerHandSetRef.transform.rotation, 1f);
+        }
+
+        dialogSystem.StartDialog(phoneCallNode);
+        isDialogActive = true;
+        StartCoroutine(CheckDialogEnd());
     }
 
     void RotateCameraToTarget(float rotateDuration)
