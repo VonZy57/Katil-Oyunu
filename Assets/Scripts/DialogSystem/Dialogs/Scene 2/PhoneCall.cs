@@ -201,6 +201,7 @@ public class PhoneCall : Interactable
         }
 
         isDialogActive = false;
+        StartCoroutine(JumpscareSequence());
     }
 
     private IEnumerator TrackJumpscareTarget(float duration)
@@ -268,12 +269,6 @@ public class PhoneCall : Interactable
         {
             Animator anim = MotherFacedGirl.GetComponent<Animator>();
             if (anim != null) anim.SetTrigger("JumpScareTrigger");
-        }
-
-        // Diyaloğu kod üzerinden kapat ki oyuncu "Abi abi abi" ekranında tıklamak zorunda kalmasın
-        if (dialogSystem != null)
-        {
-            dialogSystem.EndDialog();
         }
 
         // "UYAN!" yazısını ekranda altyazı şeklinde göster
@@ -553,8 +548,6 @@ public class PhoneCall : Interactable
                     phoneHandSet.transform.DORotateQuaternion(initialHandSetRot, 0.2f);
                     audioSource.PlayOneShot(phoneHangupSound);
                 }
-                
-                StartCoroutine(JumpscareSequence());
             },
             true
         );
