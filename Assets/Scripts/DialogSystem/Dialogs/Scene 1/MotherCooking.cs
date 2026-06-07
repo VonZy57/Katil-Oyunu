@@ -11,6 +11,8 @@ public class MotherCooking : MonoBehaviour
     public Transform motherTableTransform; // Anne'nin yemek masasında duracağı pozisyon
     public GameObject cookingPot; // Masadaki tencere modeli
 
+    [SerializeField] private SettingsMenuController settingsMenuController;
+
     [Header("Ses Referansları")]
     [SerializeField] private List<SpeakerAudio> speakerAudios;
 
@@ -69,6 +71,8 @@ public class MotherCooking : MonoBehaviour
 
     IEnumerator PlaySongAfterStartDialog()
     {
+        if (settingsMenuController != null) settingsMenuController.isLocked = true;
+
         // Şarkı başlarken (karanlıktayken) oyuncu hareket edemesin diye kontrolleri hemen kapatıyoruz
         FirstPersonController fps = playerBody.GetComponent<FirstPersonController>();
         if (fps != null)
@@ -143,6 +147,7 @@ public class MotherCooking : MonoBehaviour
         playerCamera.transform.DOLookAt(lookTarget.position, 1f).OnComplete(() =>
         {
             if (fps != null) { fps.SyncCameraRotation(); fps.enabled = true; } // Yeni açıyı sisteme kaydet ve kontrolleri geri ver
+            if (settingsMenuController != null) settingsMenuController.isLocked = false;
             dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
             StartCoroutine(WaitForDialogEnd()); // Diyalogun bitmesini bekleyecek sistemi başlat

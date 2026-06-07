@@ -7,6 +7,7 @@ public class SettingsMenuController : MonoBehaviour
     public EndlessRunner endlessRunner;
     public DialogSystem dialogSystem;
 
+    public bool isLocked = false;
     private bool isOpen = false;
     private bool fpcWasEnabled = true;
     private PlayerControls controls;
@@ -22,6 +23,7 @@ public class SettingsMenuController : MonoBehaviour
 
     void Toggle()
     {
+        if (isLocked) return;
         if (!isOpen && dialogSystem != null && dialogSystem.dialogPanel.activeSelf) return;
 
         isOpen = !isOpen;
