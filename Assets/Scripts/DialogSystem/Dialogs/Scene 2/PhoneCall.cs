@@ -35,9 +35,6 @@ public class PhoneCall : Interactable
     [Header("Rotation Settings")]
     public float rotationDuration = 2f;  // Telefona dönüş hızı
 
-
-    public float autoCloseDelay = 2f; // "UYAN!" sonrası kaç saniye beklenecek
-
     [Header("Audio Settings")]
     public AudioClip phoneHangupSound; // Telefon kapatma sesi
     private AudioSource audioSource;
@@ -177,30 +174,37 @@ public class PhoneCall : Interactable
     {
         if (jumpscareLookTarget == null) yield break;
 
+        // Slerp'in FirstPersonController ile savaşmasını KESİN olarak önlemek için kapatıyoruz
+        FirstPersonController fpc = playerObjectToTeleport != null ? playerObjectToTeleport.GetComponent<FirstPersonController>() : null;
+        if (fpc != null) fpc.enabled = false;
+
         float timer = 0f;
         while (timer < duration)
         {
+            // FPC kapalı olduğu için artık frame sonunu beklemeye gerek yok, doğrudan Update hızında çalışır
+            yield return null;
+
             if (playerCamera != null && playerBody != null)
             {
-                Vector3 dirToTarget = (jumpscareLookTarget.position - playerCamera.position).normalized;
-                Vector3 bodyDir = new Vector3(dirToTarget.x, 0, dirToTarget.z).normalized;
-                
+                // 1. Önce gövdeyi hedefe döndür (Sadece Y ekseni)
+                Vector3 bodyDir = new Vector3(jumpscareLookTarget.position.x - playerBody.position.x, 0, jumpscareLookTarget.position.z - playerBody.position.z).normalized;
                 if (bodyDir != Vector3.zero) 
                     playerBody.rotation = Quaternion.Slerp(playerBody.rotation, Quaternion.LookRotation(bodyDir), Time.deltaTime * 15f);
+
+                // 2. Gövde döndükten SONRA kameranın yeni pozisyonundan hedefe olan yönü hesapla
+                Vector3 dirToTarget = (jumpscareLookTarget.position - playerCamera.position).normalized;
+                
+                // 3. Kamerayı tam hedefe döndür
                 if (dirToTarget != Vector3.zero) 
                     playerCamera.rotation = Quaternion.Slerp(playerCamera.rotation, Quaternion.LookRotation(dirToTarget), Time.deltaTime * 15f);
             }
             timer += Time.deltaTime;
-            yield return null;
         }
     }
 
     private IEnumerator JumpscareSequence()
     {
-        // ÇÖZÜM: Unity'nin aktif edilen kızın kemik pozisyonlarını hesaplaması için 1 frame bekle
-        yield return null;
-
-        float fastTurnDuration = 0.15f; // Çok hızlı ve ani dönüş
+        /*float fastTurnDuration = 0.15f; // Çok hızlı ve ani dönüş
         if (jumpscareLookTarget != null)
         {
             if (playerBody != null)
@@ -220,10 +224,12 @@ public class PhoneCall : Interactable
         // Çok hızlı dönüş bitene kadar bekle
         yield return new WaitForSeconds(fastTurnDuration);
 
-        // ÇAKIŞMAYI ÖNLEMEK İÇİN: Slerp (sürekli takip) başlamadan önce DOTween animasyonlarını durduruyoruz!
-        if (playerBody != null) playerBody.DOKill();
-        if (playerCamera != null) playerCamera.DOKill();
-
+        // ÇÖZÜM 1: DOKill() kamerayı sarsıntı sırasında yanlış bir açıda (offset) bırakabilir.
+        // DOComplete() kullanarak animasyonu son hedefine pürüzsüzce kilitliyor ve sıfırlıyoruz.
+        if (playerBody != null) playerBody.DOComplete();
+        if (playerCamera != null) playerCamera.DOComplete();
+        */
+        yield return new WaitForSeconds(0.5f); // Jumpscare dönüşü ve animasyonu için kısa bir bekleme
         // Dönüş biter bitmez Jumpscare animasyonunu tetikle!
         if (MotherFacedGirl != null)
         {
@@ -277,6 +283,7 @@ public class PhoneCall : Interactable
         {
             // CharacterController varsa ışınlamadan önce kapatmak gerekebilir (çakışma olmaması için)
             CharacterController controller = playerObjectToTeleport.GetComponent<CharacterController>();
+            FirstPersonController fpc = playerObjectToTeleport.GetComponent<FirstPersonController>();
             if (controller != null) controller.enabled = false;
 
             playerObjectToTeleport.transform.position = wakePosition.position;
@@ -287,6 +294,11 @@ public class PhoneCall : Interactable
                 obj?.SetActive(false);
 
             if (controller != null) controller.enabled = true;
+            if (fpc != null)
+            {
+                fpc.enabled = true;
+                fpc.SyncCameraRotation(); // Uyanınca kamerada sıçrama olmaması için
+            }
         }
 
         // Sonraki görevi tetikler
