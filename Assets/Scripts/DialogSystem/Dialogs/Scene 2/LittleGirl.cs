@@ -169,8 +169,8 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option12EnginPanic = DialogBuilder.CreateNode(
-            "(Panics) Please don't tell anyone you heard that.",
-            "(Panikler) Lütfen bunu duyduğunu kimseye söyleme.",
+            "Please don't tell anyone you heard that.",
+            "Lütfen bunu duyduğunu kimseye söyleme.",
             "Engin"
         );
 
@@ -242,13 +242,6 @@ public class LittleGirl : Interactable
             "She went to work two nights ago. She told me to wait here until she comes back.",
             "İki gece önce işe çıktı. O gelene kadar burada beklememi söyledi.",
             "Little Girl"
-        );
-
-        // (DÜZELTME 2) İsim kısmı boş string. Eğer UI hala Little Girl gösteriyorsa, DialogUI scriptinde boş string kontrolü yapman gerekebilir.
-        DialogNode commonNoise = DialogBuilder.CreateNode(
-            "A noise increases outside. The hum of a group of people fills the motel. Kuru talks outside the door as if giving advice to someone.",
-            "Dışarda bir gürültü yükselir. Bir gurup insanın uğultusu motelin içini doldurur. Kuru kapının dışarda birisine öğüt verir gibi konuşur.",
-            "Noises"
         );
 
         DialogNode commonKuru = DialogBuilder.CreateNode(
@@ -373,11 +366,8 @@ public class LittleGirl : Interactable
         DialogOption commonToAnswer = DialogBuilder.CreateOption("...", "...", commonGirlAnswer, true);
         DialogBuilder.AddOption(commonEnginQuestion, commonToAnswer);
 
-        DialogOption commonToNoise = DialogBuilder.CreateOption("...", "...", commonNoise, true);
-        DialogBuilder.AddOption(commonGirlAnswer, commonToNoise);
-
         DialogOption commonToKuru = DialogBuilder.CreateOption("...", "...", commonKuru, true);
-        DialogBuilder.AddOption(commonNoise, commonToKuru);
+        DialogBuilder.AddOption(commonGirlAnswer, commonToKuru);
 
         DialogOption commonToEnd = DialogBuilder.CreateOption("...", "...", commonGirlEnd, true);
         DialogBuilder.AddOption(commonKuru, commonToEnd);
