@@ -25,12 +25,21 @@ public class DialogOption
     public bool isSilentOption = false; // "..." gibi sessiz cevaplar için
 }
 
+[System.Serializable]
+public class SpeakerAudio
+{
+    public string speakerName;
+    public AudioSource audioSource;
+    public bool isPlayer; // true ise spatialBlend = 0 (2D)
+}
+
 public class DialogNode
 {
     public string speakerName;
     public LocalizedText dialogText;
     public List<DialogOption> optionsList;
     public bool isEndDialog;
+    public AudioClip voiceClip; // YENİ
 }
 
 public class DialogSystem : MonoBehaviour
@@ -48,8 +57,14 @@ public class DialogSystem : MonoBehaviour
     public bool isTurkish = false;
 
     [Header("Görsel Ayarlar")]
-    public float typewriterSpeed = 0.1f;
+    public float typewriterSpeed = 0.05f;
     public bool useTypewriterEffect = true;
+
+    [Header("Ses Ayarları")]
+    public List<SpeakerAudio> speakers;
+
+    private float _defaultTypewriterSpeed;
+    private AudioSource _currentAudioSource;
 
     private DialogNode currentNode;
     private bool isTyping = false;
@@ -78,6 +93,7 @@ public class DialogSystem : MonoBehaviour
 
     private void Start()
     {
+        _defaultTypewriterSpeed = typewriterSpeed; // YENİ
         if (dialogPanel != null)
             dialogPanel.SetActive(false);
 
@@ -105,6 +121,11 @@ public class DialogSystem : MonoBehaviour
         }
     }
 
+    public void SetSpeakers(List<SpeakerAudio> speakerList)
+    {
+        speakers = speakerList;
+    }
+
     public void StartDialog(DialogNode startNode)
     {
         if (startNode == null)
@@ -124,6 +145,35 @@ public class DialogSystem : MonoBehaviour
         ShowDialog();
     }
 
+    private void PlayNodeAudio(DialogNode node, int textLength)
+    {
+        if (_currentAudioSource != null) _currentAudioSource.Stop();
+        _currentAudioSource = null;
+
+        if (node.voiceClip == null || speakers == null)
+        {
+            typewriterSpeed = _defaultTypewriterSpeed;
+            return;
+        }
+
+        SpeakerAudio speaker = speakers.Find(s => s.speakerName == node.speakerName);
+        if (speaker == null || speaker.audioSource == null)
+        {
+            typewriterSpeed = _defaultTypewriterSpeed;
+            return;
+        }
+
+        speaker.audioSource.spatialBlend = speaker.isPlayer ? 0f : 1f;
+        speaker.audioSource.clip = node.voiceClip;
+        speaker.audioSource.Play();
+        _currentAudioSource = speaker.audioSource;
+
+        if (textLength > 0)
+            typewriterSpeed = node.voiceClip.length / textLength;
+        else
+            typewriterSpeed = _defaultTypewriterSpeed;
+    }
+
     private void ShowDialog()
     {
         // Konuşan karakterin ismini göster
@@ -133,6 +183,7 @@ public class DialogSystem : MonoBehaviour
         }
 
         string textToShow = currentNode.dialogText.GetText(isTurkish);
+        PlayNodeAudio(currentNode, textToShow.Length); // YENİ
 
         if (useTypewriterEffect)
         {
@@ -175,6 +226,8 @@ public class DialogSystem : MonoBehaviour
 
     private void ShowOptions()
     {
+        if (_currentAudioSource != null) _currentAudioSource.Stop(); // YENİ
+        _currentAudioSource = null;  // YENİ
         ClearOptions();
 
         if (currentNode.isEndDialog || currentNode.optionsList.Count == 0)
@@ -271,6 +324,8 @@ public class DialogSystem : MonoBehaviour
 
     public void EndDialog()
     {
+        if (_currentAudioSource != null) _currentAudioSource.Stop(); // YENİ
+        _currentAudioSource = null;  // YENİ
         dialogPanel.SetActive(false);
         waitingForClick = false;
 
