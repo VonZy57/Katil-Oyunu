@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -39,6 +40,30 @@ public class PhoneCall : Interactable
     public AudioClip phoneHangupSound; // Telefon kapatma sesi
     public AudioClip phonePickupSound; // Telefon açma sesi
     private AudioSource audioSource;
+
+    [Header("Diyalog Sesleri")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Cousin at Bursa Sesleri")]
+    [SerializeField] private AudioClip clip_cousin_hello;
+    [SerializeField] private AudioClip clip_cousin_address;
+    [SerializeField] private AudioClip clip_cousin_noBus;
+    [SerializeField] private AudioClip clip_cousin_noFerry;
+    [SerializeField] private AudioClip clip_cousin_needCar;
+    [SerializeField] private AudioClip clip_cousin_signs;
+    [SerializeField] private AudioClip clip_cousin_listen;
+    [SerializeField] private AudioClip clip_cousin_goodLuck;
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_engin_yes;
+    [SerializeField] private AudioClip clip_engin_busOpt;
+    [SerializeField] private AudioClip clip_engin_ferryOpt;
+    [SerializeField] private AudioClip clip_engin_howToGet;
+    [SerializeField] private AudioClip clip_engin_noMoney;
+    [SerializeField] private AudioClip clip_engin_cantDrive;
+    [SerializeField] private AudioClip clip_engin_thanks;
+    [Header("Little Girl Sesleri")]
+    [SerializeField] private AudioClip clip_girl_abiabi;
+    [Header("Jumpscare Sesleri")]
+    [SerializeField] private AudioClip clip_wakeUp;
 
     [Header("Door References")]
     public MotelRoomDoorInteraction motelRoomDoor; // Işınlanmadan hemen önce kapanacak motel kapısı
@@ -141,6 +166,7 @@ public class PhoneCall : Interactable
             audioSource.PlayOneShot(phonePickupSound);
         }
 
+        dialogSystem.SetSpeakers(speakerAudios);
         dialogSystem.StartDialog(phoneCallNode);
         isDialogActive = true;
         StartCoroutine(CheckDialogEnd());
@@ -257,6 +283,9 @@ public class PhoneCall : Interactable
             clockText.text = isTurkish ? "UYAN!" : "WAKE UP!";
             clockText.gameObject.SetActive(true);
         }
+
+        if (audioSource != null && clip_wakeUp != null)
+            audioSource.PlayOneShot(clip_wakeUp);
 
         // Jumpscare animasyonu süresince kameranın hareket eden yüzü takip etmesini sağla
         StartCoroutine(TrackJumpscareTarget(1f));
@@ -531,6 +560,22 @@ public class PhoneCall : Interactable
         );
         DialogBuilder.AddOption(goodLuck, goodLuckToGirl);
 
+        phoneCallNode.voiceClip = clip_cousin_hello;
+        enginResponse1.voiceClip = clip_engin_yes;
+        cousinAddress.voiceClip = clip_cousin_address;
+        busOption1.voiceClip = clip_engin_busOpt;
+        busResponse.voiceClip = clip_cousin_noBus;
+        ferryOption1.voiceClip = clip_engin_ferryOpt;
+        ferryResponse.voiceClip = clip_cousin_noFerry;
+        howToGetThere.voiceClip = clip_engin_howToGet;
+        needCar.voiceClip = clip_cousin_needCar;
+        noMoneyOption1.voiceClip = clip_engin_noMoney;
+        signsWillAppear.voiceClip = clip_cousin_signs;
+        cantDriveOption1.voiceClip = clip_engin_cantDrive;
+        listenToVoice.voiceClip = clip_cousin_listen;
+        enginThanks.voiceClip = clip_engin_thanks;
+        goodLuck.voiceClip = clip_cousin_goodLuck;
+        girlArrives.voiceClip = clip_girl_abiabi;
     }
 
 }

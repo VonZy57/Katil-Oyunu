@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class LittleGirl : Interactable
@@ -12,6 +13,35 @@ public class LittleGirl : Interactable
     [System.NonSerialized] private DialogNode mainDialogNode;
     [System.NonSerialized] private DialogNode afterDialogNode;
     public GameObject objectToActivate;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Little Girl Sesleri")]
+    [SerializeField] private AudioClip clip_girl_main;
+    [SerializeField] private AudioClip clip_girl_opt1Response;
+    [SerializeField] private AudioClip clip_girl_sameDream;
+    [SerializeField] private AudioClip clip_girl_opt11Response;
+    [SerializeField] private AudioClip clip_girl_opt12Response;
+    [SerializeField] private AudioClip clip_girl_opt12End;
+    [SerializeField] private AudioClip clip_girl_opt2Response;
+    [SerializeField] private AudioClip clip_girl_opt21Response;
+    [SerializeField] private AudioClip clip_girl_opt21No;
+    [SerializeField] private AudioClip clip_girl_opt22Response;
+    [SerializeField] private AudioClip clip_girl_commonAnswer;
+    [SerializeField] private AudioClip clip_girl_commonEnd;
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_engin_didYouSee;
+    [SerializeField] private AudioClip clip_engin_wasDreaming;
+    [SerializeField] private AudioClip clip_engin_maybeWhyNot;
+    [SerializeField] private AudioClip clip_engin_ifYouSawMe;
+    [SerializeField] private AudioClip clip_engin_dontTell;
+    [SerializeField] private AudioClip clip_engin_talking;
+    [SerializeField] private AudioClip clip_engin_sawMother;
+    [SerializeField] private AudioClip clip_engin_sheWasHere;
+    [SerializeField] private AudioClip clip_engin_jumped;
+    [SerializeField] private AudioClip clip_engin_whereMom;
+    [Header("Kuru Sesleri")]
+    [SerializeField] private AudioClip clip_kuru_lavuk;
 
     void Start()
     {
@@ -36,6 +66,7 @@ public class LittleGirl : Interactable
             {
                 // İlk kez konuşma
                 hasInteracted = true;
+                dialogSystem.SetSpeakers(speakerAudios);
                 dialogSystem.StartDialog(mainDialogNode);
                 isDialogActive = true;
                 StartCoroutine(CheckDialogEnd());
@@ -43,6 +74,7 @@ public class LittleGirl : Interactable
             else
             {
                 // Dialog tamamlandıktan sonra after dialog
+                dialogSystem.SetSpeakers(speakerAudios);
                 dialogSystem.StartDialog(afterDialogNode);
                 isDialogActive = true;
                 StartCoroutine(CheckDialogEnd());
@@ -355,5 +387,30 @@ public class LittleGirl : Interactable
             DialogOption endToActivate = DialogBuilder.CreateOption("...", "...", afterDialogNode, true);
             DialogBuilder.AddOption(commonGirlEnd, endToActivate);
         }
+
+        mainDialogNode.voiceClip = clip_girl_main;
+        option1Engin.voiceClip = clip_engin_didYouSee;
+        option1GirlResponse.voiceClip = clip_girl_opt1Response;
+        option1EnginThought.voiceClip = clip_engin_wasDreaming;
+        option1GirlSameDream.voiceClip = clip_girl_sameDream;
+        option11Engin.voiceClip = clip_engin_maybeWhyNot;
+        option11GirlResponse.voiceClip = clip_girl_opt11Response;
+        option12Engin.voiceClip = clip_engin_ifYouSawMe;
+        option12GirlResponse.voiceClip = clip_girl_opt12Response;
+        option12EnginPanic.voiceClip = clip_engin_dontTell;
+        option12GirlEnd.voiceClip = clip_girl_opt12End;
+        option2Engin.voiceClip = clip_engin_talking;
+        option2GirlResponse.voiceClip = clip_girl_opt2Response;
+        option21Engin.voiceClip = clip_engin_sawMother;
+        option21GirlResponse.voiceClip = clip_girl_opt21Response;
+        option21EnginNo.voiceClip = clip_engin_sheWasHere;
+        option21GirlNo.voiceClip = clip_girl_opt21No;
+        option22Engin.voiceClip = clip_engin_jumped;
+        option22GirlResponse.voiceClip = clip_girl_opt22Response;
+        commonEnginQuestion.voiceClip = clip_engin_whereMom;
+        commonGirlAnswer.voiceClip = clip_girl_commonAnswer;
+        commonKuru.voiceClip = clip_kuru_lavuk;
+        commonGirlEnd.voiceClip = clip_girl_commonEnd;
+        afterDialogNode.voiceClip = clip_girl_commonEnd;
     }
 }

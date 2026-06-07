@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -17,6 +18,14 @@ public class KeyDialog : MonoBehaviour
 
     [Header("Activation Settings")]
     public float activationDelay = 2f; // Dialog bittikten kaç saniye sonra obje aktif olacak
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Kuru's Wife Sesleri")]
+    [SerializeField] private AudioClip clip_wife_intro;
+    [SerializeField] private AudioClip clip_wife_keysHanging;
+    [Header("Kuru Sesleri")]
+    [SerializeField] private AudioClip clip_kuru_whereKey;
 
     [Header("Mission Settings")]
     [SerializeField] private DialogSystem dialogSystem;
@@ -75,6 +84,7 @@ public class KeyDialog : MonoBehaviour
     {
         if (dialogSystem != null)
         {
+            dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(introNode);
             StartCoroutine(CheckDialogEnd());
         }
@@ -217,5 +227,9 @@ public class KeyDialog : MonoBehaviour
         // === KURU'DAN EŞİNE GEÇIŞ ===
         DialogOption kuruToWife = DialogBuilder.CreateOption("...", "...", wifeEnd, true);
         DialogBuilder.AddOption(kuruResponse, kuruToWife);
+
+        introNode.voiceClip = clip_wife_intro;
+        kuruResponse.voiceClip = clip_kuru_whereKey;
+        wifeEnd.voiceClip = clip_wife_keysHanging;
     }
 }

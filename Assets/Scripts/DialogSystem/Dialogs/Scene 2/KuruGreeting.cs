@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -18,6 +19,25 @@ public class KuruGreeting : Interactable
 
     private bool dialogCompleted = false; // Dialog tamamlandı mı?
     private bool isDialogActive = false; // Dialog şu anda aktif mi?
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Kuru's Wife Sesleri")]
+    [SerializeField] private AudioClip clip_wife_intro;
+    [Header("Kuru Sesleri")]
+    [SerializeField] private AudioClip clip_kuru_welcome;
+    [SerializeField] private AudioClip clip_kuru_bursaResponse;
+    [SerializeField] private AudioClip clip_kuru_bursaPrice;
+    [SerializeField] private AudioClip clip_kuru_phoneInfo;
+    [SerializeField] private AudioClip clip_kuru_whereResponse;
+    [SerializeField] private AudioClip clip_kuru_whereConfirm;
+    [SerializeField] private AudioClip clip_kuru_after;
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_engin_bursa;
+    [SerializeField] private AudioClip clip_engin_bursaOkay;
+    [SerializeField] private AudioClip clip_engin_phoneQuestion;
+    [SerializeField] private AudioClip clip_engin_whereIAm;
+    [SerializeField] private AudioClip clip_engin_whereStay;
 
 
     [System.NonSerialized] private DialogNode introNode;
@@ -43,6 +63,7 @@ public class KuruGreeting : Interactable
     {
         if (dialogSystem != null)
         {
+            dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(introNode);
             isDialogActive = true;
             StartCoroutine(CheckDialogEnd());
@@ -62,6 +83,7 @@ public class KuruGreeting : Interactable
         // Dialog tamamlanmışsa after node'u göster
         if (dialogSystem != null && !isDialogActive && dialogCompleted)
         {
+            dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(afterDialogNode);
             isDialogActive = true;
             StartCoroutine(CheckDialogEnd());
@@ -163,8 +185,8 @@ public class KuruGreeting : Interactable
         );
 
         DialogNode bursaContinue2 = DialogBuilder.CreateNode(
-            "Our ultra-honorable motel's nightly rate is only 15 YTL.",
-            "Ultra namuslu motelimizin geceliği sadece 15 YTL'dir.",
+            "Completely honorable. Good choice. You owe 15 YTL.",
+            "Tam namuslu. İyi bir seçim. Borcunuz 15 YTL'dir.",
             "Kuru"
         );
 
@@ -229,7 +251,7 @@ public class KuruGreeting : Interactable
 
         DialogNode whereContinue2 = DialogBuilder.CreateNode(
             "Completely honorable. Good choice. You owe 15 YTL.",
-            "Tam namuslu. İyi bir seçim. Borcun 15 YTL.",
+            "Tam namuslu. İyi bir seçim. Borcunuz 15 YTL'dir.",
             "Kuru"
         );
 
@@ -284,5 +306,21 @@ public class KuruGreeting : Interactable
         );
 
         DialogBuilder.AddOption(introNode, continueOption);
+
+        introNode.voiceClip = clip_wife_intro;
+        mainNode.voiceClip = clip_kuru_welcome;
+        bursaOption1Response.voiceClip = clip_engin_bursa;
+        bursaOption2Response.voiceClip = clip_kuru_bursaResponse;
+        bursaContinue1.voiceClip = clip_engin_bursaOkay;
+        bursaContinue2.voiceClip = clip_kuru_bursaPrice;
+        bursaContinue3.voiceClip = clip_engin_phoneQuestion;
+        bursaEnd.voiceClip = clip_kuru_phoneInfo;
+        whereOption1Response.voiceClip = clip_engin_whereIAm;
+        whereOption2Response.voiceClip = clip_kuru_whereResponse;
+        whereContinue1.voiceClip = clip_engin_whereStay;
+        whereContinue2.voiceClip = clip_kuru_whereConfirm;
+        whereContinue3.voiceClip = clip_engin_phoneQuestion;
+        whereEnd.voiceClip = clip_kuru_phoneInfo;
+        afterDialogNode.voiceClip = clip_kuru_after;
     }
 }

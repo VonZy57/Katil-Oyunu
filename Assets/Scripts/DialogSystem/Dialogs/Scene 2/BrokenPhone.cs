@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -24,6 +25,10 @@ public class BrokenPhone : Interactable
     public AudioClip phoneCloseSound;
     public AudioClip lowSignalSound;
     private AudioSource audioSource;
+
+    [Header("Diyalog Sesleri")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [SerializeField] private AudioClip clip_girl_brokenPhone;
 
     private DialogSystem dialogSystem;
     private MissionObjective missionObj;
@@ -77,6 +82,7 @@ public class BrokenPhone : Interactable
 
         if (dialogSystem != null)
         {
+            dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(phoneDialogNode);
             StartCoroutine(CheckDialogEnd());
         }
@@ -152,6 +158,7 @@ public class BrokenPhone : Interactable
         );
         DialogBuilder.AddOption(phoneBusyNode, phoneToGirl);
 
+        girlNode.voiceClip = clip_girl_brokenPhone;
         phoneDialogNode = phoneBusyNode;
     }
 }
