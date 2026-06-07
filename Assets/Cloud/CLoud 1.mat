@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CLoud
-  m_Shader: {fileID: -6465566751694194690, guid: 9e08c1ca0cc5040469bfa14195f021f5, type: 3}
+  m_Name: CLoud 1
+  m_Shader: {fileID: -6465566751694194690, guid: 4982fb5361bb6c046ba2b90fdd5d1e90, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -38,14 +38,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Alphaclip: 0
-    - _CloudAlpha: 0.75
+    - _Alphaclip: 0.5
+    - _CloudAlpha: 1.68
     - _CloudPower: 0.9
     - _CloudScale: 120
     - _DistordScale: 60
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _vertexOffset: 0.5
+    - _vertexOffset: 1.11
     m_Colors:
     - _CLoudspeed: {r: 0.0005, g: 0.0005, b: 0, a: 0}
     - _CloudColor: {r: 4.2870936, g: 4.2870936, b: 4.2870936, a: 1}
