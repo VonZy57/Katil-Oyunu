@@ -81,13 +81,15 @@ public class LavukMovement : MonoBehaviour
         // Arabaya binme animasyonunu tetikle
         lavukAnimator.SetTrigger(enterCarTriggerParam);
 
-        yield return carDoorTransform.DORotate(new Vector3(0f, 70f, 0f), 1.5f).WaitForCompletion();
+        yield return carDoorTransform.DOLocalRotateQuaternion(Quaternion.Euler(0f, 35f, 0f), 1.5f).WaitForCompletion();
 
         yield return new WaitForSeconds(1.5f);
 
-        yield return carDoorTransform.DORotate(new Vector3(0f, 0f, 0f), 1.5f).WaitForCompletion();
+        yield return carDoorTransform.DOLocalRotateQuaternion(Quaternion.identity, 1.5f).WaitForCompletion(); // Quaternion.identity = 0,0,0 demek
 
         yield return new WaitForSeconds(1.5f);
+
+        gameObject.transform.SetParent(carDoorTransform);
 
         carMovement.StartCarMovement();
     }

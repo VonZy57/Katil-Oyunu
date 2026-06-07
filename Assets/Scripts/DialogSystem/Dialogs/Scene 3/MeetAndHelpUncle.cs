@@ -116,6 +116,12 @@ public class MeetAndHelpUncle : Interactable
             missionObj.OnInteracted();
         }
 
+        // Diyalog bittiğinde Amca'nın tag'ını "Amca" olarak değiştir
+        if (amcaTransform != null)
+        {
+            amcaTransform.gameObject.tag = "Amca";
+        }
+
         yield return new WaitForSeconds(1f); // Diyalog kapanma animasyonu için küçük bir bekleme
         
         Debug.Log("Amca fırına gider ve masaya oturur...");

@@ -49,7 +49,7 @@ public class OrderSubtitle : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && MissionManager.Instance.CurrentMission == missionObj.requiredMission && !hasTriggered)
+        if (other.CompareTag("Amca") && MissionManager.Instance.CurrentMission == missionObj.requiredMission && !hasTriggered)
         {
             hasTriggered = true;
             StartCoroutine(PlaySubtitleDialog());
