@@ -13,6 +13,7 @@ public class PhoneCall : Interactable
     public Transform playerCamera;    // Karakterin kamerası (Yukarı/Aşağı bakış için)
     public GameObject phoneHandSet; // Telefonun ahizesi
     public Transform playerHandSetRef; // Ahizenin gideceği referans
+    public Transform hangUpRef; // Oyuncunun telefonu açtığında DOTween ile gideceği konum ve rotasyon
     [SerializeField] private Vector3 initialHandSetPos; // Telefon kapanınca ahizenin geri döneceği yer
     [SerializeField] private Quaternion initialHandSetRot;
 
@@ -33,8 +34,6 @@ public class PhoneCall : Interactable
 
     [Header("Rotation Settings")]
     public float rotationDuration = 2f;  // Telefona dönüş hızı
-    [Tooltip("Target'ın ne kadar üstüne bakılsın?")]
-    public float lookOffset = 0.5f;   // Hedefin ne kadar üstüne bakılacağı
 
 
     public float autoCloseDelay = 2f; // "UYAN!" sonrası kaç saniye beklenecek
@@ -96,6 +95,25 @@ public class PhoneCall : Interactable
             // Kamerayı telefona döndür
             RotateCameraToTarget(rotationDuration);
 
+            // Oyuncuyu HangUpRef konumuna ve rotasyonuna DOTween ile ilerlet
+            if (playerObjectToTeleport != null && hangUpRef != null)
+            {
+                CharacterController cc = playerObjectToTeleport.GetComponent<CharacterController>();
+                if (cc != null) cc.enabled = false;
+
+                playerObjectToTeleport.transform.DOMove(hangUpRef.position, 1f).SetEase(Ease.InOutSine);
+                playerObjectToTeleport.transform.DORotateQuaternion(hangUpRef.rotation, 1f).SetEase(Ease.InOutSine).OnComplete(() =>
+                {
+                    if (cc != null) cc.enabled = true;
+                });
+
+                // Oyuncu ilerlerken kameraya yürüme (Head Bobbing) hissi vermek için Y ekseninde sarsıntı ekle
+                if (playerCamera != null)
+                {
+                    playerCamera.DOPunchPosition(new Vector3(0f, -0.08f, 0f), 1f, 3, 0.5f);
+                }
+            }
+
             // Telefon ahizesini kulağa götür.
             if (phoneHandSet != null)
             {
@@ -117,15 +135,14 @@ public class PhoneCall : Interactable
         // Böylece karakterin vücudu hedefe döner ama havaya bakmaz.
         if (playerBody != null)
         {
-            playerBody.DOLookAt(phoneLookAtTarget.position, rotateDuration, AxisConstraint.Y);
+            playerBody.DOKill();
+            playerBody.DOLookAt(phoneLookAtTarget.position, rotateDuration, AxisConstraint.Y).SetEase(Ease.InOutSine);
         }
 
-        // B. Kamerayı (Camera) hedefin biraz üstüne döndür
-        // Hedef pozisyon + Offset (Yukarı)
         if (playerCamera != null)
         {
-            Vector3 targetPositionWithOffset = phoneLookAtTarget.position; //+ (Vector3.up * lookOffset);
-            playerCamera.DOLookAt(targetPositionWithOffset, rotateDuration);
+            playerCamera.DOKill();
+            playerCamera.DOLookAt(phoneLookAtTarget.position, rotateDuration).SetEase(Ease.InOutSine);
         }
 
     }
@@ -141,16 +158,95 @@ public class PhoneCall : Interactable
         isDialogActive = false;
     }
 
-    private IEnumerator AutoCloseDialog()
+    private IEnumerator JumpscareSequence()
     {
-        // Belirtilen süre kadar bekle
-        yield return new WaitForSeconds(autoCloseDelay);
+        // ÇÖZÜM: Unity'nin aktif edilen kızın kemik pozisyonlarını hesaplaması için 1 frame bekle
+        yield return null;
 
-        // Dialog'u kapat
+        // Şimdi hedefin doğru dünya pozisyonunu alarak dönüşü başlat
+        if (jumpscareLookTarget != null)
+        {
+            phoneLookAtTarget = jumpscareLookTarget;
+            RotateCameraToTarget(0.8f); 
+        }
+
+        // Kamera dönüş süresi kadar bekle, böylece tam arkasına döndüğünde olayı yaşar
+        yield return new WaitForSeconds(0.8f);
+
+        // Diyaloğu kod üzerinden kapat ki oyuncu "Abi abi abi" ekranında tıklamak zorunda kalmasın
         if (dialogSystem != null)
         {
             dialogSystem.EndDialog();
         }
+
+        // "UYAN!" yazısını ekranda altyazı şeklinde göster
+        if (clockText != null)
+        {
+            bool isTurkish = dialogSystem != null ? dialogSystem.GetCurrentLanguage() : true;
+            clockText.text = isTurkish ? "UYAN!" : "WAKE UP!";
+            clockText.gameObject.SetActive(true);
+        }
+
+        // Oyuncunun jumpscare'i ve yazıyı göreceği süre
+        yield return new WaitForSeconds(1f);
+
+        // Siyah ekranı aç
+        if (clockImage != null) clockImage.gameObject.SetActive(true);
+        if (objectToActivateOnBlackscreen != null) objectToActivateOnBlackscreen.SetActive(true);
+        if (skyboxMaterial != null) RenderSettings.skybox = skyboxMaterial;
+        
+        // "UYAN!" yazısını kaldır
+        if (clockText != null) clockText.gameObject.SetActive(false);
+
+        // 2 saniye karanlıkta bekle
+        yield return new WaitForSeconds(2f);
+
+        // Işınlanmadan hemen önce kapı açıksa kapalı konuma getir
+        if (motelRoomDoor != null)
+        {
+            motelRoomDoor.CloseDoor();
+        }
+        else if (buttonSmashGame != null && buttonSmashGame.motelRoomDoor != null)
+        {
+            buttonSmashGame.motelRoomDoor.CloseDoor(); // Alternatif (Fallback) kontrol
+        }
+
+        // Oyuncuyu yatağa/uyanma noktasına ışınla
+        if (playerObjectToTeleport != null && wakePosition != null)
+        {
+            // CharacterController varsa ışınlamadan önce kapatmak gerekebilir (çakışma olmaması için)
+            CharacterController controller = playerObjectToTeleport.GetComponent<CharacterController>();
+            if (controller != null) controller.enabled = false;
+
+            playerObjectToTeleport.transform.position = wakePosition.position;
+            Destroy(MotherFacedGirl);
+            if (littleGirlToTalk != null) littleGirlToTalk.SetActive(true);
+
+            foreach (var obj in objectsToDisableOnWakeUp)
+                obj?.SetActive(false);
+
+            if (controller != null) controller.enabled = true;
+        }
+
+        // Sonraki görevi tetikler
+        MissionObjective missionObj = GetComponent<MissionObjective>();
+        if (missionObj != null)
+        {
+            missionObj.OnInteracted();
+        }
+
+        // Saat metnini eski formatına (9:40 AM) döndür ve göster
+        if (clockText != null)
+        {
+            clockText.text = "9:40 AM";
+            clockText.gameObject.SetActive(true);
+        }
+        
+        yield return new WaitForSeconds(4f);
+
+        // Siyah ekranı kapat
+        if (clockImage != null) clockImage.gameObject.SetActive(false);
+        if (clockText != null) clockText.gameObject.SetActive(false);
     }
 
     void BuildDialogTree()
@@ -256,17 +352,10 @@ public class PhoneCall : Interactable
         );
 
         // === AFTER PHONE CALL - GIRL ARRIVES ===
-        DialogNode girlArrives = DialogBuilder.CreateNode(
+        DialogNode girlArrives = DialogBuilder.CreateEndNode(
             "Sir, sir, sir!",
             "Abi, abi, abi!",
             "Little Girl"
-        );
-
-        // === MOTHER'S VOICE ===
-        DialogNode motherWakeUp = DialogBuilder.CreateEndNode(
-            "WAKE UP!",
-            "UYAN!",
-            "Mother"
         );
 
         // === BUILD THE TREE ===
@@ -356,99 +445,20 @@ public class PhoneCall : Interactable
                     audioSource.PlayOneShot(phoneHangupSound);
                 }
 
-                // Küçük kızı aktif et (kamera dönmez)
+                // Küçük kızı aktif et ve animasyonu tetikle
                 if (MotherFacedGirl != null)
                 {
                     MotherFacedGirl.SetActive(true);
+                    Animator anim = MotherFacedGirl.GetComponent<Animator>();
+                    if (anim != null) anim.SetTrigger("JumpScareTrigger");
                 }
+                
+                StartCoroutine(JumpscareSequence());
             },
             true
         );
         DialogBuilder.AddOption(goodLuck, goodLuckToGirl);
 
-        // Girl -> Mother wake up (look at mother object and auto close)
-        DialogOption girlToMother = DialogBuilder.CreateOptionWithEvent(
-            "...",
-            "...",
-            motherWakeUp,
-            () => {
-                // Jumpscare anında belirlenen noktaya bak
-                if (jumpscareLookTarget != null)
-                {
-                    phoneLookAtTarget = jumpscareLookTarget;
-                    RotateCameraToTarget(0.25f);
-                }
-
-                // Otomatik kapanma başlat
-                StartCoroutine(AutoCloseDialog());
-                StartCoroutine(BlackScreenAfterJumpscare());
-            },
-            true
-        );
-        DialogBuilder.AddOption(girlArrives, girlToMother);
     }
 
-    IEnumerator BlackScreenAfterJumpscare()
-    {
-        // Jumpscare anı (1 sn bekle)
-        yield return new WaitForSeconds(1f);
-        // Siyah ekranı aç
-        clockImage.gameObject.SetActive(true);
-        if (objectToActivateOnBlackscreen != null) objectToActivateOnBlackscreen.SetActive(true);
-        if (skyboxMaterial != null) RenderSettings.skybox = skyboxMaterial;
-        clockText.gameObject.SetActive(false);
-        // 5 saniye karanlıkta bekle
-        yield return new WaitForSeconds(2f);
-
-        // Işınlanmadan hemen önce kapı açıksa kapalı konuma getir
-        if (motelRoomDoor != null)
-        {
-            motelRoomDoor.CloseDoor();
-        }
-        else if (buttonSmashGame != null && buttonSmashGame.motelRoomDoor != null)
-        {
-            buttonSmashGame.motelRoomDoor.CloseDoor(); // Alternatif (Fallback) kontrol
-        }
-
-        // Oyuncuyu yatağa/uyanma noktasına ışınla
-        if (playerObjectToTeleport != null && wakePosition != null)
-        {
-            // CharacterController varsa ışınlamadan önce kapatmak gerekebilir (çakışma olmaması için)
-            CharacterController controller = playerObjectToTeleport.GetComponent<CharacterController>();
-            if (controller != null) controller.enabled = false;
-
-            playerObjectToTeleport.transform.position = wakePosition.position;
-            Destroy(MotherFacedGirl);
-            littleGirlToTalk.SetActive(true);
-
-            foreach (var obj in objectsToDisableOnWakeUp)
-                obj?.SetActive(false);
-            // kuruObject.SetActive(true); // gerekirse kuru burada geri açılacak. sabah olduğunda. dışarıda spawnlanabilir.
-            
-
-            if (controller != null) controller.enabled = true;
-            
-        }
-
-        //Sonraki görevi tetikler
-        MissionObjective missionObj = GetComponent<MissionObjective>();
-        if (missionObj != null)
-        {
-            // Varsa, görev sistemini tetikle!
-            missionObj.OnInteracted();
-        }
-
-        clockText.text = "9:40 AM";
-        clockText.gameObject.SetActive(true);
-        yield return new WaitForSeconds(4f);
-
-        //Buraya nefes nefese kalma sesleri eklenebilir veya kendi kendine rüyaymış gibi bir konuşma olabilir.
-        //Yada bu kısım siyah ekranda uykudan uyanmadan enginin kendi kendine söylediği bir konuşma olabilir.
-
-        // Siyah ekranı kapat
-        if (clockImage != null)
-        {
-            clockImage.gameObject.SetActive(false);
-        }
-    }
 }
