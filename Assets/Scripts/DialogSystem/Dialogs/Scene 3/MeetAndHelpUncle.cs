@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
@@ -16,6 +17,16 @@ public class MeetAndHelpUncle : Interactable
 
     private FirstPersonController playerFPS;
     private bool isInteracting = false;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Amca Sesleri")]
+    [SerializeField] private AudioClip clip_amca_thankYou;
+    [SerializeField] private AudioClip clip_amca_attaBoy;
+    [SerializeField] private AudioClip clip_amca_wontAccept;
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_engin_soundsGood;
+    [SerializeField] private AudioClip clip_engin_busy;
 
     void Start()
     {
@@ -104,6 +115,7 @@ public class MeetAndHelpUncle : Interactable
 
     private IEnumerator DialogSequence()
     {
+        dialogSystem.SetSpeakers(speakerAudios);
         dialogSystem.StartDialog(amcaStartNode);
 
         yield return null;
@@ -171,5 +183,11 @@ public class MeetAndHelpUncle : Interactable
         // Amca Düğümünden Oyuncu Seçenekleri
         DialogBuilder.AddOption(amcaStartNode, DialogBuilder.CreateOption("Yes.", "Evet", amcaYesEnginNode));
         DialogBuilder.AddOption(amcaStartNode, DialogBuilder.CreateOption("No.", "Hayır", amcaNoEnginNode));
+
+        amcaStartNode.voiceClip = clip_amca_thankYou;
+        amcaYesEnginNode.voiceClip = clip_engin_soundsGood;
+        amcaYesResponseNode.voiceClip = clip_amca_attaBoy;
+        amcaNoEnginNode.voiceClip = clip_engin_busy;
+        amcaNoResponseNode.voiceClip = clip_amca_wontAccept;
     }
 }

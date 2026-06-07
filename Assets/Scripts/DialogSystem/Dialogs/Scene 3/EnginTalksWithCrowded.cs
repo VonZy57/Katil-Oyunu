@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
@@ -15,6 +16,20 @@ public class EnginTalksWithCrowded : MonoBehaviour
     [SerializeField] private Transform crowd3Transform; // A Completely Different Person (Kadın)
 
     private FirstPersonController playerFPS;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Kalabalık Sesleri")]
+    [SerializeField] private AudioClip clip_crowd1_somebody;
+    [SerializeField] private AudioClip clip_crowd2_yourTurn;
+    [SerializeField] private AudioClip clip_crowd1_lastWeek;
+    [SerializeField] private AudioClip clip_crowd3_anyIdea;
+    [SerializeField] private AudioClip clip_crowd1_youreNew;
+    [SerializeField] private AudioClip clip_crowd1_goodForYou;
+    [SerializeField] private AudioClip clip_crowd1_ohSure;
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_engin_ofCourse;
+    [SerializeField] private AudioClip clip_engin_whyMe;
 
     void Start()
     {
@@ -52,6 +67,7 @@ public class EnginTalksWithCrowded : MonoBehaviour
 
     private IEnumerator DialogSequence()
     {
+        dialogSystem.SetSpeakers(speakerAudios);
         dialogSystem.StartDialog(crowdStartNode);
 
         yield return null;
@@ -188,5 +204,15 @@ public class EnginTalksWithCrowded : MonoBehaviour
 
         DialogBuilder.AddOption(crowd5Node, sureOption);
         DialogBuilder.AddOption(crowd5Node, whyMeOption);
+
+        crowdStartNode.voiceClip = clip_crowd1_somebody;
+        crowd2Node.voiceClip = clip_crowd2_yourTurn;
+        crowd3Node.voiceClip = clip_crowd1_lastWeek;
+        crowd4Node.voiceClip = clip_crowd3_anyIdea;
+        crowd5Node.voiceClip = clip_crowd1_youreNew;
+        sureEnginNode.voiceClip = clip_engin_ofCourse;
+        sureCrowdNode.voiceClip = clip_crowd1_goodForYou;
+        whyMeEnginNode.voiceClip = clip_engin_whyMe;
+        whyMeCrowdNode.voiceClip = clip_crowd1_ohSure;
     }
 }

@@ -28,10 +28,25 @@ public class LavukBeatingAmca : MonoBehaviour
         public string speakerName;
         public LocalizedText lineText;
         public float displayDuration;
+        public AudioClip voiceClip;
     }
 
     [Header("Diyalog Satırları")]
     [SerializeField] private List<SubtitleLine> dialogLines;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Lavuk Sesleri")]
+    [SerializeField] private AudioClip clip_lavuk_1;
+    [SerializeField] private AudioClip clip_lavuk_2;
+    [SerializeField] private AudioClip clip_lavuk_3;
+    [SerializeField] private AudioClip clip_lavuk_4;
+    [SerializeField] private AudioClip clip_lavuk_5;
+    [Header("Kuru Sesleri")]
+    [SerializeField] private AudioClip clip_kuru_1;
+    [SerializeField] private AudioClip clip_kuru_2;
+    [Header("Amca Sesleri")]
+    [SerializeField] private AudioClip clip_amca_1;
 
     public bool isFinished { get; private set; } = false;
     private bool hasTriggered = false;
@@ -122,7 +137,18 @@ public class LavukBeatingAmca : MonoBehaviour
             SubtitleLine line = dialogLines[i];
             bool isTurkish = dialogSystem.GetCurrentLanguage();
             string speaker = line.speakerName;
-            
+
+            if (speakerAudios != null && line.voiceClip != null)
+            {
+                SpeakerAudio speakerAudio = speakerAudios.Find(s => s.speakerName == speaker);
+                if (speakerAudio != null && speakerAudio.audioSource != null)
+                {
+                    speakerAudio.audioSource.Stop();
+                    speakerAudio.audioSource.clip = line.voiceClip;
+                    speakerAudio.audioSource.Play();
+                }
+            }
+
             subtitleText.text = speaker + ": " + line.lineText.GetText(isTurkish);
             yield return new WaitForSeconds(line.displayDuration);
         }
@@ -229,43 +255,51 @@ public class LavukBeatingAmca : MonoBehaviour
         {
             new SubtitleLine {
                 speakerName = "Lavuk",
-                lineText = new LocalizedText { english = "Didn't I tell you I never want to see you around here again, you **** *****! Huh, if I **** your liver right now, wouldn't it be enough, wouuld it huh!", turkish = "Sana bir daha seni burada görmeyeceğim demedim mi **** *****. He şimdi senin ciğerini ****** az mı yapmış olurum l*n. *******." },
-                displayDuration = 5f
+                lineText = new LocalizedText { english = "Didn’t I tell you I never want to see you around here again, you **** *****! Huh, if I **** your liver right now, wouldn’t it be enough, wouuld it huh!", turkish = "Sana bir daha seni burada görmeyeceğim demedim mi **** *****. He şimdi senin ciğerini ****** az mı yapmış olurum l*n. *******." },
+                displayDuration = 5f,
+                voiceClip = clip_lavuk_1
             },
             new SubtitleLine {
                 speakerName = "Lavuk",
-                lineText = new LocalizedText { english = "You geezerrr, didn't I tell you to leave this woman alone, huuuuuh! Why are you roaming around here like a sleazebag, you ****.", turkish = "Moruuukk sana bu kadının peşini bırak demedim mi haaaa!? Ne gevşek gevşek dolanıyorsun buralarda *****." },
-                displayDuration = 4.5f
+                lineText = new LocalizedText { english = "You geezerrr, didn’t I tell you to leave this woman alone, huuuuuh! Why are you roaming around here like a sleazebag, you ****.", turkish = "Moruuukk sana bu kadının peşini bırak demedim mi haaaa!? Ne gevşek gevşek dolanıyorsun buralarda *****." },
+                displayDuration = 4.5f,
+                voiceClip = clip_lavuk_2
             },
             new SubtitleLine {
                 speakerName = "Kuru",
-                lineText = new LocalizedText { english = "Just walk away, man, he's gonna die by your hands. Alright we get it, you're the toughest around, now just hit the road.", turkish = "Çek git oğlum, elinde kalacak adam. Tamam en kral sensin bak yoluna." },
-                displayDuration = 4f
+                lineText = new LocalizedText { english = "Just walk away, man, he’s gonna die by your hands. Alright we get it, you’re the toughest around, now just hit the road.", turkish = "Çek git oğlum, elinde kalacak adam. Tamam en kral sensin bak yoluna." },
+                displayDuration = 4f,
+                voiceClip = clip_kuru_1
             },
             new SubtitleLine {
                 speakerName = "Lavuk",
-                lineText = new LocalizedText { english = "What do you mean hit the road, man! I'll **** your neighborhood and **** you too! It's easy to talk from up there. Come on, come here!", turkish = "Ne bakayım lan yoluma! Olum sizin mahallenizi de ***** sizi de ******. Oradan konuşmak kolay. Gelsene lan buraya." },
-                displayDuration = 5.5f
+                lineText = new LocalizedText { english = "What do you mean hit the road, man! I’ll **** your neighborhood and **** you too! It’s easy to talk from up there. Come on, come here!", turkish = "Ne bakayım lan yoluma! Olum sizin mahallenizi de ***** sizi de ******. Oradan konuşmak kolay. Gelsene lan buraya." },
+                displayDuration = 5.5f,
+                voiceClip = clip_lavuk_3
             },
             new SubtitleLine {
                 speakerName = "Kuru",
-                lineText = new LocalizedText { english = "Don't push your luck, boy!", turkish = "Oğlum kaşınma bak!" },
-                displayDuration = 2f
+                lineText = new LocalizedText { english = "Don’t push your luck, boy!", turkish = "Oğlum kaşınma bak!" },
+                displayDuration = 2f,
+                voiceClip = clip_kuru_2
             },
             new SubtitleLine {
                 speakerName = "Lavuk",
-                lineText = new LocalizedText { english = "Are you hitting on my wife, my property, my bread and butter, you ***! Don't I have the right to beat the **** out of you right in front of this neighborhood, huh!", turkish = "Sen benim karıma, sen benim malıma, ekmek tekneme laf mı atıyon ***. Bu mahallelinin önünde seni çatır çutur **** hakkım değil mi lan!" },
-                displayDuration = 6f
+                lineText = new LocalizedText { english = "Are you hitting on my wife, my property, my bread and butter, you ***! Don’t I have the right to beat the **** out of you right in front of this neighborhood, huh!", turkish = "Sen benim karıma, sen benim malıma, ekmek tekneme laf mı atıyon ***. Bu mahallelinin önünde seni çatır çutur **** hakkım değil mi lan!" },
+                displayDuration = 6f,
+                voiceClip = clip_lavuk_4
             },
             new SubtitleLine {
                 speakerName = "Amca",
                 lineText = new LocalizedText { english = "Please, let me speak to her just once. I missed her so much. I love her. She is my everything.", turkish = "Ne olur bir kez konuşayım onunla onu çok özledim. Onu seviyorum. O benim her şeyim" },
-                displayDuration = 4.5f
+                displayDuration = 4.5f,
+                voiceClip = clip_amca_1
             },
             new SubtitleLine {
                 speakerName = "Lavuk",
-                lineText = new LocalizedText { english = "Get the hell out of here, man. Look, I'm swearing in front of everyone. I swear to God on everything holy, if I see you around Asuman again, I'll choke the life out of you. If I don't, I'm the biggest *** ** *****.", turkish = "Yürrrü git lan. Bak herkesin önünde yemin ediyorum. Ekmek musap Kuran çarpsın, seni bir daha Asuman’ın etrafında görürsem senin ümüğünü sıkarım. Yapmazsam en adi ****** *******." },
-                displayDuration = 7f
+                lineText = new LocalizedText { english = "Get the hell out of here, man. Look, I’m swearing in front of everyone. I swear to God on everything holy, if I see you around Asuman again, I’ll choke the life out of you. If I don’t, I’m the biggest *** ** *****.", turkish = "Yürrrü git lan. Bak herkesin önünde yemin ediyorum. Ekmek musap Kuran çarpsın, seni bir daha Asuman’ın etrafında görürsem senin ümüğünü sıkarım. Yapmazsam en adi ****** *******." },
+                displayDuration = 7f,
+                voiceClip = clip_lavuk_5
             }
         };
     }

@@ -15,10 +15,18 @@ public class OrderSubtitle : MonoBehaviour
         public string speakerName;
         public LocalizedText lineText;
         public float displayDuration;
+        public AudioClip voiceClip;
     }
 
     [Header("Diyalog Satırları")]
     [SerializeField] private List<SubtitleLine> dialogLines;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Amca Sesleri")]
+    [SerializeField] private AudioClip clip_amca_order;
+    [Header("Kamil Efendi Sesleri")]
+    [SerializeField] private AudioClip clip_kamil_hmm;
 
     public bool isFinished { get; private set; } = false;
     private bool hasTriggered = false;
@@ -36,13 +44,15 @@ public class OrderSubtitle : MonoBehaviour
             {
                 speakerName = "Amca",
                 lineText = new LocalizedText { english = "Kamil Efendi, get us two pastries each and some ayran. Make it bottled.", turkish = "Kamil Efendi, bize ikişer poğaça ve ayran. Ayran şişe olsun." },
-                displayDuration = 4f
+                displayDuration = 4f,
+                voiceClip = clip_amca_order
             },
             new SubtitleLine
             {
                 speakerName = "Kamil Efendi",
                 lineText = new LocalizedText { english = "Hmmmm...", turkish = "Hmmmm..." },
-                displayDuration = 2f
+                displayDuration = 2f,
+                voiceClip = clip_kamil_hmm
             }
         };
     }
@@ -64,7 +74,18 @@ public class OrderSubtitle : MonoBehaviour
         {
             bool isTurkish = dialogSystem.GetCurrentLanguage();
             string speaker = line.speakerName;
-            
+
+            if (speakerAudios != null && line.voiceClip != null)
+            {
+                SpeakerAudio speakerAudio = speakerAudios.Find(s => s.speakerName == speaker);
+                if (speakerAudio != null && speakerAudio.audioSource != null)
+                {
+                    speakerAudio.audioSource.Stop();
+                    speakerAudio.audioSource.clip = line.voiceClip;
+                    speakerAudio.audioSource.Play();
+                }
+            }
+
             subtitleText.text = speaker + ": " + line.lineText.GetText(isTurkish);
             yield return new WaitForSeconds(line.displayDuration);
         }

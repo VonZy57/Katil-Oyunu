@@ -1,6 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using TMPro;
 
@@ -33,6 +34,20 @@ public class BakeryDialog : SittingInteraction
 
     public bool IsUncleAnimationFinished { get; private set; } = false;
     private bool canStandUp = false;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Amca Sesleri")]
+    [SerializeField] private AudioClip clip_amca_ugh;
+    [SerializeField] private AudioClip clip_amca_beenThrough;
+    [SerializeField] private AudioClip clip_amca_nonsense;
+    [SerializeField] private AudioClip clip_amca_longStory;
+    [SerializeField] private AudioClip clip_amca_soap;
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_engin_areYouOkay;
+    [SerializeField] private AudioClip clip_engin_seeDoctor;
+    [SerializeField] private AudioClip clip_engin_whoPunk;
+    [SerializeField] private AudioClip clip_engin_filthyMouth;
 
     protected override void Start()
     {
@@ -189,6 +204,7 @@ public class BakeryDialog : SittingInteraction
 
     private IEnumerator DialogSequence()
     {
+        dialogSystem.SetSpeakers(speakerAudios);
         dialogSystem.StartDialog(bakeryStartNode);
 
         yield return null;
@@ -281,5 +297,15 @@ public class BakeryDialog : SittingInteraction
         // Kamil Efendi mırıldandıktan sonra oyuncu seçim yapar
         DialogBuilder.AddOption(bakeryStartNode, DialogBuilder.CreateOption("Are you okay, Amca?", "İyi misin Amca?", enginAreYouOkay));
         DialogBuilder.AddOption(bakeryStartNode, DialogBuilder.CreateOption("Who was that?", "Kimdi o?", enginWhoPunk));
+
+        bakeryStartNode.voiceClip = clip_amca_ugh;
+        enginAreYouOkay.voiceClip = clip_engin_areYouOkay;
+        oldManBeenThrough.voiceClip = clip_amca_beenThrough;
+        enginSeeDoctor.voiceClip = clip_engin_seeDoctor;
+        oldManNonsense.voiceClip = clip_amca_nonsense;
+        enginWhoPunk.voiceClip = clip_engin_whoPunk;
+        oldManLongStory.voiceClip = clip_amca_longStory;
+        enginFilthyMouth.voiceClip = clip_engin_filthyMouth;
+        oldManSoap.voiceClip = clip_amca_soap;
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
@@ -17,6 +18,36 @@ public class TalkAboutAsuman : FoodInteractable
 
     private DialogNode oldManAfraid;
     private FirstPersonController playerFPS;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [Header("Amca Sesleri")]
+    [SerializeField] private AudioClip clip_amca_didYouSee;
+    [SerializeField] private AudioClip clip_amca_yeahShe;
+    [SerializeField] private AudioClip clip_amca_makeThingsUp;
+    [SerializeField] private AudioClip clip_amca_myDaughter;
+    [SerializeField] private AudioClip clip_amca_afraid;
+    [SerializeField] private AudioClip clip_amca_pimping;
+    [SerializeField] private AudioClip clip_amca_imSorry;
+    [SerializeField] private AudioClip clip_amca_20mins;
+    [SerializeField] private AudioClip clip_amca_cantLive;
+    [SerializeField] private AudioClip clip_amca_whyHelp;
+    [SerializeField] private AudioClip clip_amca_rightKamil;
+    [SerializeField] private AudioClip clip_amca_teaFirst;
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_engin_woman;
+    [SerializeField] private AudioClip clip_engin_man;
+    [SerializeField] private AudioClip clip_engin_whoIsShe;
+    [SerializeField] private AudioClip clip_engin_punkTreat;
+    [SerializeField] private AudioClip clip_engin_whatTell;
+    [SerializeField] private AudioClip clip_engin_cousin;
+    [SerializeField] private AudioClip clip_engin_wontReturn;
+    [SerializeField] private AudioClip clip_engin_convince;
+    [SerializeField] private AudioClip clip_engin_takeMe;
+    [SerializeField] private AudioClip clip_engin_alrightGo;
+    [SerializeField] private AudioClip clip_engin_fastEnd;
+    [Header("Kamil Efendi Sesleri")]
+    [SerializeField] private AudioClip clip_kamil_grunt2;
 
     protected override void Start()
     {
@@ -102,6 +133,7 @@ public class TalkAboutAsuman : FoodInteractable
 
     private IEnumerator DialogSequence()
     {
+        dialogSystem.SetSpeakers(speakerAudios);
         dialogSystem.StartDialog(oldManDidYouSee);
 
         yield return null;
@@ -127,6 +159,7 @@ public class TalkAboutAsuman : FoodInteractable
                 camTransform.DOLookAt(amcaTransform.position, 0.5f).SetEase(Ease.InOutSine);
             }
 
+            dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(oldManAfraid);
             
             yield return null;
@@ -362,5 +395,30 @@ public class TalkAboutAsuman : FoodInteractable
         DialogBuilder.AddOption(oldManRightKamil, DialogBuilder.CreateOption("...", "...", enginAlrightGo, true));
         DialogBuilder.AddOption(enginAlrightGo, DialogBuilder.CreateOption("...", "...", oldManTeaFirst, true));
         DialogBuilder.AddOption(oldManTeaFirst, DialogBuilder.CreateOption("...", "...", enginFastEnd, true));
+
+        oldManDidYouSee.voiceClip = clip_amca_didYouSee;
+        enginWoman.voiceClip = clip_engin_woman;
+        oldManYeahShe.voiceClip = clip_amca_yeahShe;
+        enginMan.voiceClip = clip_engin_man;
+        oldManMakeThingsUp.voiceClip = clip_amca_makeThingsUp;
+        enginWhoIsShe.voiceClip = clip_engin_whoIsShe;
+        oldManMyDaughter.voiceClip = clip_amca_myDaughter;
+        oldManAfraid.voiceClip = clip_amca_afraid;
+        enginPunkTreat.voiceClip = clip_engin_punkTreat;
+        oldManPimping.voiceClip = clip_amca_pimping;
+        enginWhatTell.voiceClip = clip_engin_whatTell;
+        oldManImSorry.voiceClip = clip_amca_imSorry;
+        enginCousin.voiceClip = clip_engin_cousin;
+        oldMan20Mins.voiceClip = clip_amca_20mins;
+        enginWontReturn.voiceClip = clip_engin_wontReturn;
+        oldManCantLive.voiceClip = clip_amca_cantLive;
+        enginConvince.voiceClip = clip_engin_convince;
+        oldManWhyHelp.voiceClip = clip_amca_whyHelp;
+        enginTakeMe.voiceClip = clip_engin_takeMe;
+        kamilGrunt2.voiceClip = clip_kamil_grunt2;
+        oldManRightKamil.voiceClip = clip_amca_rightKamil;
+        enginAlrightGo.voiceClip = clip_engin_alrightGo;
+        oldManTeaFirst.voiceClip = clip_amca_teaFirst;
+        enginFastEnd.voiceClip = clip_engin_fastEnd;
     }
 }
