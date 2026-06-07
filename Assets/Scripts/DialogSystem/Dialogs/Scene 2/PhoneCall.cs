@@ -101,7 +101,9 @@ public class PhoneCall : Interactable
                 CharacterController cc = playerObjectToTeleport.GetComponent<CharacterController>();
                 if (cc != null) cc.enabled = false;
 
-                playerObjectToTeleport.transform.DOMove(hangUpRef.position, 1f).SetEase(Ease.InOutSine);
+                // Hedefin sadece X ve Z koordinatlarını alıp, karakterin kendi Y (yükseklik) değerini koruyoruz
+                Vector3 targetPos = new Vector3(hangUpRef.position.x, playerObjectToTeleport.transform.position.y, hangUpRef.position.z);
+                playerObjectToTeleport.transform.DOMove(targetPos, 1f).SetEase(Ease.InOutSine);
                 playerObjectToTeleport.transform.DORotateQuaternion(hangUpRef.rotation, 1f).SetEase(Ease.InOutSine).OnComplete(() =>
                 {
                     if (cc != null) cc.enabled = true;
