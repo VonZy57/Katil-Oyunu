@@ -134,6 +134,12 @@ public class PhoneCall : Interactable
             phoneHandSet.transform.DORotateQuaternion(playerHandSetRef.transform.rotation, 1f);
         }
 
+        // Telefon açma sesi çal
+        if (oneShotAudioSource != null && phonePickupSound != null)
+        {
+            oneShotAudioSource.PlayOneShot(phonePickupSound);
+        }
+
         dialogSystem.StartDialog(phoneCallNode);
         isDialogActive = true;
         StartCoroutine(CheckDialogEnd());

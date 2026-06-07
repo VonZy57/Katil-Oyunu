@@ -1,4 +1,5 @@
 using System.Collections;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem; // Yeni Input System kütüphanesi
@@ -225,16 +226,10 @@ public class ButtonSmashGame : MonoBehaviour
         if (messageText != null)
             messageText.gameObject.SetActive(false);
 
-        // Oyun bitince Vignette'i normale döndür
+        // Oyun bitince Vignette'i anlık değerinden yavaşça 0'a (normale) DOTween ile döndür
         if (vignette != null)
-            vignette.intensity.value = 0f;
-
-        // Gözleri (Siyah paneli) tamamen şeffaf yap
-        if (eyeImage != null)
         {
-            Color tempEyeColor = eyeImage.color;
-            tempEyeColor.a = 0f;
-            eyeImage.color = tempEyeColor;
+            DOTween.To(() => vignette.intensity.value, x => vignette.intensity.value = x, 0f, 1.5f).SetEase(Ease.InOutSine);
         }
 
         // Loop sesi durdur
@@ -243,10 +238,10 @@ public class ButtonSmashGame : MonoBehaviour
             phoneLoopAudioSource.Stop();
         }
 
-        // Telefon açma sesi çal
-        if (oneShotAudioSource != null && phonePickupSound != null)
+        // Gözleri (Siyah paneli) DOTween ile yavaşça tamamen şeffaf yap
+        if (eyeImage != null)
         {
-            oneShotAudioSource.PlayOneShot(phonePickupSound);
+            eyeImage.DOFade(0f, 1.5f).SetEase(Ease.InOutSine);
         }
 
         // Oyun bittiğinde ışıkları aç
