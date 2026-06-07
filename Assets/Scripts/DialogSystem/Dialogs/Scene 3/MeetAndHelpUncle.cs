@@ -27,6 +27,9 @@ public class MeetAndHelpUncle : Interactable
     [Header("Engin Sesleri")]
     [SerializeField] private AudioClip clip_engin_soundsGood;
     [SerializeField] private AudioClip clip_engin_busy;
+    [Header("Kaldırma Sesi")]
+    [SerializeField] private AudioSource helpAudioSource;
+    [SerializeField] private AudioClip clip_helpUp;
 
     void Start()
     {
@@ -67,6 +70,12 @@ public class MeetAndHelpUncle : Interactable
         if (amcaAnimator != null)
         {
             amcaAnimator.SetTrigger("HelpUpTrigger");
+        }
+
+        if (helpAudioSource != null && clip_helpUp != null)
+        {
+            helpAudioSource.clip = clip_helpUp;
+            helpAudioSource.Play();
         }
 
         Debug.Log("Animasyon: Engin amcayı yerden kaldırır...");

@@ -123,14 +123,13 @@ public class LavukBeatingAmca : MonoBehaviour
     {
         isFinished = false;
 
-        // Konuşma başladığında peş peşe oynayacak animasyonlar
-        StartCoroutine(InitialAnimationsPlaceholder());
-
         for (int i = 0; i < dialogLines.Count; i++)
         {
             // Lavuk son lafını söylediğinde ayrı bir animasyon sekansı başlat
             if (i == dialogLines.Count - 1)
             {
+                if (lavukAnimator != null)
+                    lavukAnimator.SetTrigger("PunchTrigger");
                 StartCoroutine(FinalAnimationSequencePlaceholder());
             }
 
@@ -150,23 +149,11 @@ public class LavukBeatingAmca : MonoBehaviour
             }
 
             subtitleText.text = speaker + ": " + line.lineText.GetText(isTurkish);
-            yield return new WaitForSeconds(line.displayDuration);
+            yield return new WaitForSeconds(line.voiceClip != null ? line.voiceClip.length : line.displayDuration);
         }
         
         subtitleText.text = "";
         isFinished = true;
-    }
-
-    private IEnumerator InitialAnimationsPlaceholder()
-    {
-        // Peş peşe gelecek animasyonlar için placeholder
-        yield return new WaitForSeconds(31f); // Lavuğun vurcağı cümlenin gelmesini bekleme süresi
-        Debug.Log("Diyalog başladı! Animasyon 1 (örn: Lavuk vurur)");
-        
-        if (lavukAnimator != null)
-        {
-            lavukAnimator.SetTrigger("PunchTrigger");
-        }
     }
 
     private IEnumerator FinalAnimationSequencePlaceholder()

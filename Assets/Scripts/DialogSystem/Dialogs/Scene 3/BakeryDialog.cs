@@ -237,7 +237,7 @@ public class BakeryDialog : SittingInteraction
         bakeryStartNode = DialogBuilder.CreateNode(
             "Ughhh...",
             "Offff...",
-            "Amca"
+            "Kamil Efendi"
         );
 
         // ==========================================

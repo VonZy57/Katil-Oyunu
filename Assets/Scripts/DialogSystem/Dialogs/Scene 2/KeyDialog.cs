@@ -179,8 +179,8 @@ public class KeyDialog : MonoBehaviour
     {
         // === INTRO NODE (Kuru'nun eşinin bağırması) ===
         introNode = DialogBuilder.CreateNode(
-            "(Shouts from inside) GIVE ZEKİ HIS ROOM. I HAD THE DOOR FIXED YESTERDAY. HE WON'T BE COMING TO THE ROOM ANYWAY.",
-            "(İçerden bağırır) ZEKİ'NİN ODASINI VER. KAPISINI DÜN YAPTIRDIM. O DA YAKINDA GELMEZ ZATEN.",
+            "GIVE ZEKİ HIS ROOM. I HAD THE DOOR FIXED YESTERDAY. HE WON'T BE COMING TO THE ROOM ANYWAY.",
+            "ZEKİ'NİN ODASINI VER. KAPISINI DÜN YAPTIRDIM. O DA YAKINDA GELMEZ ZATEN.",
             "Kuru's Wife"
         );
 
