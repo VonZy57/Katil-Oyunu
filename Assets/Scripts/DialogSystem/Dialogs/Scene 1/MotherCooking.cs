@@ -28,6 +28,19 @@ public class MotherCooking : MonoBehaviour
     [SerializeField] private GameObject playerCamera;
     [SerializeField] private GameObject playerBody;
 
+    [Header("Şarkı Altyazıları")]
+    public TMPro.TextMeshProUGUI subtitleText;
+    private List<SongSubtitle> songSubtitles;
+
+    [System.Serializable]
+    public struct SongSubtitle
+    {
+        public float startTime;
+        public float duration;
+        public string speakerName;
+        public LocalizedText lineText;
+    }
+
     void OnEnable()
     {
         BathtubDropInteractable.OnLastBodyDropped += TeleportMotherToTable;
@@ -50,23 +63,79 @@ public class MotherCooking : MonoBehaviour
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
         BuildDialogTree();
+        BuildSongSubtitles();
         StartCoroutine(PlaySongAfterStartDialog());
     }
 
     IEnumerator PlaySongAfterStartDialog()
     {
+        // Şarkı başlarken (karanlıktayken) oyuncu hareket edemesin diye kontrolleri hemen kapatıyoruz
+        FirstPersonController fps = playerBody.GetComponent<FirstPersonController>();
+        if (fps != null)
+        {
+            fps.enabled = false;
+            
+            // FirstPersonController'da otomatik olarak başlayan Fade Out'u iptal edip ekranı siyah kilitliyoruz.
+            if (fps.fadeImage != null)
+            {
+                fps.fadeImage.DOKill();
+                Color c = fps.fadeImage.color;
+                c.a = 1f;
+                fps.fadeImage.color = c;
+            }
+        }
+
         if (songClip != null)
         {
             audioSource.PlayOneShot(songClip);
-            yield return new WaitForSeconds(songClip.length);
+            if (subtitleText != null)
+                StartCoroutine(PlaySongSubtitles());
+            yield return new WaitForSeconds(songClip.length); // Şarkının süresine göre bekleme (örneğin 57 saniye)
         }
 
-        yield return new WaitForSeconds(2f);
+        // Şarkı bitti! Ekranı göz kırpma (Blinking) efektiyle yavaşça aydınlatıyoruz.
+        if (fps != null && fps.fadeImage != null)
+        {
+            // Kırpıştırma başlamadan hemen önce kamerayı tavana (-65 derece) bakacak şekilde ayarla
+            if (playerCamera != null)
+            {
+                playerCamera.transform.localEulerAngles = new Vector3(-65f, 0f, 0f);
+                
+                // Kırpıştırmanın toplam animasyon süresini hesaplıyoruz (0.3 + 0.15 + 0.4 + 0.15 = 1 saniye + fadeDuration)
+                float totalBlinkDuration = 1f + fps.fadeDuration;
+                
+                // Kırpıştırma ile senkronize bir şekilde kafayı yavaşça öne (0 derece) eğ
+                playerCamera.transform.DOLocalRotate(Vector3.zero, totalBlinkDuration).SetEase(Ease.InOutSine);
 
+                // Aynı anda baş dönmesi hissi için sağa-sola (Y ve Z eksenlerinde) hafif ve yavaş sarsıntı ekle
+                // Vibrato (3) düşük tutularak titreme değil, sarhoş gibi sallanma hissi verilir
+                //playerCamera.transform.DOShakeRotation(totalBlinkDuration, new Vector3(0f, 8f, 4f), 3, 45f, true);
+            }
+            
+            yield return new WaitForSeconds(0.5f); // Kırpıştırma başlamadan önce kısa bir bekleme (isteğe bağlı)
 
-        // Karakter kontrollerini geçici kapat ki DOTween ile çakışmasın
-        FirstPersonController fps = playerBody.GetComponent<FirstPersonController>();
-        if (fps != null) fps.enabled = false;
+            Sequence blinkSequence = DOTween.Sequence();
+
+            // 1. Kırpma: Gözler hafifçe açılır ve hızla kapanır
+            blinkSequence.Append(fps.fadeImage.DOFade(0.4f, 0.3f).SetEase(Ease.InOutSine));
+            blinkSequence.Append(fps.fadeImage.DOFade(1f, 0.15f).SetEase(Ease.InOutSine));
+
+            // 2. Kırpma: Gözler biraz daha fazla açılır ve kapanır
+            blinkSequence.Append(fps.fadeImage.DOFade(0.1f, 0.4f).SetEase(Ease.InOutSine));
+            blinkSequence.Append(fps.fadeImage.DOFade(1f, 0.15f).SetEase(Ease.InOutSine));
+
+            // Son açılış: Gözler tamamen ve yumuşakça açılır
+            blinkSequence.Append(fps.fadeImage.DOFade(0f, fps.fadeDuration).SetEase(Ease.InOutSine));
+
+            blinkSequence.OnComplete(() =>
+            {
+                fps.fadeImage.gameObject.SetActive(false);
+            });
+            
+            yield return blinkSequence.WaitForCompletion();
+        }
+        
+        yield return new WaitForSeconds(1f); // Ekran açıldıktan sonra kısa bir süre bekle
 
         // GÖVDEYİ (playerBody) DÖNDÜRMÜYORUZ! (Gövde dönerse koltuğun yönü/0 noktası bozulur).
         // Sadece kamerayı anneye çeviriyoruz.
@@ -78,6 +147,41 @@ public class MotherCooking : MonoBehaviour
             dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
             StartCoroutine(WaitForDialogEnd()); // Diyalogun bitmesini bekleyecek sistemi başlat
         });
+    }
+
+    private IEnumerator PlaySongSubtitles()
+    {
+        if (subtitleText == null) yield break;
+
+        bool isTurkish = dialogSystem != null ? dialogSystem.GetCurrentLanguage() : true;
+        float timer = 0f;
+
+        foreach (var sub in songSubtitles)
+        {
+            while (timer < sub.startTime)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            string speaker = sub.speakerName;
+            if (isTurkish)
+            {
+                if (speaker == "Man") speaker = "Adam";
+                else if (speaker == "Woman") speaker = "Kadın";
+                else if (speaker == "Mother") speaker = "Anne";
+            }
+
+            subtitleText.text = speaker + ": " + sub.lineText.GetText(isTurkish);
+
+            while (timer < sub.startTime + sub.duration)
+            {
+                timer += Time.deltaTime;
+                yield return null;
+            }
+
+            subtitleText.text = "";
+        }
     }
 
     private IEnumerator WaitForDialogEnd()
@@ -110,5 +214,40 @@ public class MotherCooking : MonoBehaviour
 
         carryTheBodies.voiceClip  = clip_carryTheBodies;
         carryTheBodies2.voiceClip = clip_carryTheBodies2;
+    }
+
+    void BuildSongSubtitles()
+    {
+        songSubtitles = new List<SongSubtitle>
+        {
+            new SongSubtitle
+            {
+                startTime = 33f,
+                duration = 2f,
+                speakerName = "Man",
+                lineText = new LocalizedText { english = "Stop, stop! Don't do it!", turkish = "Dur, dur yapma!" }
+            },
+            new SongSubtitle
+            {
+                startTime = 36f,
+                duration = 4f,
+                speakerName = "Woman",
+                lineText = new LocalizedText { english = "Stop, don't do it, stop! We were going to help you!!", turkish = "Dur, yapma dur! Biz sana yardım edecektik!!" }
+            },
+            new SongSubtitle
+            {
+                startTime = 44f,
+                duration = 3.5f,
+                speakerName = "Engin",
+                lineText = new LocalizedText { english = "I am sorry for everything.", turkish = "Her şey için özür dilerim." }
+            },
+            new SongSubtitle
+            {
+                startTime = 48f,
+                duration = 6f,
+                speakerName = "Mother",
+                lineText = new LocalizedText { english = "You are a good person Engin. My good boy. You are a good person. Open your eyes. Wake up!", turkish = "Sen iyi birisin Engin. Uslu oğluşum benim. Sen iyi birisin. Aç gözlerini. Uyan!" }
+            }
+        };
     }
 }
