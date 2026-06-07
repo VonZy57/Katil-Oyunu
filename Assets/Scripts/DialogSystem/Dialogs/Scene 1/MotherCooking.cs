@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
@@ -9,6 +10,13 @@ public class MotherCooking : MonoBehaviour
     [SerializeField] private MissionObjective missionObj;
     public Transform motherTableTransform; // Anne'nin yemek masasında duracağı pozisyon
     public GameObject cookingPot; // Masadaki tencere modeli
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+
+    [Header("Anne Dialog Sesleri")]
+    [SerializeField] private AudioClip clip_carryTheBodies;
+    [SerializeField] private AudioClip clip_carryTheBodies2;
 
     [Header("Şarkı")]
     public AudioClip songClip;
@@ -66,6 +74,7 @@ public class MotherCooking : MonoBehaviour
         playerCamera.transform.DOLookAt(lookTarget.position, 1f).OnComplete(() =>
         {
             if (fps != null) { fps.SyncCameraRotation(); fps.enabled = true; } // Yeni açıyı sisteme kaydet ve kontrolleri geri ver
+            dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(carryTheBodies); // Diyalog başlar.
             StartCoroutine(WaitForDialogEnd()); // Diyalogun bitmesini bekleyecek sistemi başlat
         });
@@ -98,5 +107,8 @@ public class MotherCooking : MonoBehaviour
 
         DialogOption silentOption = DialogBuilder.CreateOption("...", "...", carryTheBodies2, true);
         DialogBuilder.AddOption(carryTheBodies, silentOption);
+
+        carryTheBodies.voiceClip  = clip_carryTheBodies;
+        carryTheBodies2.voiceClip = clip_carryTheBodies2;
     }
 }

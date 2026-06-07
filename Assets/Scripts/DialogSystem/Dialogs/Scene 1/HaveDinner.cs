@@ -9,6 +9,19 @@ public class HaveDinner : Interactable
 {
     [SerializeField] private DialogNode putTheGamePadNode;
     [SerializeField] private DialogSystem dialogSystem;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+
+    [Header("Anne Sesleri")]
+    [SerializeField] private AudioClip clip_putTheGamePad;
+    [SerializeField] private AudioClip clip_motherSaysLiars;
+    [SerializeField] private AudioClip clip_motherSaysShut;
+
+    [Header("Cenk Sesleri")]
+    [SerializeField] private AudioClip clip_brotherKilled;
+    [SerializeField] private AudioClip clip_cenkSaysEnginStrong;
+
     [SerializeField] private MissionObjective missionObj;
 
     [Header("Kalkma Görevi")]
@@ -154,6 +167,7 @@ public class HaveDinner : Interactable
         }
 
         yield return new WaitForSeconds(2f);
+        dialogSystem.SetSpeakers(speakerAudios);
         dialogSystem.StartDialog(putTheGamePadNode);
         RotateCameraToSpeaker(motherLookAtPoint); 
 
@@ -326,6 +340,12 @@ public class HaveDinner : Interactable
         DialogBuilder.AddOption(brotherKilledNode, silentOption2);
         DialogBuilder.AddOption(motherSaysLiarsNode, silentOption3);
         DialogBuilder.AddOption(cenkSaysEnginStrong, silentOption4);
+
+        putTheGamePadNode.voiceClip       = clip_putTheGamePad;
+        motherSaysLiarsNode.voiceClip     = clip_motherSaysLiars;
+        motherSaysShutNode.voiceClip      = clip_motherSaysShut;
+        brotherKilledNode.voiceClip       = clip_brotherKilled;
+        cenkSaysEnginStrong.voiceClip     = clip_cenkSaysEnginStrong;
 
     }
 

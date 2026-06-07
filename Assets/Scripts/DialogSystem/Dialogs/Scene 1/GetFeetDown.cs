@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using System.Numerics;
@@ -7,6 +8,25 @@ using System.Numerics;
 public class GetFeetDown : Interactable
 {
     [SerializeField] private DialogSystem dialogSystem;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_getFeetDown;
+    [SerializeField] private AudioClip clip_afterDinner;
+    [SerializeField] private AudioClip clip_enginsAnswer;
+    [SerializeField] private AudioClip clip_whichLevel;
+    [SerializeField] private AudioClip clip_enginsAnswerLevel;
+
+    [Header("Cenk Sesleri")]
+    [SerializeField] private AudioClip clip_playingGame;
+    [SerializeField] private AudioClip clip_cenksAnswer;
+    [SerializeField] private AudioClip clip_cenksAnswerLevel;
+
+    [Header("Anne Sesleri")]
+    [SerializeField] private AudioClip clip_motherWarns;
+
     [SerializeField] private DialogNode getFeetDownNode;
     [SerializeField] private MissionObjective missionObj;
 
@@ -72,6 +92,7 @@ public class GetFeetDown : Interactable
     
     private IEnumerator DialogRoutine()
     {
+        dialogSystem.SetSpeakers(speakerAudios);
         dialogSystem.StartDialog(getFeetDownNode);
         
         // Panelin açılması için 1 frame bekle
@@ -180,5 +201,20 @@ public class GetFeetDown : Interactable
         
         DialogBuilder.AddOption(playingGameNode, playingGameOption);
         DialogBuilder.AddOption(playingGameNode, whichLevelOption);
+
+        // Engin
+        getFeetDownNode.voiceClip       = clip_getFeetDown;
+        afterDinnerNode.voiceClip       = clip_afterDinner;
+        enginsAnswerNode.voiceClip      = clip_enginsAnswer;
+        whichLevelNode.voiceClip        = clip_whichLevel;
+        enginsAnswerLevelNode.voiceClip  = clip_enginsAnswerLevel;
+
+        // Cenk
+        playingGameNode.voiceClip       = clip_playingGame;
+        cenksAnswerNode.voiceClip       = clip_cenksAnswer;
+        cenksAnswerLevelNode.voiceClip   = clip_cenksAnswerLevel;
+
+        // Anne
+        motherWarnsNode.voiceClip = clip_motherWarns;
     }
 }

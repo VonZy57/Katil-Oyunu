@@ -10,12 +10,16 @@ public class TalkWithNeighbor : MonoBehaviour
     [SerializeField] private DialogSystem dialogSystem;
     [SerializeField] private TextMeshProUGUI subtitleText;
 
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+
     [System.Serializable]
     public struct SubtitleLine
     {
         public string speakerName;
         public LocalizedText lineText;
         public float displayDuration;
+        public AudioClip voiceClip; // YENİ — null ise ses çalınmaz
     }
 
     [Header("Diyalog Satırları")]
@@ -89,8 +93,21 @@ public class TalkWithNeighbor : MonoBehaviour
             bool isTurkish = dialogSystem.GetCurrentLanguage();
             // Dil Türkçeyse isimleri de çeviriyoruz.
             string speaker = isTurkish ? (line.speakerName == "Mother" ? "Anne" : "Komşu") : line.speakerName;
-            
+
             subtitleText.text = speaker + ": " + line.lineText.GetText(isTurkish);
+
+            // Konuşmacının AudioSource'unu bul ve sesi çal
+            if (line.voiceClip != null && speakerAudios != null)
+            {
+                SpeakerAudio sa = speakerAudios.Find(s => s.speakerName == line.speakerName);
+                if (sa != null && sa.audioSource != null)
+                {
+                    sa.audioSource.spatialBlend = sa.isPlayer ? 0f : 1f;
+                    sa.audioSource.clip = line.voiceClip;
+                    sa.audioSource.Play();
+                }
+            }
+
             yield return new WaitForSeconds(line.displayDuration);
         }
         

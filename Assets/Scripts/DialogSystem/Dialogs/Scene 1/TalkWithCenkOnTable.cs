@@ -1,10 +1,41 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using DG.Tweening;
 
 public class TalkWithCenkOnTable : MonoBehaviour
 {
     [SerializeField] private DialogSystem dialogSystem;
+
+    [Header("Ses Referansları")]
+    [SerializeField] private List<SpeakerAudio> speakerAudios;
+
+    [Header("Cenk Sesleri")]
+    [SerializeField] private AudioClip clip_cenkStarts;
+    [SerializeField] private AudioClip clip_sheKilledTwo;
+    [SerializeField] private AudioClip clip_cenkSaysYouKilled;
+    [SerializeField] private AudioClip clip_cenksRemindsOlds;
+    [SerializeField] private AudioClip clip_cenkSaysDoYouBelieve;
+    [SerializeField] private AudioClip clip_cenkSaysDoYouRemember;
+    [SerializeField] private AudioClip clip_motherDontLikeFats;
+    [SerializeField] private AudioClip clip_cenkSaysNo;
+    [SerializeField] private AudioClip clip_leaveHere;
+    [SerializeField] private AudioClip clip_goToCousin;
+    [SerializeField] private AudioClip clip_cenksLastWords;
+
+    [Header("Engin Sesleri")]
+    [SerializeField] private AudioClip clip_enginSays;
+    [SerializeField] private AudioClip clip_enginSaysWatchYourWords;
+    [SerializeField] private AudioClip clip_motherSaidThat;
+    [SerializeField] private AudioClip clip_theyWouldHarmUs;
+    [SerializeField] private AudioClip clip_enginSaysWhyHeKilled;
+    [SerializeField] private AudioClip clip_enginSaysNo;
+    [SerializeField] private AudioClip clip_enginSaysIdontWant;
+    [SerializeField] private AudioClip clip_cutTheThroat;
+    [SerializeField] private AudioClip clip_dontWantRemember;
+    [SerializeField] private AudioClip clip_dontTortureMe;
+    [SerializeField] private AudioClip clip_whatDoYouWant;
+    [SerializeField] private AudioClip clip_toWhere;
     [SerializeField] private DialogNode cenkStartsNode;
     [SerializeField] private MissionObjective missionObj;
 
@@ -56,6 +87,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
         {
             if (playerFPS != null) playerFPS.enabled = false; // Kontrolleri kapat ki kamera dönmesi çakışmasın
 
+            dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(cenkStartsNode);
             
             // Diyalog başladığında kamerayı doğrudan Cenk'e döndür
@@ -348,8 +380,31 @@ public class TalkWithCenkOnTable : MonoBehaviour
         DialogOption toCousinSilentOp = DialogBuilder.CreateOption("...", "...", cenksLastWords, true);
         DialogBuilder.AddOption(goToCousinNode, toCousinSilentOp);
 
+        // Cenk cliplerini ata
+        cenkStartsNode.voiceClip                = clip_cenkStarts;
+        sheKilledTwoNode.voiceClip              = clip_sheKilledTwo;
+        cenkSaysYouKilled.voiceClip             = clip_cenkSaysYouKilled;
+        cenksRemindsOldsNode.voiceClip          = clip_cenksRemindsOlds;
+        cenkSaysDoYouBelieveNode.voiceClip      = clip_cenkSaysDoYouBelieve;
+        cenkSaysDoYouRememberNode.voiceClip     = clip_cenkSaysDoYouRemember;
+        motherDontLikeFatsNode.voiceClip        = clip_motherDontLikeFats;
+        cenkSaysNo.voiceClip                    = clip_cenkSaysNo;
+        leaveHereNode.voiceClip                 = clip_leaveHere;
+        goToCousinNode.voiceClip                = clip_goToCousin;
+        cenksLastWords.voiceClip                = clip_cenksLastWords;
 
-        
-
+        // Engin cliplerini ata
+        enginSaysNode.voiceClip                 = clip_enginSays;
+        enginSaysWatchYourWordsNode.voiceClip   = clip_enginSaysWatchYourWords;
+        motherSaidThat.voiceClip                = clip_motherSaidThat;
+        theyWouldHarmUs.voiceClip               = clip_theyWouldHarmUs;
+        enginSaysWhyHeKilledNode.voiceClip      = clip_enginSaysWhyHeKilled;
+        enginSaysNoNode.voiceClip               = clip_enginSaysNo;
+        enginSaysIdontWantNode.voiceClip        = clip_enginSaysIdontWant;
+        cutTheThroatNode.voiceClip              = clip_cutTheThroat;
+        dontWantRememberNode.voiceClip          = clip_dontWantRemember;
+        DontTortureMeNode.voiceClip             = clip_dontTortureMe;
+        whatDoYouWantNode.voiceClip             = clip_whatDoYouWant;
+        toWhereNode.voiceClip                   = clip_toWhere;
     }
 }
