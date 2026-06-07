@@ -77,6 +77,13 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
     private IEnumerator WaitAndStartDialog()
     {
+        // KOŞUL: Yemek yeme animasyonunun bitmiş olmasını bekle!
+        PlateInteraction plate = GetComponent<PlateInteraction>();
+        if (plate != null)
+        {
+            yield return new WaitUntil(() => !plate.IsAnimationPlaying);
+        }
+
         // Eğer komşu diyaloğu atanmışsa ve henüz bitmemişse, bitmesini bekle
         if (talkWithNeighbor != null)
         {

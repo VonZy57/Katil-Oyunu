@@ -13,11 +13,14 @@ public class PlateInteraction : FoodInteractable
     [Header("Görev Referansları")]
     [SerializeField] private MissionSO talkWithCenkSO;
     
+    public bool IsAnimationPlaying { get; private set; } = false;
+
     protected override void DoEventsWhileEating()
     {
         //Basit çiğneme animasyonu
         if (playerCamera != null)
         {
+            IsAnimationPlaying = true; // Animasyon başladı
             player.GetComponent<FirstPersonController>().enabled = false;
 
             // DOTween Sequence oluştur (Animasyonları sıraya dizmek için)
@@ -41,6 +44,7 @@ public class PlateInteraction : FoodInteractable
                 FirstPersonController fpsController = player.GetComponent<FirstPersonController>();
                 fpsController.AddXRotation(-20f); // Animasyonda verdiğimiz -20 derecelik açıyı Controller'a da bildiriyoruz
                 fpsController.enabled = true;
+                IsAnimationPlaying = false; // Animasyon tamamen bitti
             });
         }
             

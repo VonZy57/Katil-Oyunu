@@ -119,7 +119,7 @@ public class MeetAndHelpUncle : Interactable
         // Diyalog bittiğinde Amca'nın tag'ını "Amca" olarak değiştir
         if (amcaTransform != null)
         {
-            amcaTransform.gameObject.tag = "Amca";
+            this.gameObject.tag = "Amca";
         }
 
         yield return new WaitForSeconds(1f); // Diyalog kapanma animasyonu için küçük bir bekleme
