@@ -9,6 +9,9 @@ public class KuruGreeting : Interactable
     public Transform playerBody;      // Karakterin ana gövdesi (Sağa/Sola dönüş için)
     public Transform playerCamera;    // Karakterin kamerası (Yukarı/Aşağı bakış için)
 
+    [Header("Prerequisites")]
+    public KeyDialog requiredKeyDialog; // Bu dialog bitmeden (obje silinmeden) etkileşime girilmesin
+
     [Header("Rotation Settings")]
     public float rotationDuration = 2f;  // Dönüş hızı
     [Tooltip("Target'ın ne kadar üstüne bakılsın?")]
@@ -53,10 +56,19 @@ public class KuruGreeting : Interactable
         // Referansları bul
         dialogSystem = FindFirstObjectByType<DialogSystem>();
         missionObj = GetComponent<MissionObjective>();
-        promptMessage = "E - Talk";
         BuildDialogTree();
     }
 
+    protected override void Update()
+    {
+        base.Update();
+
+        // KeyDialog henüz bitmediyse (obje silinmediyse) etkileşim metnini gizle
+        if (requiredKeyDialog != null)
+            promptMessage = "";
+        else
+            promptMessage = "E - Talk";
+    }
 
 
     public void StartIntroDialog()
@@ -72,6 +84,9 @@ public class KuruGreeting : Interactable
 
     protected override void Interact()
     {
+        // KeyDialog henüz bitmediyse etkileşimi engelle
+        if (requiredKeyDialog != null) return;
+
         // NPC HAREKETİ: Kuru, Oyuncuya dönsün (Sadece Y ekseninde)
         if (playerCamera != null)
         {

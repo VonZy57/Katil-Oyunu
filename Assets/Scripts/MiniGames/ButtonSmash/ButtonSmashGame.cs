@@ -51,7 +51,6 @@ public class ButtonSmashGame : MonoBehaviour
     public LightSwitchInteractable lightSwitch; // Oyun bitince açılacak ışık anahtarı
 
     [Header("Kapı Ayarları")]
-    public DoorInteraction roomDoor; // Oyun bitince kapanacak normal kapı (varsa)
     public MotelRoomDoorInteraction motelRoomDoor; // Oyun bitince kapanacak motel kapısı (varsa)
 
     // --- YENİ INPUT SYSTEM DEĞİŞKENİ ---
@@ -242,22 +241,6 @@ public class ButtonSmashGame : MonoBehaviour
         if (eyeImage != null)
         {
             eyeImage.DOFade(0f, 1.5f).SetEase(Ease.InOutSine);
-        }
-
-        // Oyun bittiğinde ışıkları aç
-        if (lightSwitch != null)
-        {
-            lightSwitch.TurnOnLights();
-        }
-
-        // Oyun bittiğinde kapıyı kapat
-        if (roomDoor != null)
-        {
-            roomDoor.CloseDoor();
-        }
-        if (motelRoomDoor != null)
-        {
-            motelRoomDoor.CloseDoor();
         }
 
         Debug.Log("Oyun Bitti! Skor (Bar Doluluğu): " + currentBarValue);

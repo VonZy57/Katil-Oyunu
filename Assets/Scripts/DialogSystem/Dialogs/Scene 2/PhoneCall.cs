@@ -5,6 +5,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class PhoneCall : Interactable
 {
@@ -40,6 +41,9 @@ public class PhoneCall : Interactable
     public AudioClip phoneHangupSound; // Telefon kapatma sesi
     public AudioClip phonePickupSound; // Telefon açma sesi
     private AudioSource audioSource;
+
+    [Header("TV Video Settings")]
+    public VideoPlayer tvVideoPlayer; // TV'deki VideoPlayer bileşeni
 
     [Header("Diyalog Sesleri")]
     [SerializeField] private List<SpeakerAudio> speakerAudios;
@@ -107,7 +111,7 @@ public class PhoneCall : Interactable
     {
 
         //Button Smash gamei bitir
-        buttonSmashGame.EndGame(); // Telefon açma sesi bu metodun içinde
+        buttonSmashGame.EndGame();
 
         // E tuşuna basıldığında çağrılır (PlayerInteraction raycast ile kontrol eder)
         if (dialogSystem != null && !isDialogActive && !hasInteracted)
@@ -238,32 +242,14 @@ public class PhoneCall : Interactable
 
     private IEnumerator JumpscareSequence()
     {
-        /*float fastTurnDuration = 0.15f; // Çok hızlı ve ani dönüş
-        if (jumpscareLookTarget != null)
-        {
-            if (playerBody != null)
-            {
-                playerBody.DOKill();
-                playerBody.DOLookAt(jumpscareLookTarget.position, fastTurnDuration, AxisConstraint.Y).SetEase(Ease.OutBack);
-            }
-            if (playerCamera != null)
-            {
-                playerCamera.DOKill();
-                playerCamera.DOLookAt(jumpscareLookTarget.position, fastTurnDuration).SetEase(Ease.OutBack);
-                // Dönerken sarsıntı (shake) efekti ekle
-                playerCamera.DOShakePosition(fastTurnDuration, new Vector3(0.2f, 0.2f, 0f), 30, 90f, false, true);
-            }
-        }
+        Sequence jumpscareSeq = DOTween.Sequence();
 
-        // Çok hızlı dönüş bitene kadar bekle
-        yield return new WaitForSeconds(fastTurnDuration);
-
-        // ÇÖZÜM 1: DOKill() kamerayı sarsıntı sırasında yanlış bir açıda (offset) bırakabilir.
-        // DOComplete() kullanarak animasyonu son hedefine pürüzsüzce kilitliyor ve sıfırlıyoruz.
-        if (playerBody != null) playerBody.DOComplete();
-        if (playerCamera != null) playerCamera.DOComplete();
-        */
-        yield return new WaitForSeconds(0.5f); // Jumpscare dönüşü ve animasyonu için kısa bir bekleme
+        jumpscareSeq.Append(playerBody.DOLookAt(jumpscareLookTarget.position, 0.15f, AxisConstraint.Y).SetEase(Ease.InOutSine));
+        jumpscareSeq.Join(playerCamera.DOLookAt(jumpscareLookTarget.position, 0.15f).SetEase(Ease.InOutSine));
+        jumpscareSeq.Join(playerCamera.DOShakePosition(0.15f, strength: 0.5f, vibrato:10, randomness:90).SetEase(Ease.InOutSine));
+        jumpscareSeq.OnComplete(() => {Debug.Log("Jumpscare Rotasyonu Tamamlandı");});
+        yield return jumpscareSeq.WaitForCompletion();
+        
         // Dönüş biter bitmez Jumpscare animasyonunu tetikle!
         if (MotherFacedGirl != null)
         {
@@ -297,7 +283,7 @@ public class PhoneCall : Interactable
         if (clockText != null) clockText.gameObject.SetActive(false);
 
         // 2 saniye karanlıkta bekle
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
 
         // Işınlanmadan hemen önce kapı açıksa kapalı konuma getir
         if (motelRoomDoor != null)
@@ -308,6 +294,8 @@ public class PhoneCall : Interactable
         {
             buttonSmashGame.motelRoomDoor.CloseDoor(); // Alternatif (Fallback) kontrol
         }
+
+        yield return new WaitForSeconds(2f); // Kapının kapanma animasyonunu bekle
 
         // Oyuncuyu yatağa/uyanma noktasına ışınla
         if (playerObjectToTeleport != null && wakePosition != null)
@@ -351,6 +339,8 @@ public class PhoneCall : Interactable
         // Siyah ekranı kapat
         if (clockImage != null) clockImage.gameObject.SetActive(false);
         if (clockText != null) clockText.gameObject.SetActive(false);
+
+        tvVideoPlayer.Play();
     }
 
     void BuildDialogTree()
