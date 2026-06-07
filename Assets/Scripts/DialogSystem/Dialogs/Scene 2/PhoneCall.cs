@@ -124,6 +124,12 @@ public class PhoneCall : Interactable
         // Hareket tamamen bittikten sonra kamerayı telefona döndür
         RotateCameraToTarget(rotationDuration);
 
+        // Küçük kızı aktif et ve animasyonu tetikle
+        if (MotherFacedGirl != null)
+        {
+            MotherFacedGirl.SetActive(true);
+        }
+
         // Telefon ahizesini kulağa götür.
         if (phoneHandSet != null)
         {
@@ -167,20 +173,63 @@ public class PhoneCall : Interactable
         isDialogActive = false;
     }
 
+    private IEnumerator TrackJumpscareTarget(float duration)
+    {
+        if (jumpscareLookTarget == null) yield break;
+
+        float timer = 0f;
+        while (timer < duration)
+        {
+            if (playerCamera != null && playerBody != null)
+            {
+                Vector3 dirToTarget = (jumpscareLookTarget.position - playerCamera.position).normalized;
+                Vector3 bodyDir = new Vector3(dirToTarget.x, 0, dirToTarget.z).normalized;
+                
+                if (bodyDir != Vector3.zero) 
+                    playerBody.rotation = Quaternion.Slerp(playerBody.rotation, Quaternion.LookRotation(bodyDir), Time.deltaTime * 15f);
+                if (dirToTarget != Vector3.zero) 
+                    playerCamera.rotation = Quaternion.Slerp(playerCamera.rotation, Quaternion.LookRotation(dirToTarget), Time.deltaTime * 15f);
+            }
+            timer += Time.deltaTime;
+            yield return null;
+        }
+    }
+
     private IEnumerator JumpscareSequence()
     {
         // ÇÖZÜM: Unity'nin aktif edilen kızın kemik pozisyonlarını hesaplaması için 1 frame bekle
         yield return null;
 
-        // Şimdi hedefin doğru dünya pozisyonunu alarak dönüşü başlat
+        float fastTurnDuration = 0.15f; // Çok hızlı ve ani dönüş
         if (jumpscareLookTarget != null)
         {
-            phoneLookAtTarget = jumpscareLookTarget;
-            RotateCameraToTarget(0.8f); 
+            if (playerBody != null)
+            {
+                playerBody.DOKill();
+                playerBody.DOLookAt(jumpscareLookTarget.position, fastTurnDuration, AxisConstraint.Y).SetEase(Ease.OutBack);
+            }
+            if (playerCamera != null)
+            {
+                playerCamera.DOKill();
+                playerCamera.DOLookAt(jumpscareLookTarget.position, fastTurnDuration).SetEase(Ease.OutBack);
+                // Dönerken sarsıntı (shake) efekti ekle
+                playerCamera.DOShakePosition(fastTurnDuration, new Vector3(0.2f, 0.2f, 0f), 30, 90f, false, true);
+            }
         }
 
-        // Kamera dönüş süresi kadar bekle, böylece tam arkasına döndüğünde olayı yaşar
-        yield return new WaitForSeconds(0.8f);
+        // Çok hızlı dönüş bitene kadar bekle
+        yield return new WaitForSeconds(fastTurnDuration);
+
+        // ÇAKIŞMAYI ÖNLEMEK İÇİN: Slerp (sürekli takip) başlamadan önce DOTween animasyonlarını durduruyoruz!
+        if (playerBody != null) playerBody.DOKill();
+        if (playerCamera != null) playerCamera.DOKill();
+
+        // Dönüş biter bitmez Jumpscare animasyonunu tetikle!
+        if (MotherFacedGirl != null)
+        {
+            Animator anim = MotherFacedGirl.GetComponent<Animator>();
+            if (anim != null) anim.SetTrigger("JumpScareTrigger");
+        }
 
         // Diyaloğu kod üzerinden kapat ki oyuncu "Abi abi abi" ekranında tıklamak zorunda kalmasın
         if (dialogSystem != null)
@@ -195,6 +244,9 @@ public class PhoneCall : Interactable
             clockText.text = isTurkish ? "UYAN!" : "WAKE UP!";
             clockText.gameObject.SetActive(true);
         }
+
+        // Jumpscare animasyonu süresince kameranın hareket eden yüzü takip etmesini sağla
+        StartCoroutine(TrackJumpscareTarget(1f));
 
         // Oyuncunun jumpscare'i ve yazıyı göreceği süre
         yield return new WaitForSeconds(1f);
@@ -452,14 +504,6 @@ public class PhoneCall : Interactable
                     phoneHandSet.transform.DOMove(initialHandSetPos, 0.2f);
                     phoneHandSet.transform.DORotateQuaternion(initialHandSetRot, 0.2f);
                     audioSource.PlayOneShot(phoneHangupSound);
-                }
-
-                // Küçük kızı aktif et ve animasyonu tetikle
-                if (MotherFacedGirl != null)
-                {
-                    MotherFacedGirl.SetActive(true);
-                    Animator anim = MotherFacedGirl.GetComponent<Animator>();
-                    if (anim != null) anim.SetTrigger("JumpScareTrigger");
                 }
                 
                 StartCoroutine(JumpscareSequence());
