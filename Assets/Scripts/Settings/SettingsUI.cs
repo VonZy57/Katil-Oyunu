@@ -66,7 +66,14 @@ public class SettingsUI : MonoBehaviour
     void OnEnable()
     {
         if (SettingsManager.Instance == null) return;
+        SettingsManager.Instance.OnDisplayApplied += RefreshResolutionDropdown;
         PopulateAll();
+    }
+
+    void OnDisable()
+    {
+        if (SettingsManager.Instance != null)
+            SettingsManager.Instance.OnDisplayApplied -= RefreshResolutionDropdown;
     }
 
     void PopulateAll()
@@ -76,8 +83,9 @@ public class SettingsUI : MonoBehaviour
         // Sensitivity
         if (sensitivitySlider != null)
         {
-            sensitivitySlider.minValue = 10f;
-            sensitivitySlider.maxValue = 300f;
+            sensitivitySlider.minValue = 1f;
+            sensitivitySlider.maxValue = 10f;
+            sensitivitySlider.wholeNumbers = true;
             sensitivitySlider.SetValueWithoutNotify(sm.Sensitivity);
             UpdateSensitivityText(sm.Sensitivity);
         }
@@ -160,7 +168,7 @@ public class SettingsUI : MonoBehaviour
     void OnDisplayChanged(int index)
     {
         SettingsManager.Instance?.SetDisplay(index);
-        RefreshResolutionDropdown();
+        // Çözünürlük listesi OnDisplayApplied event'i ile coroutine bittikten sonra yenilenir
     }
 
     void RefreshResolutionDropdown()

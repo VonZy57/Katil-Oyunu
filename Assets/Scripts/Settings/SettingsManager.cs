@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +17,8 @@ public class SettingsManager : MonoBehaviour
     public int   ResolutionIndex { get; private set; }
     public int   DisplayIndex    { get; private set; }
     public bool  IsTurkish       { get; private set; }
+
+    public event System.Action OnDisplayApplied;
 
     private readonly List<DisplayInfo> displayLayout = new List<DisplayInfo>();
     private FirstPersonController playerController;
@@ -98,13 +101,18 @@ public class SettingsManager : MonoBehaviour
     {
         DisplayIndex = index;
         PlayerPrefs.SetInt(KEY_DISPLAY, index);
-        ApplyDisplay();
+        StartCoroutine(ApplyDisplayCoroutine());
+    }
 
-        // Çözünürlük listesi değiştiği için index'i sıfırla
+    IEnumerator ApplyDisplayCoroutine()
+    {
+        ApplyDisplay();
+        yield return null; // Pencere taşınsın, Screen.resolutions güncellensin
         var resolutions = GetAvailableResolutions();
         ResolutionIndex = resolutions.Length - 1;
         PlayerPrefs.SetInt(KEY_RESOLUTION, ResolutionIndex);
         ApplyResolution();
+        OnDisplayApplied?.Invoke();
     }
 
     public void SetLanguage(bool turkish)
@@ -120,7 +128,7 @@ public class SettingsManager : MonoBehaviour
     {
         playerController = FindFirstObjectByType<FirstPersonController>(FindObjectsInactive.Include);
         if (playerController != null)
-            playerController.mouseSensitivity = Sensitivity;
+            playerController.mouseSensitivity = Sensitivity * 30f; // 1-10 scale → 30-300
     }
 
     void ApplyVolume()
@@ -156,27 +164,54 @@ public class SettingsManager : MonoBehaviour
     {
         ApplySensitivity();
         ApplyVolume();
-        ApplyDisplay();
-        ApplyResolution();
         ApplyLanguage();
+        // Kaydedilmiş monitör tercihi varsa taşı + bekle; yoksa mevcut ekranda kal
+        if (PlayerPrefs.HasKey(KEY_DISPLAY))
+            StartCoroutine(ApplyDisplayCoroutine());
+        else
+            ApplyResolution();
     }
 
     // ── Load ─────────────────────────────────────────────────────────────────
 
     void LoadAll()
     {
-        Sensitivity  = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 100f);
-        Volume       = PlayerPrefs.GetFloat(KEY_VOLUME, 1f);
-        IsTurkish    = PlayerPrefs.GetInt(KEY_LANGUAGE, 0) == 1;
+        // Sens migration: eski format 10-300, yeni format 1-10
+        float rawSens = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 3f);
+        Sensitivity   = rawSens > 10f
+            ? Mathf.Clamp(rawSens / 30f, 1f, 10f)
+            : Mathf.Clamp(rawSens, 1f, 10f);
 
-        // Kaydedilen monitör bu cihazda yoksa 0'a düş
+        Volume    = PlayerPrefs.GetFloat(KEY_VOLUME, 1f);
+        IsTurkish = PlayerPrefs.GetInt(KEY_LANGUAGE, 0) == 1;
+
         RefreshDisplayLayout();
-        int savedDisplay = PlayerPrefs.GetInt(KEY_DISPLAY, 0);
-        DisplayIndex = Mathf.Clamp(savedDisplay, 0, Mathf.Max(0, displayLayout.Count - 1));
+        if (PlayerPrefs.HasKey(KEY_DISPLAY))
+        {
+            int savedDisplay = PlayerPrefs.GetInt(KEY_DISPLAY, 0);
+            DisplayIndex = Mathf.Clamp(savedDisplay, 0, Mathf.Max(0, displayLayout.Count - 1));
+        }
+        else
+        {
+            // Tercih yok: pencerenin şu an bulunduğu ekranı kullan (Windows'un seçtiği)
+            DisplayIndex = DetectCurrentDisplayIndex();
+        }
 
         // Kaydedilen çözünürlük bu monitörde yoksa en yükseğini al
         var resolutions = GetAvailableResolutions();
         int savedRes    = PlayerPrefs.GetInt(KEY_RESOLUTION, resolutions.Length - 1);
         ResolutionIndex = Mathf.Clamp(savedRes, 0, Mathf.Max(0, resolutions.Length - 1));
+    }
+
+    int DetectCurrentDisplayIndex()
+    {
+        int w = Screen.currentResolution.width;
+        int h = Screen.currentResolution.height;
+        for (int i = 0; i < displayLayout.Count; i++)
+        {
+            if (displayLayout[i].width == w && displayLayout[i].height == h)
+                return i;
+        }
+        return 0;
     }
 }
