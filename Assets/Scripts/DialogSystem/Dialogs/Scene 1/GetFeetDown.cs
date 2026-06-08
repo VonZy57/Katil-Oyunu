@@ -1,4 +1,5 @@
 using Unity.VisualScripting;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -112,6 +113,8 @@ public class GetFeetDown : Interactable
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
         
         isDialogCompleted = true;
+        cenkAnimator?.SetBool("isTable", true);
+        transform.DOLocalMoveX(transform.localPosition.x + 0.4f, 0.3f).SetEase(Ease.OutQuad);
     }
 
     void BuildDialogTree()
