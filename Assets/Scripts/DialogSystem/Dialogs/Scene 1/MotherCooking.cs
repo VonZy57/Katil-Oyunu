@@ -233,28 +233,28 @@ public class MotherCooking : MonoBehaviour
         {
             new SongSubtitle
             {
-                startTime = 33f,
+                startTime = 34f,
                 duration = 2f,
                 speakerName = "Man",
                 lineText = new LocalizedText { english = "Stop, stop! Don't do it!", turkish = "Dur, dur yapma!" }
             },
             new SongSubtitle
             {
-                startTime = 36f,
+                startTime = 37f,
                 duration = 4f,
                 speakerName = "Woman",
                 lineText = new LocalizedText { english = "Stop, don't do it, stop! We were going to help you!!", turkish = "Dur, yapma dur! Biz sana yardım edecektik!!" }
             },
             new SongSubtitle
             {
-                startTime = 44f,
+                startTime = 45f,
                 duration = 3.5f,
                 speakerName = "Engin",
                 lineText = new LocalizedText { english = "I am sorry for everything.", turkish = "Her şey için özür dilerim." }
             },
             new SongSubtitle
             {
-                startTime = 48f,
+                startTime = 49f,
                 duration = 6f,
                 speakerName = "Mother",
                 lineText = new LocalizedText { english = "You are a good person Engin. My good boy. You are a good person. Open your eyes. Wake up!", turkish = "Sen iyi birisin Engin. Uslu oğluşum benim. Sen iyi birisin. Aç gözlerini. Uyan!" }
