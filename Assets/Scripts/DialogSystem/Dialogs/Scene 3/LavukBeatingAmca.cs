@@ -20,6 +20,7 @@ public class LavukBeatingAmca : MonoBehaviour
     [SerializeField] private SplineContainer playerPathSpline;
     [SerializeField] private Transform playerLookAtTarget;
     [SerializeField] private Transform amcaLookAtTarget;
+    [SerializeField] private Transform kuruLookAtTarget; // Kuru'nun yerini veya bakılacak yüzünü belirten hedef
     [SerializeField] private float playerWalkSpeed = 3f;
 
     [System.Serializable]
@@ -51,6 +52,7 @@ public class LavukBeatingAmca : MonoBehaviour
     public bool isFinished { get; private set; } = false;
     private bool hasTriggered = false;
     private GameObject currentPlayer;
+    private Quaternion lavukOriginalRotation;
 
     void Start()
     {
@@ -123,6 +125,10 @@ public class LavukBeatingAmca : MonoBehaviour
     {
         isFinished = false;
 
+        // Lavuk'un orijinal rotasyonunu kaydet, böylece sonra eski haline dönebilsin.
+        if (lavukAnimator != null)
+            lavukOriginalRotation = lavukAnimator.transform.rotation;
+
         for (int i = 0; i < dialogLines.Count; i++)
         {
             // Lavuk son lafını söylediğinde ayrı bir animasyon sekansı başlat
@@ -131,6 +137,22 @@ public class LavukBeatingAmca : MonoBehaviour
                 if (lavukAnimator != null)
                     lavukAnimator.SetTrigger("PunchTrigger");
                 StartCoroutine(FinalAnimationSequencePlaceholder());
+            }
+
+            // 3. indeks: Lavuk'un Kuru'ya cevap vermeye başladığı an
+            if (i == 3)
+            {
+                if (lavukAnimator != null) lavukAnimator.SetTrigger("PointTrigger");
+                StartCoroutine(LavukLookAtKuruRoutine());
+            }
+            // 4. indeks: Kuru'nun Lavuk'a "Kaşınma bak!" dediği an (Eski rotasyona dön)
+            else if (i == 4)
+            {
+                if (lavukAnimator != null)
+                {
+                    lavukAnimator.transform.DOKill();
+                    lavukAnimator.transform.DORotateQuaternion(lavukOriginalRotation, 0.5f);
+                }
             }
 
             SubtitleLine line = dialogLines[i];
@@ -150,10 +172,26 @@ public class LavukBeatingAmca : MonoBehaviour
 
             subtitleText.text = speaker + ": " + line.lineText.GetText(isTurkish);
             yield return new WaitForSeconds(line.voiceClip != null ? line.voiceClip.length : line.displayDuration);
+
+            // Konuşması bittiğinde (3. indeksin sonu) EnoughTrigger tetiklensin
+            if (i == 3)
+            {
+                if (lavukAnimator != null) lavukAnimator.SetTrigger("EnoughTrigger");
+            }
         }
         
         subtitleText.text = "";
         isFinished = true;
+    }
+
+    private IEnumerator LavukLookAtKuruRoutine()
+    {
+        yield return new WaitForSeconds(2f);
+        if (lavukAnimator != null && kuruLookAtTarget != null)
+        {
+            lavukAnimator.transform.DOKill();
+            lavukAnimator.transform.DOLookAt(kuruLookAtTarget.position, 0.5f, AxisConstraint.Y).SetEase(Ease.InOutSine);
+        }
     }
 
     private IEnumerator FinalAnimationSequencePlaceholder()

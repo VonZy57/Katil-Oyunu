@@ -20,6 +20,13 @@ public class FoodInteractable : Interactable
     [Tooltip("Etkileşime geçilecek tüketilebilirin türüne göre gösterilecek prompt mesajı. Örn: 'Eat' veya 'Drink'")]
     public string interactionPromt; 
 
+    [Header("Ses Ayarları")]
+    [Tooltip("Yiyecek sıvı/çorba türündeyse işaretleyin.")]
+    public bool isSoup = false;
+    public AudioClip eatSolidSound; // Katı yiyecek (çiğneme vb.) sesi
+    public AudioClip eatSoupSound;  // Sıvı/Çorba (höpürdetme vb.) sesi
+    private AudioSource audioSource;
+
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
     private int currentBiteIndex = 0; // Kaçıncı ısırıkta olduğumuzu tutar
@@ -29,6 +36,13 @@ public class FoodInteractable : Interactable
     {
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+        audioSource.playOnAwake = false;
         
 
         if (foodStages.Length > 0 && foodStages[0].foodMesh != null)
@@ -55,6 +69,17 @@ public class FoodInteractable : Interactable
     {
         canEat = false;
         currentBiteIndex++;
+
+        // Yeme/İçme sesini çal
+        if (audioSource != null)
+        {
+            AudioClip clipToPlay = isSoup ? eatSoupSound : eatSolidSound;
+            if (clipToPlay != null)
+            {
+                audioSource.PlayOneShot(clipToPlay);
+            }
+        }
+
         DoEventsWhileEating();
 
         // Meshi bir sonraki ısırık meshiyle değiştir

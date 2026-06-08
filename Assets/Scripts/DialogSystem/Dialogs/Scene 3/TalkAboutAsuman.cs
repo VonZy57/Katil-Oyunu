@@ -16,6 +16,11 @@ public class TalkAboutAsuman : FoodInteractable
     [SerializeField] private Transform kamilEfendiTransform;
     [SerializeField] private AmcaMovement amcaMovement;
 
+
+    [Header("Yiyecek ve İçecek Referansları")]
+    [SerializeField] private GameObject ayranTable; // Masadaki ayran objesi
+    [SerializeField] private GameObject ayranInHand; // Amcanın elinde belirecek ayran objesi
+    
     private DialogNode oldManAfraid;
     private FirstPersonController playerFPS;
 
@@ -143,7 +148,13 @@ public class TalkAboutAsuman : FoodInteractable
         // PLACEHOLDER: Amcanın yemek yeme animasyonu burada çalışacak
         Debug.Log("Amca yemek yeme animasyonu başladı...");
         amcaMovement.gameObject.GetComponent<Animator>().SetTrigger("DrinkTrigger"); // Amca'nın ayran içme animasyonunu tetikle
-        yield return new WaitForSeconds(8.5f); // TODO: Animasyon kodları buraya yazılacak
+        yield return new WaitForSeconds(1.5f);
+        ayranTable.SetActive(false); // Amca ayran içtikten sonra masadaki ayranı kaldır
+        ayranInHand.SetActive(true); // Amcanın elinde ayran belirsin
+        yield return new WaitForSeconds(3.5f);
+        ayranInHand.SetActive(false); // Amcanın elindeki ayranı kaldır
+        ayranTable.SetActive(true); // Masadaki ayranı tekrar koy
+        yield return new WaitForSeconds(3.5f);
         Debug.Log("Amca yemek yeme animasyonu bitti.");
 
         if (oldManAfraid != null)

@@ -33,6 +33,8 @@ public class BakeryDialog : SittingInteraction
     [SerializeField] private GameObject plateEngin;
     [SerializeField] private GameObject plateLeft; // Kamil Efendi'nin taşıdığı sol tabak
     [SerializeField] private GameObject plateRight; // Kamil Efendi'nin taşıdığı sağ tabak
+    [SerializeField] private GameObject ayranTable; // Masadaki ayran objesi
+    [SerializeField] private GameObject ayranInHand; // Amcanın elinde belirecek ayran objesi
 
     public bool IsUncleAnimationFinished { get; private set; } = false;
     private bool canStandUp = false;
@@ -178,11 +180,13 @@ public class BakeryDialog : SittingInteraction
             plateLeft.SetActive(true);
             plateRight.SetActive(true);
             Vector3 targetPosition = new Vector3(kamilTablePosition.position.x, kamilOriginalPosition.y, kamilTablePosition.position.z);
-            yield return kamilEfendiTransform.DOMove(targetPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
+            yield return kamilEfendiTransform.DOMove(targetPosition, 4f).SetEase(Ease.InOutSine).WaitForCompletion();
 
             // Tabakları bırakma bekleme süresi
             yield return new WaitForSeconds(0.5f);
             kamilEfendiLookAt.gameObject.GetComponentInParent<Animator>().SetTrigger("IdleTrigger"); // Kamil Efendi'nin poğaçaları bırakma animasyonunu tetikle
+            plateLeft.SetActive(false);
+            plateRight.SetActive(false);
             plateAmca.SetActive(true);
             plateEngin.SetActive(true);
             Debug.Log("Kamil Efendi poğaçaları masaya bıraktı.");
@@ -192,7 +196,7 @@ public class BakeryDialog : SittingInteraction
             kamilEfendiTransform.DOLookAt(kamilOriginalPosition, 0.5f, AxisConstraint.Y);
             RotateCameraToSpeaker(amcaLookAt);
             kamilEfendiLookAt.gameObject.GetComponentInParent<Animator>().SetTrigger("WalkingTrigger"); // Kamil Efendi'nin geri yürüyüş animasyonunu tetikle
-            yield return kamilEfendiTransform.DOMove(kamilOriginalPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
+            yield return kamilEfendiTransform.DOMove(kamilOriginalPosition, 4f).SetEase(Ease.InOutSine).WaitForCompletion();
 
             // Orijinal rotasyona dön
             kamilEfendiTransform.DORotateQuaternion(kamilOriginalRotation, 0.5f);
@@ -226,7 +230,13 @@ public class BakeryDialog : SittingInteraction
 
         Debug.Log("Placeholder Animasyon: BakeryDialog bittikten sonra çalışacak animasyon (Örn: Amca poğaçadan bir ısırık alır)");
         amcaTransform.gameObject.GetComponentInParent<Animator>().SetTrigger("DrinkTrigger"); // Amca'nın ayran içme animasyonunu tetikle
-        yield return new WaitForSeconds(8.5f);
+        yield return new WaitForSeconds(1.5f);
+        ayranTable.SetActive(false); // Amca ayran içtikten sonra masadaki ayranı kaldır
+        ayranInHand.SetActive(true); // Amcanın elinde ayran belirsin
+        yield return new WaitForSeconds(3.5f);
+        ayranInHand.SetActive(false); // Amcanın elindeki ayranı kaldır
+        ayranTable.SetActive(true); // Masadaki ayranı tekrar koy
+        yield return new WaitForSeconds(3.5f);
         Debug.Log("BakeryDialog sonrası animasyon bitti.");
         IsUncleAnimationFinished = true; // Amcanın animasyonu bitti, diğer script artık diyaloğu başlatabilir.
     }

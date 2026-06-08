@@ -73,6 +73,11 @@ public class MotherCooking : MonoBehaviour
     {
         if (settingsMenuController != null) settingsMenuController.isLocked = true;
 
+        // FirstPersonController'ın Start() metodunun çalışmasına izin vermek için 1 frame bekle.
+        // Eğer hemen fps.enabled = false yaparsak, Start metodu ertelenir ve diyalog
+        // başladığında (fps.enabled = true yapıldığında) çalışarak ekranı aniden siyah yapar!
+        yield return null;
+
         // Şarkı başlarken (karanlıktayken) oyuncu hareket edemesin diye kontrolleri hemen kapatıyoruz
         FirstPersonController fps = playerBody.GetComponent<FirstPersonController>();
         if (fps != null)
@@ -86,6 +91,7 @@ public class MotherCooking : MonoBehaviour
                 Color c = fps.fadeImage.color;
                 c.a = 1f;
                 fps.fadeImage.color = c;
+                fps.fadeImage.gameObject.SetActive(true); // Siyah ekranı garanti altına al
             }
         }
 
@@ -191,8 +197,8 @@ public class MotherCooking : MonoBehaviour
 
     private IEnumerator WaitForDialogEnd()
     {
-        // Panelin açılması için 1 frame bekle (erken tetiklenmeyi önlemek için)
-        yield return null;
+        // Diyalog panelinin önce açılmasını garanti olarak bekle (erken tetiklenmeyi önlemek için)
+        yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
         
         // Diyalog paneli kapanana kadar (EndDialog çağrılana kadar) döngüyü beklet
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
