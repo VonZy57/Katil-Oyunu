@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Splines;
 
@@ -32,7 +33,11 @@ public class CarMovement : MonoBehaviour
     public void StartCarMovement()
     {
         if (carPathSpline == null) return;
+        StartCoroutine(MoveCarRoutine());
+    }
 
+    private IEnumerator MoveCarRoutine()
+    {
         splineAnimate.Container = carPathSpline;
         splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
         splineAnimate.MaxSpeed = carSpeed;
@@ -41,6 +46,12 @@ public class CarMovement : MonoBehaviour
 
         splineAnimate.enabled = true;
         splineAnimate.Restart(true);
+
+        // Araba hedefine ulaşana kadar bekle
+        yield return new WaitUntil(() => !splineAnimate.IsPlaying);
+        
+        // Hedefe ulaştığında arabayı tamamen deaktif et
+        gameObject.SetActive(false);
     }
 
     private void RotateWheels()
