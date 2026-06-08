@@ -14,6 +14,9 @@ public class LittleGirl : Interactable
     [System.NonSerialized] private DialogNode afterDialogNode;
     public GameObject objectToActivate;
 
+    [Header("Kavga Sesi")]
+    [SerializeField] private AudioSource kavgaAudioSource;
+
     [Header("Ses Referansları")]
     [SerializeField] private List<SpeakerAudio> speakerAudios;
     [Header("Little Girl Sesleri")]
@@ -366,7 +369,8 @@ public class LittleGirl : Interactable
         DialogOption commonToAnswer = DialogBuilder.CreateOption("...", "...", commonGirlAnswer, true);
         DialogBuilder.AddOption(commonEnginQuestion, commonToAnswer);
 
-        DialogOption commonToKuru = DialogBuilder.CreateOption("...", "...", commonKuru, true);
+        DialogOption commonToKuru = DialogBuilder.CreateOptionWithEvent("...", "...", commonKuru,
+            () => kavgaAudioSource?.Play(), true);
         DialogBuilder.AddOption(commonGirlAnswer, commonToKuru);
 
         DialogOption commonToEnd = DialogBuilder.CreateOption("...", "...", commonGirlEnd, true);
