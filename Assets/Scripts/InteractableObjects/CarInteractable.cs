@@ -76,7 +76,7 @@ public class CarInteractable : Interactable
                         thanksText.DOFade(1f, 3f).SetDelay(5f).OnComplete(() =>
                         {
                             // Fade in bittikten 10 saniye sonra oyunu kapat
-                            DOVirtual.DelayedCall(10f, () =>
+                            DOVirtual.DelayedCall(5f, () =>
                             {
 #if UNITY_EDITOR
                                 UnityEditor.EditorApplication.isPlaying = false;
