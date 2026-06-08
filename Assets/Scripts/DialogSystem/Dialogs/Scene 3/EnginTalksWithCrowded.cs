@@ -112,12 +112,12 @@ public class EnginTalksWithCrowded : MonoBehaviour
     {
         Debug.Log("NPC'lerin diyalog sonrası hareket/animasyon sekansı başladı...");
 
-        Coroutine c1 = StartCoroutine(MoveNPCAlongSpline(crowd1Animator, crowd1Spline, false));
-        Coroutine c2 = StartCoroutine(MoveNPCAlongSpline(crowd2Animator, crowd2Spline, true));
-        Coroutine c3 = StartCoroutine(MoveNPCAlongSpline(crowd3Animator, crowd3Spline, true));
-        Coroutine c4 = StartCoroutine(MoveNPCAlongSpline(crowdWithBagAnimator, crowdWithBagSpline, true));
-        Coroutine c5 = StartCoroutine(MoveNPCAlongSpline(crowdWomanWithGlassesAnimator, crowdWomanWithGlassesSpline, true));
-        Coroutine c6 = StartCoroutine(MoveNPCAlongSpline(crowdTheOtherManAnimator, crowdTheOtherManSpline, true));
+        Coroutine c1 = StartCoroutine(MoveNPCAlongSpline(crowd1Animator, crowd1Spline, false, 2f));
+        Coroutine c2 = StartCoroutine(MoveNPCAlongSpline(crowd2Animator, crowd2Spline, true, 0.5f));
+        Coroutine c3 = StartCoroutine(MoveNPCAlongSpline(crowd3Animator, crowd3Spline, true, 1f));
+        Coroutine c4 = StartCoroutine(MoveNPCAlongSpline(crowdWithBagAnimator, crowdWithBagSpline, true, 1.5f));
+        Coroutine c5 = StartCoroutine(MoveNPCAlongSpline(crowdWomanWithGlassesAnimator, crowdWomanWithGlassesSpline, true, 2f));
+        Coroutine c6 = StartCoroutine(MoveNPCAlongSpline(crowdTheOtherManAnimator, crowdTheOtherManSpline, true, 2.5f));
         
         yield return c1;
         yield return c2;
@@ -130,9 +130,14 @@ public class EnginTalksWithCrowded : MonoBehaviour
         if (crowd1Animator != null) crowd1Animator.gameObject.SetActive(false);
     }
 
-    private IEnumerator MoveNPCAlongSpline(Animator animator, SplineContainer splineRoute, bool disableAtEnd = true)
+    private IEnumerator MoveNPCAlongSpline(Animator animator, SplineContainer splineRoute, bool disableAtEnd = true, float delay = 0f)
     {
         if (animator == null || splineRoute == null) yield break;
+
+        if (delay > 0f)
+        {
+            yield return new WaitForSeconds(delay);
+        }
 
         animator.SetTrigger("WalkTrigger"); // Yürüme animasyonunu başlat
 
@@ -149,7 +154,17 @@ public class EnginTalksWithCrowded : MonoBehaviour
 
         splineAnimate.Restart(true); // Yürüyüşü başlat
         
-        yield return new WaitUntil(() => !splineAnimate.IsPlaying); // Rota bitene kadar bekle
+        // Rota bitene kadar bekle ve yukarı/aşağı (X) veya sağa/sola (Z) eğilmelerini engelle
+        while (splineAnimate != null && splineAnimate.IsPlaying)
+        {
+            Vector3 currentEuler = npcTransform.eulerAngles;
+            currentEuler.x = 0f;
+            currentEuler.z = 0f;
+            npcTransform.eulerAngles = currentEuler;
+            
+            yield return null;
+        }
+
         splineAnimate.enabled = false;
 
         if (disableAtEnd)

@@ -200,8 +200,8 @@ public class KuruGreeting : Interactable
         );
 
         DialogNode bursaContinue2 = DialogBuilder.CreateNode(
-            "Very honorable. A good choice. You owe 15 YTL.",
-            "Tam namuslu. İyi bir seçim. Borcunuz 15 YTL'dir.",
+            "A good choice. You owe 15 YTL.",
+            "İyi bir seçim. Borcunuz 15 YTL'dir.",
             "Kuru"
         );
 
@@ -266,7 +266,7 @@ public class KuruGreeting : Interactable
 
         DialogNode whereContinue2 = DialogBuilder.CreateNode(
             "Very honorable. A good choice. You owe 15 YTL.",
-            "Very honorable. A good choice. You owe 15 YTL.",
+            "Tam namuslu. İyi bir seçim. Borcunuz 15 YTL.",
             "Kuru"
         );
 
