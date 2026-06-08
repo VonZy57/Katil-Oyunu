@@ -83,9 +83,9 @@ public class SettingsUI : MonoBehaviour
         // Sensitivity
         if (sensitivitySlider != null)
         {
-            sensitivitySlider.minValue = 1f;
+            sensitivitySlider.minValue = 0.1f;
             sensitivitySlider.maxValue = 10f;
-            sensitivitySlider.wholeNumbers = true;
+            sensitivitySlider.wholeNumbers = false;
             sensitivitySlider.SetValueWithoutNotify(sm.Sensitivity);
             UpdateSensitivityText(sm.Sensitivity);
         }
@@ -196,7 +196,7 @@ public class SettingsUI : MonoBehaviour
     void UpdateSensitivityText(float value)
     {
         if (sensitivityValueText != null)
-            sensitivityValueText.text = Mathf.RoundToInt(value).ToString();
+            sensitivityValueText.text = value.ToString("F1");
     }
 
     void UpdateVolumeText(float value)

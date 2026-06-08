@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SettingsManager : MonoBehaviour
 {
@@ -29,6 +30,37 @@ public class SettingsManager : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "MainMenuScene")
+        {
+            // Main menu her zaman default değerlerle başlar
+            Sensitivity     = 1f;
+            Volume          = 1f;
+            IsTurkish       = false;
+            Time.timeScale  = 1f;
+        }
+        else
+        {
+            // Diğer sahnelerde kaydedilen ayarları geri yükle
+            float raw = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 1f);
+            Sensitivity = raw > 10f
+                ? Mathf.Clamp(raw / 30f, 0.1f, 10f)
+                : Mathf.Clamp(raw, 0.1f, 10f);
+            Volume    = PlayerPrefs.GetFloat(KEY_VOLUME, 1f);
+            IsTurkish = PlayerPrefs.GetInt(KEY_LANGUAGE, 0) == 1;
+        }
+        ApplySensitivity();
+        ApplyVolume();
+        ApplyLanguage();
     }
 
     void Start()
@@ -177,10 +209,10 @@ public class SettingsManager : MonoBehaviour
     void LoadAll()
     {
         // Sens migration: eski format 10-300, yeni format 1-10
-        float rawSens = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 3f);
+        float rawSens = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 1f);
         Sensitivity   = rawSens > 10f
-            ? Mathf.Clamp(rawSens / 30f, 1f, 10f)
-            : Mathf.Clamp(rawSens, 1f, 10f);
+            ? Mathf.Clamp(rawSens / 30f, 0.1f, 10f)
+            : Mathf.Clamp(rawSens, 0.1f, 10f);
 
         Volume    = PlayerPrefs.GetFloat(KEY_VOLUME, 1f);
         IsTurkish = PlayerPrefs.GetInt(KEY_LANGUAGE, 0) == 1;
