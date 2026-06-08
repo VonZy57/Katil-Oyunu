@@ -142,7 +142,8 @@ public class TalkAboutAsuman : FoodInteractable
 
         // PLACEHOLDER: Amcanın yemek yeme animasyonu burada çalışacak
         Debug.Log("Amca yemek yeme animasyonu başladı...");
-        yield return new WaitForSeconds(2f); // TODO: Animasyon kodları buraya yazılacak
+        amcaMovement.gameObject.GetComponent<Animator>().SetTrigger("DrinkTrigger"); // Amca'nın ayran içme animasyonunu tetikle
+        yield return new WaitForSeconds(8.5f); // TODO: Animasyon kodları buraya yazılacak
         Debug.Log("Amca yemek yeme animasyonu bitti.");
 
         if (oldManAfraid != null)

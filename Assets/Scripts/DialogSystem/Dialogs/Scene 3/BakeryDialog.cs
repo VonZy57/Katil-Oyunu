@@ -225,7 +225,8 @@ public class BakeryDialog : SittingInteraction
         }
 
         Debug.Log("Placeholder Animasyon: BakeryDialog bittikten sonra çalışacak animasyon (Örn: Amca poğaçadan bir ısırık alır)");
-        yield return new WaitForSeconds(2f);
+        amcaTransform.gameObject.GetComponentInParent<Animator>().SetTrigger("DrinkTrigger"); // Amca'nın ayran içme animasyonunu tetikle
+        yield return new WaitForSeconds(8.5f);
         Debug.Log("BakeryDialog sonrası animasyon bitti.");
         IsUncleAnimationFinished = true; // Amcanın animasyonu bitti, diğer script artık diyaloğu başlatabilir.
     }
