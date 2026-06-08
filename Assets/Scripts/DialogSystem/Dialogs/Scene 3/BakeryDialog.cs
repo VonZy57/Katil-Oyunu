@@ -31,6 +31,8 @@ public class BakeryDialog : SittingInteraction
     [Header("Yiyecek Referansları")]
     [SerializeField] private GameObject plateAmca;
     [SerializeField] private GameObject plateEngin;
+    [SerializeField] private GameObject plateLeft; // Kamil Efendi'nin taşıdığı sol tabak
+    [SerializeField] private GameObject plateRight; // Kamil Efendi'nin taşıdığı sağ tabak
 
     public bool IsUncleAnimationFinished { get; private set; } = false;
     private bool canStandUp = false;
@@ -173,6 +175,8 @@ public class BakeryDialog : SittingInteraction
             kamilEfendiTransform.DOLookAt(kamilTablePosition.position, 0.5f, AxisConstraint.Y);
             kamilEfendiLookAt.gameObject.GetComponentInParent<Animator>().SetTrigger("CarryTrigger"); // Kamil Efendi'nin yürüyüş animasyonunu tetikle
             RotateCameraToSpeaker(kamilEfendiLookAt);
+            plateLeft.SetActive(true);
+            plateRight.SetActive(true);
             Vector3 targetPosition = new Vector3(kamilTablePosition.position.x, kamilOriginalPosition.y, kamilTablePosition.position.z);
             yield return kamilEfendiTransform.DOMove(targetPosition, 3f).SetEase(Ease.InOutSine).WaitForCompletion();
 
@@ -196,6 +200,8 @@ public class BakeryDialog : SittingInteraction
         }
         else
         {
+            plateLeft.SetActive(false);
+            plateRight.SetActive(false);
             plateAmca.SetActive(true);
             plateEngin.SetActive(true);
             Debug.LogWarning("Kamil Efendi referansları eksik, poğaçalar direkt masada belirdi.");
