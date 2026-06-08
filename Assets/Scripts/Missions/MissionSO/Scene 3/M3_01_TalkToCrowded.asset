@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: M3_01_TalkToCrowded
   m_EditorClassIdentifier: 
   missionID: TalkToCrowd
-  description: Talk to the crowd
+  description: Talk with the crowd
   nextMission: {fileID: 11400000, guid: adb871803aab3fd45a1094b99c139e4d, type: 2}
   loadSceneName: 
   isFinalMission: 0

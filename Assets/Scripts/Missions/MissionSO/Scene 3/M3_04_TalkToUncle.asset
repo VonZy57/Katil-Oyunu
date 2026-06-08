@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: M3_04_TalkToUncle
   m_EditorClassIdentifier: 
   missionID: TalkToUncle
-  description: Talk to Uncle
+  description: Talk with Uncle
   nextMission: {fileID: 11400000, guid: f1916c410421d1e49833c67813863d77, type: 2}
   loadSceneName: 
   isFinalMission: 0

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: M2_02_GoToTheRoom
   m_EditorClassIdentifier: Assembly-CSharp::MissionSO
   missionID: GoToTheRoom
-  description: Get the keys from reception and go up to room
+  description: Get the keys from reception and go up to room 204
   nextMission: {fileID: 11400000, guid: a5f7a5edd3b929447beafbd1c0a27e13, type: 2}
   loadSceneName: 
   isFinalMission: 0

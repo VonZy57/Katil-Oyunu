@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: M1_03_GoToDinner
   m_EditorClassIdentifier: 
   missionID: GoToDinningTable
-  description: Have dinner
+  description: Go have dinner
   nextMission: {fileID: 11400000, guid: 0301992e9e07c104994a1bf4ace69592, type: 2}
   loadSceneName: 
   isFinalMission: 0

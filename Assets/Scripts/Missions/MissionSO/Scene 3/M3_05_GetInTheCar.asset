@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: M3_05_GetInTheCar
   m_EditorClassIdentifier: 
   missionID: GetInTheCar
-  description: Get in Uncle's car
+  description: Get in the Uncle's car
   nextMission: {fileID: 0}
   loadSceneName: 
   isFinalMission: 0
