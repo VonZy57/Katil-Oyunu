@@ -44,6 +44,9 @@ public class PhoneCall : Interactable
 
     [Header("TV Video Settings")]
     public VideoPlayer tvVideoPlayer; // TV'deki VideoPlayer bileşeni
+    public Material nightMaterial;
+    public Material dayMaterial;
+
 
     [Header("Diyalog Sesleri")]
     [SerializeField] private List<SpeakerAudio> speakerAudios;
@@ -336,10 +339,11 @@ public class PhoneCall : Interactable
         
         yield return new WaitForSeconds(4f);
 
+        tvVideoPlayer.gameObject.GetComponent<MeshRenderer>().material = dayMaterial;
         // Siyah ekranı kapat
         if (clockImage != null) clockImage.gameObject.SetActive(false);
         if (clockText != null) clockText.gameObject.SetActive(false);
-
+        tvVideoPlayer.enabled = true;
         tvVideoPlayer.Play();
     }
 

@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Static
+  m_Name: StaticMaterial
   m_Shader: {fileID: -6465566751694194690, guid: 0f84590c7e5b89b4e8bf3cbd6d00621b, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
