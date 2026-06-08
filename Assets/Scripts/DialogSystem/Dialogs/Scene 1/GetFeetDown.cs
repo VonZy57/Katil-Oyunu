@@ -34,6 +34,7 @@ public class GetFeetDown : Interactable
     public Transform cenkTransform; // Cenk'in küvetten kalktıktan sonra gideceği pozisyon
     public Transform cenksChairTransform; // Cenk'in sandalyeye oturacağı pozisyon
     public GameObject chairForCenk; // Cenk'in oturacağı sandalyenin modeli
+    public GameObject cenksFood;
 
     private Animator cenkAnimator;
 
@@ -56,6 +57,7 @@ public class GetFeetDown : Interactable
         {
             cenkAnimator.SetBool("isTable", true);
         }
+        cenksFood.SetActive(true);
 
         promptMessage = ""; // Etkileşim mesajını temizle
         this.gameObject.layer = LayerMask.NameToLayer("Default"); // Cenk'in layer'ını değiştirme (örneğin "Default" yapabilirsiniz)

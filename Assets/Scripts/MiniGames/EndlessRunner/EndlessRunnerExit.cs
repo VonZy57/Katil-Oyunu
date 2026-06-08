@@ -13,7 +13,7 @@ public class EndlessRunnerExit : MonoBehaviour
     public Collider exitTrigger;
 
     [Header("Sahne")]
-    public int sceneToLoad = 2;
+    public int sceneToLoad = 3;
 
     [Header("Geçiş Ayarları")]
     public Image fadeImage; // Ekranı kaplayan siyah UI resmi
