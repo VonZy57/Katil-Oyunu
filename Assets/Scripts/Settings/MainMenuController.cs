@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using DG.Tweening;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class MainMenuController : MonoBehaviour
     public GameObject mainPanel;
     public GameObject settingsPanel;
     public GameObject creditsPanel;
+    public Image fadeImage; // Siyah ekran için UI Image
 
     [Header("Ana Menü Butonları")]
     public Button playButton;
@@ -41,6 +43,23 @@ public class MainMenuController : MonoBehaviour
 
     void Start()
     {
+        // Sahne başladığında ekranın siyahtan normale dönmesi (Fade In/Out)
+        if (fadeImage != null)
+        {
+            // Başlangıçta tamamen siyah yap ve aktif et
+            Color startColor = fadeImage.color;
+            startColor.a = 1f;
+            fadeImage.color = startColor;
+            fadeImage.gameObject.SetActive(true);
+
+            // DOTween kullanarak belirtilen süre kadar bekledikten sonra alpha değerini 0'a indir (Saydamlaştır)
+            fadeImage.DOFade(0f, 3f).SetDelay(1f).OnComplete(() =>
+            {
+                fadeImage.gameObject.SetActive(false); // İşlem bitince objeyi kapat
+                fadeImage.color = startColor; // Bir sonraki kullanım için alpha'yı tekrar 1 yap
+            });
+            
+        }
         ShowPanel(mainPanel);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

@@ -81,6 +81,8 @@ public class LavukMovement : MonoBehaviour
         // Arabaya binme animasyonunu tetikle
         lavukAnimator.SetTrigger(enterCarTriggerParam);
 
+        yield return new WaitForSeconds(1f); // Animasyonun başlaması için kısa bir bekleme
+
         yield return carDoorTransform.DOLocalRotateQuaternion(Quaternion.Euler(0f, 35f, 0f), 1.5f).WaitForCompletion();
 
         yield return new WaitForSeconds(1.5f);

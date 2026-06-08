@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System.Collections;
+using UnityEngine.Splines;
 
 public class EnginTalksWithCrowded : MonoBehaviour
 {
@@ -15,7 +16,23 @@ public class EnginTalksWithCrowded : MonoBehaviour
     [SerializeField] private Transform crowd2Transform; // Another from the Crowd
     [SerializeField] private Transform crowd3Transform; // A Completely Different Person (Kadın)
 
+    [Header("NPC Referansları")]
+    [SerializeField] private Animator crowd1Animator;
+    [SerializeField] private Animator crowd2Animator;
+    [SerializeField] private Animator crowd3Animator;
+    [SerializeField] private Animator crowdWithBagAnimator;
+    [SerializeField] private Animator crowdWomanWithGlassesAnimator;
+    [SerializeField] private Animator crowdTheOtherManAnimator;
     private FirstPersonController playerFPS;
+
+    [Header("NPC Spline Rotaları")]
+    [SerializeField] private SplineContainer crowd1Spline;
+    [SerializeField] private SplineContainer crowd2Spline;
+    [SerializeField] private SplineContainer crowd3Spline;
+    [SerializeField] private SplineContainer crowdWithBagSpline;
+    [SerializeField] private SplineContainer crowdWomanWithGlassesSpline;
+    [SerializeField] private SplineContainer crowdTheOtherManSpline;
+    [SerializeField] private float crowdWalkSpeed = 2f;
 
     [Header("Ses Referansları")]
     [SerializeField] private List<SpeakerAudio> speakerAudios;
@@ -75,6 +92,9 @@ public class EnginTalksWithCrowded : MonoBehaviour
         Debug.Log("Diyalog başladı.");
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
 
+        // Diyalog bittikten sonra NPC animasyonlarını ve hareketlerini başlat
+        StartCoroutine(EndCrowdDialogAnimations());
+
         if (playerFPS != null)
         {
             playerFPS.SyncCameraRotation(); // Eski açıya dönmesini engelle
@@ -86,6 +106,43 @@ public class EnginTalksWithCrowded : MonoBehaviour
             missionObj.OnInteracted();
             Debug.Log("Görev tamamlandı");
         }
+    }
+
+    private IEnumerator EndCrowdDialogAnimations()
+    {
+        Debug.Log("NPC'lerin diyalog sonrası hareket/animasyon sekansı başladı...");
+
+        StartCoroutine(MoveNPCAlongSpline(crowd1Animator, crowd1Spline));
+        StartCoroutine(MoveNPCAlongSpline(crowd2Animator, crowd2Spline));
+        StartCoroutine(MoveNPCAlongSpline(crowd3Animator, crowd3Spline));
+        StartCoroutine(MoveNPCAlongSpline(crowdWithBagAnimator, crowdWithBagSpline));
+        StartCoroutine(MoveNPCAlongSpline(crowdWomanWithGlassesAnimator, crowdWomanWithGlassesSpline));
+        StartCoroutine(MoveNPCAlongSpline(crowdTheOtherManAnimator, crowdTheOtherManSpline));
+        
+        yield return null;
+    }
+
+    private IEnumerator MoveNPCAlongSpline(Animator animator, SplineContainer splineRoute)
+    {
+        if (animator == null || splineRoute == null) yield break;
+
+        animator.SetTrigger("WalkTrigger"); // Yürüme animasyonunu başlat
+
+        Transform npcTransform = animator.transform;
+        SplineAnimate splineAnimate = npcTransform.GetComponent<SplineAnimate>();
+        if (splineAnimate == null) splineAnimate = npcTransform.gameObject.AddComponent<SplineAnimate>();
+
+        splineAnimate.enabled = true;
+        splineAnimate.Container = splineRoute;
+        splineAnimate.AnimationMethod = SplineAnimate.Method.Speed;
+        splineAnimate.MaxSpeed = crowdWalkSpeed;
+        splineAnimate.Loop = SplineAnimate.LoopMode.Once;
+        splineAnimate.Alignment = SplineAnimate.AlignmentMode.SplineElement; // Karakteri spline yönüne çevir
+
+        splineAnimate.Restart(true); // Yürüyüşü başlat
+        
+        yield return new WaitUntil(() => !splineAnimate.IsPlaying); // Rota bitene kadar bekle
+        splineAnimate.enabled = false;
     }
 
     private IEnumerator LookAtTargetSequence(Transform targetTransform, float duration = 0.7f)
