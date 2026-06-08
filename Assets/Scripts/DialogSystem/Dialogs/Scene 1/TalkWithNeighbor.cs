@@ -83,7 +83,7 @@ public class TalkWithNeighbor : MonoBehaviour
             new SubtitleLine
             {
                 speakerName = "Mother",
-                lineText = new LocalizedText { english = "Okay, let's go get it one more time. But if you touch the raw cake, I'll sh*t on your bed again.", turkish = "Tamam hadi bir bardak daha olsun. Ama elin pişmemiş keke giderse gene sıçarım yatağına." },
+                lineText = new LocalizedText { english = "Okay, let's go get it one more time. But if you touch the raw cake, I'll **** on your bed again.", turkish = "Tamam hadi bir bardak daha olsun. Ama elin pişmemiş keke giderse gene sıçarım yatağına." },
                 displayDuration = clip_mother2 != null ? clip_mother2.length : 5f,
                 voiceClip = clip_mother2
             }

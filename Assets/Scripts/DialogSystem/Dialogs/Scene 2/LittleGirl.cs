@@ -153,7 +153,7 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option11GirlResponse = DialogBuilder.CreateNode(
-            "My mom would say it's not possible. Everyone only lives inside their own head. No one loves or understands anyone because of this. And that's also why my b*stard of a father left us.",
+            "My mom would say it's not possible. Everyone only lives inside their own head. No one loves or understands anyone because of this. And that's also why my ******* of a father left us.",
             "Annem olamaz derdi. Herkes sadece kendi kafasının içinde yaşarmış. Kimse kimseyi bu yüzden sevmez ve anlamazmış. Yavşak babam da bu yüzden bizi terk etmiş.",
             "Little Girl"
         );
@@ -229,7 +229,7 @@ public class LittleGirl : Interactable
         );
 
         DialogNode option22GirlResponse = DialogBuilder.CreateNode(
-            "My father left us before I was born. My mom says her love and body were taken over by a b*stard and he left me behind. Only I remain from him.",
+            "My father left us before I was born. My mom says her love and body were taken over by a ******* and he left me behind. Only I remain from him.",
             "Benim babam bizi ben doğmadan önce bırakmış. Annem sevgisinin ve bedeninin bir yavşak tarafından yendiğini geriye de beni bıraktığını söylüyor. Ondan geriye yalnızca ben kalmışım.",
             "Little Girl"
         );

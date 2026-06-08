@@ -288,7 +288,7 @@ public class TalkAboutAsuman : FoodInteractable
             "Engin"
         );
         DialogNode oldManPimping = DialogBuilder.CreateNode(
-            "You know what hurts me the most? The bastard is pimping my daughter out. And he gambles away the money he gets. The scumbag owes money to every gambling den around here. Everyone knows him here. And nobody likes him. Oh, if I could just talk to Asuman...",
+            "You know what hurts me the most? The ******* is pimping my daughter out. And he gambles away the money he gets. The scumbag owes money to every gambling den around here. Everyone knows him here. And nobody likes him. Oh, if I could just talk to Asuman...",
             "En çok da bu canımı yakıyor biliyon mu? Pezevenk kızı satıyor. Aldığı parayla da kumar oynuyor. Yakın çevredeki tüm batakhanelere borcu var itin. Herkes tanır burada onu. Kimse de sevmez. Ah bir Asuman’la konuşabilsem...",
             "Amca"
         );

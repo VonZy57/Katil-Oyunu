@@ -291,7 +291,7 @@ public class HaveDinner : Interactable
     void BuildDialogTree()
     {
         putTheGamePadNode = DialogBuilder.CreateNode
-        ("Put that damn thing down and eat. Thankless bastard! Do you know how much mother worked hard to put food on the table?",
+        ("Put that damn thing down and eat. Thankless *******! Do you know how much mother worked hard to put food on the table?",
         "Anne masaya yemek koymak için ne kadar debelendi haberiniz var mı?",
         "Mother");
 

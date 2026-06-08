@@ -192,7 +192,7 @@ public class GetFeetDown : Interactable
 
         // === ORTAK SON: ANNE BÖLÜYOR ===
         DialogNode motherWarnsNode = DialogBuilder.CreateEndNode
-        ("MOTHERF*CKERS! DINNER IS ALMOST READY! If the bodies are still there when I come over there, I'm gonna torture you two until morning!",
+        ("*************! DINNER IS ALMOST READY! If the bodies are still there when I come over there, I'm gonna torture you two until morning!",
         "AĞZINA S*ÇTIKLARIM! YEMEK NEREDEYSE HAZIR! Oraya geldiğimde eğer o cesetler hala oradaysa, sabaha kadar döverim sizi!",
         "Mother");
 
