@@ -112,17 +112,25 @@ public class EnginTalksWithCrowded : MonoBehaviour
     {
         Debug.Log("NPC'lerin diyalog sonrası hareket/animasyon sekansı başladı...");
 
-        StartCoroutine(MoveNPCAlongSpline(crowd1Animator, crowd1Spline));
-        StartCoroutine(MoveNPCAlongSpline(crowd2Animator, crowd2Spline));
-        StartCoroutine(MoveNPCAlongSpline(crowd3Animator, crowd3Spline));
-        StartCoroutine(MoveNPCAlongSpline(crowdWithBagAnimator, crowdWithBagSpline));
-        StartCoroutine(MoveNPCAlongSpline(crowdWomanWithGlassesAnimator, crowdWomanWithGlassesSpline));
-        StartCoroutine(MoveNPCAlongSpline(crowdTheOtherManAnimator, crowdTheOtherManSpline));
+        Coroutine c1 = StartCoroutine(MoveNPCAlongSpline(crowd1Animator, crowd1Spline, false));
+        Coroutine c2 = StartCoroutine(MoveNPCAlongSpline(crowd2Animator, crowd2Spline, true));
+        Coroutine c3 = StartCoroutine(MoveNPCAlongSpline(crowd3Animator, crowd3Spline, true));
+        Coroutine c4 = StartCoroutine(MoveNPCAlongSpline(crowdWithBagAnimator, crowdWithBagSpline, true));
+        Coroutine c5 = StartCoroutine(MoveNPCAlongSpline(crowdWomanWithGlassesAnimator, crowdWomanWithGlassesSpline, true));
+        Coroutine c6 = StartCoroutine(MoveNPCAlongSpline(crowdTheOtherManAnimator, crowdTheOtherManSpline, true));
         
-        yield return null;
+        yield return c1;
+        yield return c2;
+        yield return c3;
+        yield return c4;
+        yield return c5;
+        yield return c6;
+
+        // Tüm NPC'ler hedeflerine ulaştıktan sonra, bu scripti de barındıran crowd1'i en son kapatıyoruz.
+        if (crowd1Animator != null) crowd1Animator.gameObject.SetActive(false);
     }
 
-    private IEnumerator MoveNPCAlongSpline(Animator animator, SplineContainer splineRoute)
+    private IEnumerator MoveNPCAlongSpline(Animator animator, SplineContainer splineRoute, bool disableAtEnd = true)
     {
         if (animator == null || splineRoute == null) yield break;
 
@@ -143,6 +151,11 @@ public class EnginTalksWithCrowded : MonoBehaviour
         
         yield return new WaitUntil(() => !splineAnimate.IsPlaying); // Rota bitene kadar bekle
         splineAnimate.enabled = false;
+
+        if (disableAtEnd)
+        {
+            npcTransform.gameObject.SetActive(false); // Hedefe ulaştığında NPC'yi kapat
+        }
     }
 
     private IEnumerator LookAtTargetSequence(Transform targetTransform, float duration = 0.7f)
