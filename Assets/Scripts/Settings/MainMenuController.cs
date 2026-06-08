@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using DG.Tweening;
+using TMPro;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MainMenuController : MonoBehaviour
     public GameObject settingsPanel;
     public GameObject creditsPanel;
     public Image fadeImage; // Siyah ekran için UI Image
+    public TextMeshProUGUI gameNameText; // Oyun adının yazdığı TextMeshProUGUI
 
     [Header("Ana Menü Butonları")]
     public Button playButton;
@@ -58,7 +60,7 @@ public class MainMenuController : MonoBehaviour
                 fadeImage.gameObject.SetActive(false); // İşlem bitince objeyi kapat
                 fadeImage.color = startColor; // Bir sonraki kullanım için alpha'yı tekrar 1 yap
             });
-            
+
         }
         ShowPanel(mainPanel);
         Cursor.lockState = CursorLockMode.None;
@@ -66,7 +68,7 @@ public class MainMenuController : MonoBehaviour
         Time.timeScale = 1f;
     }
 
-    void OnPlayButton()     => SceneManager.LoadScene(gameSceneName);
+    void OnPlayButton()     => StartGameLoadSequence();
     void OnSettingsButton() => ShowPanel(settingsPanel);
     void OnBackButton()     => ShowPanel(mainPanel);
 
@@ -97,5 +99,21 @@ public class MainMenuController : MonoBehaviour
         if (mainPanel != null)     mainPanel.SetActive(mainPanel == target);
         if (settingsPanel != null) settingsPanel.SetActive(settingsPanel == target);
         if (creditsPanel != null)  creditsPanel.SetActive(creditsPanel == target);
+    }
+
+    void StartGameLoadSequence()
+    {   
+        gameNameText.DOFade(0f, 1f);
+        settingsButton.gameObject.GetComponent<Image>().DOFade(0f, 1f);
+        creditsButton.gameObject.GetComponent<Image>().DOFade(0f, 1f);
+        quitButton.gameObject.GetComponent<Image>().DOFade(0f, 1f);
+        playButton.gameObject.GetComponent<Image>().DOFade(0f, 1f).OnComplete(() =>
+        {
+            Camera.main.DOFieldOfView(1f, 10f).SetEase(Ease.InOutSine).OnComplete(() =>
+            {
+                SceneManager.LoadScene(gameSceneName);
+                Cursor.lockState = CursorLockMode.Locked;
+            });
+        });
     }
 }
