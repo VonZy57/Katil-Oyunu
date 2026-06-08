@@ -175,7 +175,7 @@ public class KuruGreeting : Interactable
 
         // Bursa Seçeneği - Kuru'nun yanıtı
         bursaOption2Response = DialogBuilder.CreateNode(
-            "You can't even go out to the center at this hour. Buses to Bursa leaves from Esenler. Ferries from Eminönü. Trying to go to those places at this hour is not wise. I'd say wait for the morning.",
+            "You can't even go out to the center at this hour. Buses to Bursa leave from Esenler. Ferries from Eminönü. Trying to go to those places at this hour is not wise. I'd say wait for the morning.",
             "Bu saatte meydana bile çıkamazsın sen. Bursa'ya giden otobüsler Esenler'den kalkar. Vapurlar Eminönü'nden. Bu saatte o taraflara gitmeye çalışmak akıl kârı değil. Sabahı bekle derim.",
             "Kuru"
         );

@@ -285,7 +285,7 @@ public class BakeryDialog : SittingInteraction
             "Engin"
         );
         DialogNode oldManSoap = DialogBuilder.CreateEndNode(
-            "If you gathered all the soap in the Eminönü, you couldn't wash that mouth clean. Let's eat something, I'll tell you all thats happened, don't worry.",
+            "If you gathered all the soap in the Eminönü, you couldn't wash that mouth clean. Let's eat something, I'll tell you all that's happened, don't worry.",
             "Eminönü’ndeki tüm sabunları toplasan onun ağzını temizleyemezsin. Bir şeyler yiyelim anlatacağım sana olanı biteni merak etme.",
             "Amca"
         );

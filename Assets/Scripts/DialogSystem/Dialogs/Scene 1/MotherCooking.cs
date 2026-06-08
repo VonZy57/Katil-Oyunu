@@ -210,7 +210,7 @@ public class MotherCooking : MonoBehaviour
         "Mother");
 
         DialogNode carryTheBodies2 = DialogBuilder.CreateEndNode
-        ("Stand up, do something useful you lazy piece of ****. Carry the bodies to the bathroom. We can't eat like this. My dear son, just like his father. Come on, help yor poor mother.",
+        ("Stand up, do something useful you lazy piece of ****. Carry the bodies to the bathroom. We can't eat like this. My dear son, just like his father. Come on, help your poor mother.",
         "Kalk da bir boka yara. Cesetleri sırtlan da banyoya koy. Midemiz kaldırmaz ellam. Babası kılıklı canım oğluşum benim. Hadi garip anana bir yardım et.",
         "Mother");
 

@@ -226,7 +226,7 @@ public class TalkWithCenkOnTable : MonoBehaviour
 
         // 1 - Devam
         DialogNode cenksRemindsOldsNode = DialogBuilder.CreateNode
-        ("Okay, let's say these people were bad. But why did she made you kill a kid on the street, two months ago?",
+        ("Okay, let's say these people were bad. But why did she make you kill a kid on the street, two months ago?",
         "Hadi bu insanlar kötü. 2 ay önce, sokaktaki çocuğu niye öldürttü sana?",
         "Cenk"); 
 
