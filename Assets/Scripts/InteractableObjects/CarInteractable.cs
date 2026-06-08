@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 public class CarInteractable : Interactable
 {
@@ -12,6 +13,7 @@ public class CarInteractable : Interactable
     public Image fadeImage; // Ekranı kaplayan siyah UI resmi
     public float fadeDuration = 2f; // Kararma süresi
     private bool isTransitioning = false; // Geçişin birden fazla kez tetiklenmesini engellemek için
+    public TextMeshProUGUI thanksText; // Demonun bitmesiyle gösterilecek teşekkür mesajı
 
     [Header("Ses Referansları")]
     public AudioSource carAudioSource; // Araba motor sesi için AudioSource
@@ -60,18 +62,40 @@ public class CarInteractable : Interactable
 
                 fadeImage.DOFade(1f, fadeDuration).OnComplete(() =>
                 {
-                    carAudioSource.Play();
-                    float audioLength = carAudioSource.clip != null ? carAudioSource.clip.length : 2f; // Ses yoksa varsayılan 2 saniye bekle
-                    DOVirtual.DelayedCall(audioLength, () =>
+                    if (carAudioSource != null) carAudioSource.Play();
+
+                    if (thanksText != null)
                     {
-                        SceneManager.LoadScene("DemoEndScene");
-                    });
+                        // Başlangıçta görünmez yap
+                        Color textColor = thanksText.color;
+                        textColor.a = 0f;
+                        thanksText.color = textColor;
+                        thanksText.gameObject.SetActive(true);
+
+                        // 5 saniye bekle, sonra 3 saniyede fade in yap
+                        thanksText.DOFade(1f, 3f).SetDelay(5f).OnComplete(() =>
+                        {
+                            // Fade in bittikten 10 saniye sonra oyunu kapat
+                            DOVirtual.DelayedCall(10f, () =>
+                            {
+#if UNITY_EDITOR
+                                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                                Application.Quit();
+#endif
+                            });
+                        });
+                    }
                 });
             }
             else
             {
-                // Eğer fadeImage atanmamışsa direkt geçiş yap (hata almamak için)
-                SceneManager.LoadScene("DemoEndScene");
+                // Eğer fadeImage atanmamışsa direkt çıkış yap
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit();
+#endif
             }
     }
 }

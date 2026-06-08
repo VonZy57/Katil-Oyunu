@@ -21,6 +21,7 @@ public class AmcaMovement : MonoBehaviour
     public string walkInjuredTriggerParam = "WalkInjuredTrigger";
     public string sitTriggerParam = "SitDownTrigger";
     public string walkTriggerParam = "WalkTrigger";
+    public string idleTriggerParam = "IdleTrigger";
 
     private SplineAnimate splineAnimate;
 
@@ -140,5 +141,8 @@ public class AmcaMovement : MonoBehaviour
         yield return new WaitUntil(() => !splineAnimate.IsPlaying);
         
         splineAnimate.enabled = false;
+
+        // Rotanın sonuna geldiğinde bekleme (idle) animasyonuna geçiş yap
+        amcaAnimator.SetTrigger(idleTriggerParam);
     }
 }
