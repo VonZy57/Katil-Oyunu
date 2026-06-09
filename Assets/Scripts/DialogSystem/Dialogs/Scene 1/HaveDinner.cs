@@ -12,6 +12,8 @@ public class HaveDinner : Interactable
 
     [Header("Ses Referansları")]
     [SerializeField] private List<SpeakerAudio> speakerAudios;
+    [SerializeField] private AudioClip clip_doorRinging;
+    [SerializeField] private AudioSource doorAudioSource;
 
     [Header("Anne Sesleri")]
     [SerializeField] private AudioClip clip_putTheGamePad;
@@ -65,6 +67,7 @@ public class HaveDinner : Interactable
     private FirstPersonController playerFPS;
     private CharacterController playerController;
     private PlayerControls controls;
+
 
     protected override void Awake()
     {
@@ -166,16 +169,21 @@ public class HaveDinner : Interactable
                 if (plate != null) plate.SetActive(true); // Oturma işlemi tamamlandığında boş tabakları aktif et
         }
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1.5f);
         dialogSystem.SetSpeakers(speakerAudios);
-        dialogSystem.StartDialog(putTheGamePadNode);
         RotateCameraToSpeaker(motherLookAtPoint); 
+        dialogSystem.StartDialog(putTheGamePadNode);
 
         // Diyalog panelinin aktif olmasını (açılmasını) bekle
         yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
         
         // Diyalog panelinin kapanmasını (diyaloğun bitmesini) bekle
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+
+        if (clip_doorRinging != null)
+        {
+            StartCoroutine(PlayDoorRingingTwice());
+        }
 
         // Diyalog tamamen bittikten sonra tabakları değiştir
         if (emptyPlates != null && emptyPlates.Count > 0)
@@ -197,6 +205,16 @@ public class HaveDinner : Interactable
         }
 
         StartCoroutine(motherWalksToDoor()); // Diyalog bittikten sonra annenin kapıya yürüyüp komşu diyalogunu başlatması için coroutine'i başlat
+    }
+
+    private IEnumerator PlayDoorRingingTwice()
+    {
+        if (doorAudioSource != null && clip_doorRinging != null)
+        {
+            doorAudioSource.PlayOneShot(clip_doorRinging);
+            yield return new WaitForSeconds(clip_doorRinging.length + 0.5f); // İki zil arası kısa bir bekleme (0.5s)
+            doorAudioSource.PlayOneShot(clip_doorRinging);
+        }
     }
 
     IEnumerator motherWalksToDoor()
