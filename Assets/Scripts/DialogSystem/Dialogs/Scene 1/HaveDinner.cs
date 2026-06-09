@@ -271,6 +271,16 @@ public class HaveDinner : Interactable
             
             if (doorTransform != null)
             {
+                HouseDoorInteraction doorInteraction = doorTransform.GetComponent<HouseDoorInteraction>();
+                if (doorInteraction != null && doorInteraction.doorOpenSound != null)
+                {
+                    AudioSource doorAudio = doorTransform.GetComponent<AudioSource>();
+                    if (doorAudio != null)
+                    {
+                        doorAudio.PlayOneShot(doorInteraction.doorOpenSound);
+                    }
+                }
+
                 Vector3 openRot = new Vector3(doorTransform.localEulerAngles.x, doorTransform.localEulerAngles.y, doorOpenZAngle);
                 yield return doorTransform.DOLocalRotate(openRot, 1f).SetEase(Ease.OutQuad).WaitForCompletion();
             }

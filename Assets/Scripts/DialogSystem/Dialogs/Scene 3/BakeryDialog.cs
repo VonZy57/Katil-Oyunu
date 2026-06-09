@@ -75,8 +75,10 @@ public class BakeryDialog : SittingInteraction
                 notificationText.text = "E - Stand Up";
             }       
             else
+            {
                 promptMessage = "";
                 notificationText.text = "";
+            }
         }
     }
 

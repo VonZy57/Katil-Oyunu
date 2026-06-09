@@ -92,7 +92,7 @@ public class TalkAboutAsuman : FoodInteractable
             {
                 // playerFPS.AddXRotation(15f); alttaki iki satırın eskisi (diğer sahnelerde bir buga sebep olursa eski haline getirilecek)
                 playerFPS.SyncCameraRotation(); // Yeni kamera açısını (15 dereceyi) sisteme kaydet
-                playerFPS.enabled = true; // Bekleme esnasında oyuncuya etrafına bakması için kontrolü geri ver
+                // playerFPS.enabled = true; // Diyaloglar bitene kadar oyuncuya kontrolü geri vermiyoruz.
             });
         }
     }
