@@ -92,7 +92,7 @@ public class TalkAboutAsuman : FoodInteractable
             {
                 // playerFPS.AddXRotation(15f); alttaki iki satırın eskisi (diğer sahnelerde bir buga sebep olursa eski haline getirilecek)
                 playerFPS.SyncCameraRotation(); // Yeni kamera açısını (15 dereceyi) sisteme kaydet
-                // playerFPS.enabled = true; // Diyaloglar bitene kadar oyuncuya kontrolü geri vermiyoruz.
+                playerFPS.enabled = true; // Sonraki lokmayı alabilmesi için oyuncuya kontrolü geri veriyoruz.
             });
         }
     }
@@ -105,7 +105,7 @@ public class TalkAboutAsuman : FoodInteractable
     private IEnumerator WaitAndStartDialog()
     {
         Debug.Log("Engin'in yeme animasyonu bitti. Amca'nın animasyonunu bekliyor...");
-        
+
         if (bakeryDialog != null)
         {
             yield return new WaitUntil(() => bakeryDialog.IsUncleAnimationFinished);
@@ -144,6 +144,20 @@ public class TalkAboutAsuman : FoodInteractable
         yield return null;
         yield return new WaitUntil(() => dialogSystem.dialogPanel.activeSelf);
         yield return new WaitUntil(() => !dialogSystem.dialogPanel.activeSelf);
+
+        // Engin yemeği tamamen bitirdiğinde oyuncunun hareketini kısıtla ve kamerayı amcaya çevir.
+        if (playerFPS != null) playerFPS.enabled = false;
+
+        if (playerCamera != null && amcaTransform != null)
+        {
+            Camera cam = playerCamera.GetComponent<Camera>();
+            if (cam == null) cam = playerCamera.GetComponentInChildren<Camera>();
+            if (cam == null) cam = Camera.main;
+
+            Transform camTransform = cam != null ? cam.transform : playerCamera.transform;
+            camTransform.DOKill();
+            camTransform.DOLookAt(amcaTransform.position, 0.1f).SetEase(Ease.InOutSine);
+        }
 
         // PLACEHOLDER: Amcanın yemek yeme animasyonu burada çalışacak
         Debug.Log("Amca yemek yeme animasyonu başladı...");

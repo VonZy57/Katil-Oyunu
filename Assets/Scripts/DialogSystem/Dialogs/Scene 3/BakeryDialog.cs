@@ -78,7 +78,7 @@ public class BakeryDialog : SittingInteraction
             {
                 promptMessage = "";
                 notificationText.text = "";
-            }
+            }  
         }
     }
 
