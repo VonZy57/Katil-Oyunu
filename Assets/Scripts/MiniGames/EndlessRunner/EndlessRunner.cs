@@ -32,6 +32,7 @@ public class EndlessRunner : MonoBehaviour
 
     [Header("Ses Ayarları")]
     public AudioClip turnBackSound;
+    public AudioSource screamSoundSource;
     public AudioClip obstacleHitSound;
     public AudioClip jumpSound;
     public AudioClip landSound;
@@ -469,9 +470,12 @@ public class EndlessRunner : MonoBehaviour
         isRotating = true;
         if (playerBody != null) startBodyRotation = playerBody.rotation;
 
+        if (screamSoundSource != null)
+            screamSoundSource.Play();
+
+        ShowTurnBackSubtitle();
         RotateBackwards();
         EnableVoidFog();
-        ShowTurnBackSubtitle();
 
         DOTween.Sequence()
             .AppendInterval(rotationDuration)
@@ -512,7 +516,7 @@ public class EndlessRunner : MonoBehaviour
 
         subtitleText.text = isTurkish ? trText : enText;
 
-        DOVirtual.DelayedCall(1f, () =>
+        DOVirtual.DelayedCall(3f, () =>
         {
             if (subtitleText != null)
                 subtitleText.text = "";

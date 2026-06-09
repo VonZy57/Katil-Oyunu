@@ -71,6 +71,7 @@ public class PhoneCall : Interactable
     [SerializeField] private AudioClip clip_girl_abiabi;
     [Header("Jumpscare Sesleri")]
     [SerializeField] private AudioClip clip_wakeUp;
+    [SerializeField] private AudioClip clip_jumpscare;
 
     [Header("Door References")]
     public MotelRoomDoorInteraction motelRoomDoor; // Işınlanmadan hemen önce kapanacak motel kapısı
@@ -267,6 +268,9 @@ public class PhoneCall : Interactable
             clockText.text = isTurkish ? "UYAN!" : "WAKE UP!";
             clockText.gameObject.SetActive(true);
         }
+
+        if(audioSource != null && clip_jumpscare != null)
+            audioSource.PlayOneShot(clip_jumpscare);
 
         if (audioSource != null && clip_wakeUp != null)
             audioSource.PlayOneShot(clip_wakeUp);
