@@ -24,6 +24,9 @@ public class SettingsUI : MonoBehaviour
     [Header("Altyazı Dili")]
     public TMP_Dropdown languageDropdown;
 
+    [Header("Geri Butonu")]
+    public Button backButton;
+
     void Awake()
     {
         // Tüm callback'leri kodda bağla — Inspector'da OnValueChanged ayarlamana gerek yok
@@ -41,6 +44,9 @@ public class SettingsUI : MonoBehaviour
 
         if (languageDropdown != null)
             languageDropdown.onValueChanged.AddListener(OnLanguageChanged);
+
+        if (backButton != null)
+            backButton.onClick.AddListener(OnBackButtonClicked);
     }
 
     void Start() { } // Awake'te yapıldı
@@ -61,6 +67,9 @@ public class SettingsUI : MonoBehaviour
 
         if (languageDropdown != null)
             languageDropdown.onValueChanged.RemoveListener(OnLanguageChanged);
+
+        if (backButton != null)
+            backButton.onClick.RemoveListener(OnBackButtonClicked);
     }
 
     void OnEnable()
@@ -189,6 +198,11 @@ public class SettingsUI : MonoBehaviour
     void OnLanguageChanged(int index)
     {
         SettingsManager.Instance?.SetLanguage(index == 1);
+    }
+
+    void OnBackButtonClicked()
+    {
+        FindFirstObjectByType<SettingsMenuController>()?.CloseSettings();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────

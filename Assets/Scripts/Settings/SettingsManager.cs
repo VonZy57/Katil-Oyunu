@@ -40,24 +40,13 @@ public class SettingsManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "MainMenuScene")
-        {
-            // Main menu her zaman default değerlerle başlar
-            Sensitivity     = 1f;
-            Volume          = 1f;
-            IsTurkish       = false;
-            Time.timeScale  = 1f;
-        }
-        else
-        {
-            // Diğer sahnelerde kaydedilen ayarları geri yükle
-            float raw = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 1f);
-            Sensitivity = raw > 10f
-                ? Mathf.Clamp(raw / 30f, 0.1f, 10f)
-                : Mathf.Clamp(raw, 0.1f, 10f);
-            Volume    = PlayerPrefs.GetFloat(KEY_VOLUME, 1f);
-            IsTurkish = PlayerPrefs.GetInt(KEY_LANGUAGE, 0) == 1;
-        }
+        float raw = PlayerPrefs.GetFloat(KEY_SENSITIVITY, 1f);
+        Sensitivity = raw > 10f
+            ? Mathf.Clamp(raw / 30f, 0.1f, 10f)
+            : Mathf.Clamp(raw, 0.1f, 10f);
+        Volume    = PlayerPrefs.GetFloat(KEY_VOLUME, 1f);
+        IsTurkish = PlayerPrefs.GetInt(KEY_LANGUAGE, 0) == 1;
+        Time.timeScale = 1f;
         ApplySensitivity();
         ApplyVolume();
         ApplyLanguage();
@@ -112,6 +101,7 @@ public class SettingsManager : MonoBehaviour
     {
         Sensitivity = value;
         PlayerPrefs.SetFloat(KEY_SENSITIVITY, value);
+        PlayerPrefs.Save();
         ApplySensitivity();
     }
 
@@ -119,6 +109,7 @@ public class SettingsManager : MonoBehaviour
     {
         Volume = value;
         PlayerPrefs.SetFloat(KEY_VOLUME, value);
+        PlayerPrefs.Save();
         ApplyVolume();
     }
 
@@ -126,6 +117,7 @@ public class SettingsManager : MonoBehaviour
     {
         ResolutionIndex = index;
         PlayerPrefs.SetInt(KEY_RESOLUTION, index);
+        PlayerPrefs.Save();
         ApplyResolution();
     }
 
@@ -133,6 +125,7 @@ public class SettingsManager : MonoBehaviour
     {
         DisplayIndex = index;
         PlayerPrefs.SetInt(KEY_DISPLAY, index);
+        PlayerPrefs.Save();
         StartCoroutine(ApplyDisplayCoroutine());
     }
 
@@ -151,6 +144,7 @@ public class SettingsManager : MonoBehaviour
     {
         IsTurkish = turkish;
         PlayerPrefs.SetInt(KEY_LANGUAGE, turkish ? 1 : 0);
+        PlayerPrefs.Save();
         ApplyLanguage();
     }
 
