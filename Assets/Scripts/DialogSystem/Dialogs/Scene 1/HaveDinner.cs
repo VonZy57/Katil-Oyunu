@@ -3,7 +3,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Splines;
-
+using TMPro;
+using NUnit.Framework;
 
 public class HaveDinner : Interactable
 {
@@ -32,6 +33,9 @@ public class HaveDinner : Interactable
     [Header("Oturma/Kalkma Referansları")]
     public Transform sitReference;
     public Transform standReference;
+    public GameObject notificationtextObject;
+    public TextMeshProUGUI notificationtext;
+
 
     [Header ("Animasyon Ayarları")]
     public float transitionDuration = 1.0f;
@@ -63,6 +67,8 @@ public class HaveDinner : Interactable
 
     private bool isSitting = false;
     private bool isMoving = false;
+
+    public bool isChair = false;
 
     private FirstPersonController playerFPS;
     private CharacterController playerController;
@@ -100,7 +106,9 @@ public class HaveDinner : Interactable
         if (MissionManager.Instance == null) return;
 
         if (MissionManager.Instance.CurrentMission == missionObj.requiredMission && !isSitting)
+        {
             promptMessage = "E - Sit and Eat";
+        }
         else if (isSitting && MissionManager.Instance.CurrentMission == leaveHomeMission)
         {
             promptMessage = "E - Stand Up";
@@ -109,6 +117,19 @@ public class HaveDinner : Interactable
         {
             promptMessage = "";
         }
+
+        if (isSitting && isChair && MissionManager.Instance.CurrentMission == leaveHomeMission)
+        {
+            notificationtextObject.SetActive(true);
+            notificationtext.text = "E - Stand Up";
+            isChair = false;
+        }
+        else if (!isSitting && !isChair && notificationtextObject.activeSelf && MissionManager.Instance.CurrentMission == leaveHomeMission)
+        {
+            notificationtextObject.SetActive(false);
+            notificationtext.text = "";
+        }
+
     }
 
 
@@ -127,6 +148,7 @@ public class HaveDinner : Interactable
         if (!isSitting && !isMoving && MissionManager.Instance.CurrentMission == missionObj.requiredMission)
         {
             StartCoroutine(SitDown());
+            isChair = true;
         }
 
     }

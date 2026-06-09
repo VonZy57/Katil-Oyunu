@@ -506,6 +506,7 @@ public class EndlessRunner : MonoBehaviour
     void ShowTurnBackSubtitle()
     {
         if (subtitleText == null) return;
+        subtitleText.gameObject.SetActive(true);
 
         bool isTurkish = false;
         if (dialogSystem != null)
@@ -519,7 +520,10 @@ public class EndlessRunner : MonoBehaviour
         DOVirtual.DelayedCall(3f, () =>
         {
             if (subtitleText != null)
+            {
+                subtitleText.gameObject.SetActive(false);
                 subtitleText.text = "";
+            } 
         });
     }
 

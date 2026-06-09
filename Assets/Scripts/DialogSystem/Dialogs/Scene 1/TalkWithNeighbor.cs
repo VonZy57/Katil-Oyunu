@@ -98,6 +98,7 @@ public class TalkWithNeighbor : MonoBehaviour
     private IEnumerator PlaySubtitleDialog()
     {
         isFinished = false;
+        subtitleText.gameObject.SetActive(true);
         
         foreach (SubtitleLine line in dialogLines)
         {
@@ -123,6 +124,7 @@ public class TalkWithNeighbor : MonoBehaviour
         }
         
         subtitleText.text = "";
+        subtitleText.gameObject.SetActive(false);
         
         // Diyalog altyazıları bittikten sonra hareketleri ve kapı kapanmasını başlat
         yield return StartCoroutine(MoveAndCloseDoorSequence());

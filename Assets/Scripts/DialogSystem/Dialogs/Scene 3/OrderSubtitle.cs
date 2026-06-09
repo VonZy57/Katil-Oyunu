@@ -69,6 +69,7 @@ public class OrderSubtitle : MonoBehaviour
     private IEnumerator PlaySubtitleDialog()
     {
         isFinished = false;
+        subtitleText.gameObject.SetActive(true);
         
         foreach (SubtitleLine line in dialogLines)
         {
@@ -91,6 +92,7 @@ public class OrderSubtitle : MonoBehaviour
         }
         
         subtitleText.text = "";
+        subtitleText.gameObject.SetActive(false);
         isFinished = true;
     }
 }

@@ -163,6 +163,7 @@ public class MotherCooking : MonoBehaviour
     private IEnumerator PlaySongSubtitles()
     {
         if (subtitleText == null) yield break;
+        subtitleText.gameObject.SetActive(true);
 
         bool isTurkish = dialogSystem != null ? dialogSystem.GetCurrentLanguage() : true;
         float timer = 0f;
@@ -192,6 +193,7 @@ public class MotherCooking : MonoBehaviour
             }
 
             subtitleText.text = "";
+            subtitleText.gameObject.SetActive(false);
         }
     }
 

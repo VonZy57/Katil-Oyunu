@@ -146,7 +146,7 @@ public class FirstPersonController : MonoBehaviour
 
             // Yukarı Aşağı (Pitch) - Limitli
             xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -sittingLookLimit, sittingLookLimit);
+            xRotation = Mathf.Clamp(xRotation, -sittingLookLimit-2f, sittingLookLimit);
 
             // Sağa Sola (Yaw) - Limitli (Normalde gövde dönerdi, şimdi sadece kafa)
             yRotation += mouseX;
