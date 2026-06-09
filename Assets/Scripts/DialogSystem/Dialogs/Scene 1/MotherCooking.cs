@@ -163,13 +163,13 @@ public class MotherCooking : MonoBehaviour
     private IEnumerator PlaySongSubtitles()
     {
         if (subtitleText == null) yield break;
-        subtitleText.gameObject.SetActive(true);
 
         bool isTurkish = dialogSystem != null ? dialogSystem.GetCurrentLanguage() : true;
         float timer = 0f;
 
         foreach (var sub in songSubtitles)
         {
+            subtitleText.gameObject.SetActive(true);
             while (timer < sub.startTime)
             {
                 timer += Time.deltaTime;

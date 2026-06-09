@@ -124,6 +124,8 @@ public class LavukBeatingAmca : MonoBehaviour
     private IEnumerator PlaySubtitleSequence()
     {
         isFinished = false;
+        subtitleText.gameObject.SetActive(true);
+
 
         // Lavuk'un orijinal rotasyonunu kaydet, böylece sonra eski haline dönebilsin.
         if (lavukAnimator != null)
@@ -181,6 +183,7 @@ public class LavukBeatingAmca : MonoBehaviour
         }
         
         subtitleText.text = "";
+        subtitleText.gameObject.SetActive(false);
         isFinished = true;
     }
 
