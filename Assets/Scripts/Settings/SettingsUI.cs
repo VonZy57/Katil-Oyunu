@@ -30,11 +30,23 @@ public class SettingsUI : MonoBehaviour
     void Awake()
     {
         // Tüm callback'leri kodda bağla — Inspector'da OnValueChanged ayarlamana gerek yok
+        // ÖNEMLİ: min/max listener'dan önce set edilmeli. Prefab'da slider value=0 gelir;
+        // listener eklendikten SONRA minValue=0.1f set edilseydi, Unity 0→0.1 clamp ederek
+        // onValueChanged tetikler ve SettingsManager'a yanlış değer kaydederdi.
         if (sensitivitySlider != null)
+        {
+            sensitivitySlider.minValue = 0.1f;
+            sensitivitySlider.maxValue = 10f;
+            sensitivitySlider.wholeNumbers = false;
             sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
+        }
 
         if (volumeSlider != null)
+        {
+            volumeSlider.minValue = 0f;
+            volumeSlider.maxValue = 1f;
             volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+        }
 
         if (resolutionDropdown != null)
             resolutionDropdown.onValueChanged.AddListener(OnResolutionChanged);
@@ -92,9 +104,6 @@ public class SettingsUI : MonoBehaviour
         // Sensitivity
         if (sensitivitySlider != null)
         {
-            sensitivitySlider.minValue = 0.1f;
-            sensitivitySlider.maxValue = 10f;
-            sensitivitySlider.wholeNumbers = false;
             sensitivitySlider.SetValueWithoutNotify(sm.Sensitivity);
             UpdateSensitivityText(sm.Sensitivity);
         }
@@ -102,8 +111,6 @@ public class SettingsUI : MonoBehaviour
         // Volume
         if (volumeSlider != null)
         {
-            volumeSlider.minValue = 0f;
-            volumeSlider.maxValue = 1f;
             volumeSlider.SetValueWithoutNotify(sm.Volume);
             UpdateVolumeText(sm.Volume);
         }
