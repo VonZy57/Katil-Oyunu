@@ -10,7 +10,7 @@ public class KuruGreeting : Interactable
     public Transform playerCamera;    // Karakterin kamerası (Yukarı/Aşağı bakış için)
 
     [Header("Prerequisites")]
-    public KeyDialog requiredKeyDialog; // Bu dialog bitmeden (obje silinmeden) etkileşime girilmesin
+    public GameObject roomKey;
 
     [Header("Rotation Settings")]
     public float rotationDuration = 2f;  // Dönüş hızı
@@ -63,8 +63,7 @@ public class KuruGreeting : Interactable
     {
         base.Update();
 
-        // KeyDialog henüz bitmediyse (obje silinmediyse) etkileşim metnini gizle
-        if (requiredKeyDialog != null)
+        if (roomKey != null && !roomKey.activeSelf)
             promptMessage = "";
         else
             promptMessage = "E - Talk";
@@ -85,7 +84,7 @@ public class KuruGreeting : Interactable
     protected override void Interact()
     {
         // KeyDialog henüz bitmediyse etkileşimi engelle
-        if (requiredKeyDialog != null) return;
+        if (roomKey != null && !roomKey.activeSelf) return;
 
         // NPC HAREKETİ: Kuru, Oyuncuya dönsün (Sadece Y ekseninde)
         if (playerCamera != null)
@@ -96,7 +95,7 @@ public class KuruGreeting : Interactable
 
         // E tuşuna basıldığında çağrılır (PlayerInteraction raycast ile kontrol eder)
         // Dialog tamamlanmışsa after node'u göster
-        if (dialogSystem != null && !isDialogActive && dialogCompleted)
+        if (dialogSystem != null && !isDialogActive && dialogCompleted && roomKey != null && roomKey.activeSelf)
         {
             dialogSystem.SetSpeakers(speakerAudios);
             dialogSystem.StartDialog(afterDialogNode);
