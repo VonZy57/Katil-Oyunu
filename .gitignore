@@ -74,3 +74,19 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 ProjectSettings/ShaderGraphSettings.asset
+node_modules
+
+# graphify (local knowledge-graph tool output, not tracked)
+.claude/skills/graphify/
+graphify-out/
+Assets/Scripts/graphify-out/
+
+# Claude Code local settings (machine-specific)
+.claude/settings.json
+
+# Local/exploratory - not committing yet
+/CLAUDE.md
+.claude/CLAUDE.md
+Katil-Oyunu.slnx
+package.json
+package-lock.json
